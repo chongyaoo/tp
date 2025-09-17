@@ -1,4 +1,4 @@
-# Duke
+# StudyMate
 
 {Give product intro here}
 
