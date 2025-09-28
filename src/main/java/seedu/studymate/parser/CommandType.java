@@ -9,5 +9,6 @@ public enum CommandType {
     DELETE,
     REM_ADD,
     REM_LS,
-    REM_RM
+    REM_RM,
+    BYE
 }
