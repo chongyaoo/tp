@@ -25,7 +25,7 @@ public class MessageHandler {
     }
 
     /**
-     * Prints the task lis
+     * Prints the task list
      *
      * @param taskList The TaskList object to be printed
      */
