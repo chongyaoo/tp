@@ -21,11 +21,12 @@ public class StudyMate {
         sendWelcomeMessage();
 
         Scanner sc = new Scanner(System.in);
+        Parser parser = new Parser();
 
         while (true) {
             try {
                 String input = readInput(sc);
-                Command cmd = Parser.parse(input);
+                Command cmd = parser.parse(input);
                 if (cmd.type == CommandType.BYE) {
                     break;
                 }

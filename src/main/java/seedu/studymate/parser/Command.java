@@ -1,9 +1,5 @@
 package seedu.studymate.parser;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-
 public class Command {
     public CommandType type;
     // for descriptions
@@ -11,9 +7,10 @@ public class Command {
     // for reminders
     public String message;
     // might refactor these to datetime
-    LocalDate date;
-    LocalTime time;
-    ArrayList<Integer> indices;
+    DateTimeArg datetime;
+    // for operations done on a range of indices
+    int indexStart;
+    int indexEnd;
 
     public Command(CommandType type) {
         this.type = type;
@@ -28,5 +25,11 @@ public class Command {
         this.type = type;
         this.desc = desc;
         this.message = message;
+    }
+
+    public Command(CommandType type, int startInclusive, int endInclusive) {
+        this.type = type;
+        this.indexStart = startInclusive;
+        this.indexEnd = endInclusive;
     }
 }
