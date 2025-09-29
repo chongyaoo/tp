@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
-    private static String DELIMITER_BY = "/by";
+    private static final String DELIMITER_BY = "/by";
     private static Pattern integerPattern = Pattern.compile("\\d");
     private static Pattern multipleIntegerPattern = Pattern.compile(("\\d...\\d"));
 
