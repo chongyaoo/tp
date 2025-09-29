@@ -2,10 +2,16 @@ package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
 
-public class Parser {
-    static String DELIMITER_BY = "/by";
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    public static Command parse(String line) throws StudyMateException {
+public class Parser {
+    private static String DELIMITER_BY = "/by";
+    private static Pattern integerPattern = Pattern.compile("\\d");
+    private static Pattern multipleIntegerPattern = Pattern.compile(("\\d...\\d"));
+
+    public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
             throw new StudyMateException("Line cannot be empty");
         }
@@ -34,14 +40,14 @@ public class Parser {
         }
     }
 
-    private static Command parseToDo(String desc) throws StudyMateException {
+    private Command parseToDo(String desc) throws StudyMateException {
         if (desc.isEmpty()) {
             throw new StudyMateException("The description of a todo cannot be empty.");
         }
         return new Command(CommandType.TODO, desc);
     }
 
-    private static Command parseDeadline(String arguments) throws StudyMateException {
+    private Command parseDeadline(String arguments) throws StudyMateException {
         if (arguments.isEmpty()) {
             throw new StudyMateException("The description of the deadline task cannot be empty!");
         }
@@ -63,31 +69,63 @@ public class Parser {
         return new Command(CommandType.DEADLINE, desc, deadline);
     }
 
-    private static Command parseMark(String[] arguments) throws StudyMateException {
-        validateNumberedCommand(arguments);
-        return new Command(CommandType.MARK, arguments[1]);
+    private Command parseMark(String[] arguments) throws StudyMateException {
+        int[] ranges = parseIndexRange(arguments);
+        return new Command(CommandType.MARK, ranges[0], ranges[1]);
     }
 
-    private static Command parseUnmark(String[] arguments) throws StudyMateException {
-        validateNumberedCommand(arguments);
-        return new Command(CommandType.UNMARK, arguments[1]);
+    private Command parseUnmark(String[] arguments) throws StudyMateException {
+        int[] ranges = parseIndexRange(arguments);
+        return new Command(CommandType.UNMARK, ranges[0], ranges[1]);
     }
 
-    private static Command parseDelete(String[] arguments) throws StudyMateException {
-        validateNumberedCommand(arguments);
-        return new Command(CommandType.DELETE, arguments[1]);
+    private Command parseDelete(String[] arguments) throws StudyMateException {
+        int[] ranges = parseIndexRange(arguments);
+        return new Command(CommandType.DELETE, ranges[0], ranges[1]);
     }
 
-    private static void validateNumberedCommand(String[] arguments) throws StudyMateException {
+    private int[] parseIndexRange(String[] arguments) throws StudyMateException {
         // Check that the task number is not empty
         if (arguments[1].isEmpty()) {
             throw new StudyMateException("The " + arguments[0] + " command must be followed by a task number.");
         }
         try {
-            Integer.parseInt(arguments[1]);
+            String[] indexArgs = arguments[1].split(",");
+            int[] ranges = new int[2];
+            int maximum = Integer.MIN_VALUE;
+            int minimum = Integer.MAX_VALUE;
+            for (String arg: indexArgs) {
+                if (integerPattern.matcher(arg).find()) {
+                    int val = Integer.parseInt(arg);
+                    if (val > maximum) {
+                        maximum = val;
+                    }
+                    if (val < minimum) {
+                        minimum = val;
+                    }
+                } else if (multipleIntegerPattern.matcher(arg).find()) {
+                    int[] startAndEndArgs = Arrays.stream(arg.split("...")).mapToInt(Integer::parseInt).toArray();
+                    if (startAndEndArgs[0] > startAndEndArgs[1]) {
+                        throw new NumberFormatException();
+                    }
+                    for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
+                        if (i > maximum) {
+                            maximum = i;
+                        }
+                        if (i < minimum) {
+                            minimum = i;
+                        }
+                    }
+                    ranges[0] = minimum;
+                    ranges[1] = maximum;
+                    return ranges;
+                } else {
+                    throw new NumberFormatException();
+                }
+            }
+            return ranges;
         } catch (NumberFormatException e) {
-            // Check that string is a valid integer
-            throw new StudyMateException("The " + arguments[0] + " command must be followed by a valid number!");
+            throw new StudyMateException("The " + arguments[0] + " command must be followed by a valid input");
         }
     }
 
