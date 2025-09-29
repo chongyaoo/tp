@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 
 public class Parser {
     private static final String DELIMITER_BY = "/by";
-    private static Pattern integerPattern = Pattern.compile("\\d");
-    private static Pattern multipleIntegerPattern = Pattern.compile(("\\d...\\d"));
+    private static final Pattern integerPattern = Pattern.compile("\\d");
+    private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d...\\d"));
 
     public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
