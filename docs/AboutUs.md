@@ -2,5 +2,5 @@
 
 Display |    Name    | Github Profile | Portfolio 
 --------|:----------:|:--------------:|:---------:
-![](https://via.placeholder.com/100.png?text=Photo) | Hanyang Ma | [Github](https://github.com/m-xrtin) | [Portfolio](docs/team/m-xrtin.md)
-
+![](https://nus.instructure.com/images/thumbnails/4426183/g7cEtQhKk7NruR8dWsS8iI67fr6vkHRbQ41rC4kY) | Chong Yao | [Github](https://github.com/cmhongyaoo) | [Portfolio](docs/team/chongyao.md)
+![](https://nus.instructure.com/images/thumbnails/6769710/o9U1HrjMiXpmYR4DoljPIWzdqWYAL3sEKupg6beo) | Hanyang Ma | [Github](https://github.com/m-xrtin) | [Portfolio](docs/team/m-xrtin.md)
