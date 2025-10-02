@@ -3,6 +3,8 @@ package seedu.studymate.ui;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
+import java.util.List;
+
 /**
  * Handles all messages and interactions with the user interface by printing to the console
  * This class provides a centralised way to display information
@@ -63,13 +65,15 @@ public class MessageHandler {
     /**
      * Prints a confirmation message after a task has been deleted
      *
-     * @param task The task that was deleted
+     * @param tasks The list of tasks that was deleted
      * @param count The current number of tasks in the list
      */
-    public static void sendDeleteTaskMessage(Task task, int count) {
+    public static void sendDeleteTaskMessage(List<Task> tasks, int count) {
         System.out.println(LINE);
-        System.out.println("Got it. I've deleted this task:");
-        System.out.println(task.toString());
+        System.out.println("Got it. I've deleted these tasks:");
+        for (Task task: tasks) {
+            System.out.println(task.toString());
+        }
         if (count == 1) {
             System.out.println("Now you have 1 task in the task list.");
         } else {
@@ -81,24 +85,28 @@ public class MessageHandler {
     /**
      * Prints a message to confirm that a task has been marked as done
      *
-     * @param task The task that was marked
+     * @param tasks The list of tasks that was marked
      */
-    public static void sendMarkMessage(Task task) {
+    public static void sendMarkMessage(List<Task> tasks) {
         System.out.println(LINE);
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println(task.toString());
+        System.out.println("Nice! I've marked these tasks as done:");
+        for (Task task: tasks) {
+            System.out.println(task.toString());
+        }
         System.out.println(LINE);
     }
 
     /**
      * Prints a message to confirm that a task has been unmarked
      *
-     * @param task The task that was unmarked
+     * @param tasks The list of task that was unmarked
      */
-    public static void sendUnmarkMessage(Task task) {
+    public static void sendUnmarkMessage(List<Task> tasks) {
         System.out.println(LINE);
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println(task.toString());
+        System.out.println("OK, I've marked these tasks as not done yet:");
+        for (Task task: tasks) {
+            System.out.println(task.toString());
+        }
         System.out.println(LINE);
     }
 }

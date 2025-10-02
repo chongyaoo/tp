@@ -1,5 +1,7 @@
 package seedu.studymate.ui;
 
+import seedu.studymate.parser.DateTimeArg;
+
 /**
  * Class to manage all message formatting
  */
@@ -20,7 +22,7 @@ public class MessageFormatting {
      * Returns a human-readable string representation of the deadline, including its completion status and due date
      * @return The formatted string for display
      */
-    public static String deadlineString(Boolean isDone, String name, String deadline) {
+    public static String deadlineString(Boolean isDone, String name, DateTimeArg deadline) {
         if (isDone) {
             return "[D][X] " + name + " (by: " + deadline + ")";
         }

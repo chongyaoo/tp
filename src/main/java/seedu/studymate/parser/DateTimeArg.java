@@ -24,4 +24,9 @@ public class DateTimeArg {
     public LocalDateTime getDateTime () {
         return LocalDateTime.of(date, time);
     }
+
+    @Override
+    public String toString() {
+        return (date == null ? "" : date) + "T" + (time == null ? "" : time);
+    }
 }

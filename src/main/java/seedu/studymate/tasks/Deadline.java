@@ -1,6 +1,7 @@
 package seedu.studymate.tasks;
 
 import seedu.studymate.database.DataFormatting;
+import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
 /**
@@ -9,14 +10,14 @@ import seedu.studymate.ui.MessageFormatting;
  */
 public class Deadline extends Task {
 
-    private final String deadline;
+    private final DateTimeArg deadline;
 
     /**
      * Constructs Deadline task with the given name and a deadline
      * @param task The description or name of the task
      * @param deadline The deadline time of the task
      */
-    public Deadline(String task, String deadline) {
+    public Deadline(String task, DateTimeArg deadline) {
         super(task);
         this.deadline = deadline;
     }

@@ -4,6 +4,8 @@ import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
+import java.util.LinkedHashSet;
+
 public class CommandHandler {
 
     /**
@@ -28,7 +30,7 @@ public class CommandHandler {
     }
 
     private static void handleDeadline(TaskList taskList, Command cmd) {
-        taskList.addDeadline(cmd.desc, cmd.message);
+        taskList.addDeadline(cmd.desc, cmd.datetime);
     }
 
     private static void handleList(TaskList taskList) {
@@ -36,33 +38,25 @@ public class CommandHandler {
     }
 
     private static void handleMark(TaskList taskList, Command cmd) throws StudyMateException {
-        int taskNumber = parseAndValidateTaskNumber(cmd, taskList.getCount());
-        taskList.mark(taskNumber);
+        validateTaskNumber(cmd.indexes, taskList.getCount());
+        taskList.mark(cmd.indexes);
     }
 
     private static void handleUnmark(TaskList taskList, Command cmd) throws StudyMateException {
-        int taskNumber = parseAndValidateTaskNumber(cmd, taskList.getCount());
-        taskList.unmark(taskNumber);
+        validateTaskNumber(cmd.indexes, taskList.getCount());
+        taskList.unmark(cmd.indexes);
     }
 
     private static void handleDelete(TaskList taskList, Command cmd) throws StudyMateException {
-        int taskNumber = parseAndValidateTaskNumber(cmd, taskList.getCount());
-        taskList.delete(taskNumber);
+        validateTaskNumber(cmd.indexes, taskList.getCount());
+        taskList.delete(cmd.indexes);
     }
 
-    private static int parseAndValidateTaskNumber(Command cmd, int max) throws StudyMateException {
-        int taskNumber;
-
-        try {
-            taskNumber = Integer.parseInt(cmd.desc);
-        } catch (NumberFormatException e) {
-            throw new StudyMateException("Invalid task number!");
+    private static void validateTaskNumber(LinkedHashSet<Integer> indexes, int max) throws StudyMateException {
+        for (Integer index:indexes) {
+            if (index < 0 || index >= max) {
+                throw new StudyMateException("Invalid index ranges given!");
+            }
         }
-
-        if (taskNumber < 1 || taskNumber > max) {
-            throw new StudyMateException("There is no such task number!");
-        }
-
-        return taskNumber;
     }
 }
