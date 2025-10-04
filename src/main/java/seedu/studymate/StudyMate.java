@@ -26,15 +26,13 @@ public class StudyMate {
         Scanner sc = new Scanner(System.in);
         Parser parser = new Parser();
 
-        // Try loading exisiting tasks from file 
-        try {
-            for (Task t : storage.load()) {
-                taskList.add(t);
-            }
-            MessageHandler.sendMessage("Loaded " + taskList.getCount() + " task(s) from file.");
+    // Load existing tasks from file.
+    try {
+        storage.load(taskList);
+        MessageHandler.sendMessage("Loaded " + taskList.getCount() + " task(s) from file.");
         } catch (StudyMateException e) {
-            MessageHandler.sendMessage("No existing save file found, creating new task list.");
-        }
+        MessageHandler.sendMessage("Error loading tasks: " + e.getMessage());
+    }
 
         while (true) {
             try {

@@ -93,15 +93,6 @@ public class TaskList {
     }
 
     /**
-     * Adds a new task object to the task list.
-     * 
-     * @param task The task object
-     */
-    public void add(Task task) {
-        taskList.add(task);
-    }
-
-    /**
      * Returns the list of all tasks in this TaskList.
      *
      * @return An ArrayList containing all Task objects in the list.

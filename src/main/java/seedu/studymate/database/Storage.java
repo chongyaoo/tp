@@ -21,7 +21,7 @@ public class Storage {
      * Loads tasks from the save file into a TaskList.
      * If file not found, creates a new empty one.
      */
-    public List<Task> load() throws StudyMateException {
+    public void load(TaskList taskList) throws StudyMateException {
         List<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
 
@@ -32,22 +32,17 @@ public class Storage {
             } catch (IOException e) {
                 throw new StudyMateException("Error creating save file: " + e.getMessage());
             }
-            return tasks; // empty list
+            return;
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                Task task = parseTask(line);
-                if (task != null) {
-                    tasks.add(task);
-                }
+                parseAndAddTask(line, taskList);
             }
         } catch (IOException e) {
             throw new StudyMateException("Error reading save file: " + e.getMessage());
         }
-
-        return tasks;
     }
 
     /**
@@ -65,24 +60,37 @@ public class Storage {
     }
 
     /**
-     * Converts a saved text line into a Task object.
+     * Parses a line from the save file and adds the corresponding Task to the given TaskList.
+     * Supports ToDo and Deadline tasks. Sets the task's done status if indicated.
+     *
+     * @param line     The line from the save file representing a task.
+     * @param taskList The TaskList to add the parsed task to.
      */
-    private Task parseTask(String line) {
+    private void parseAndAddTask(String line, TaskList taskList) {
         String[] parts = line.split("\\|");
         String type = parts[0];
         boolean isDone = parts[1].equals("1");
 
         switch (type) {
         case "T":
-            Task todo = new ToDo(parts[2]);
-            todo.setDone(isDone);
-            return todo;
+            
+            taskList.addToDo(parts[2]);
+            if (isDone) {
+                taskList.getTask(taskList.getCount() - 1).setDone(true);
+            }
+            break;
+
         case "D":
-            Task deadline = new Deadline(parts[2], parts[3]);
-            deadline.setDone(isDone);
-            return deadline;
+            
+            taskList.addDeadline(parts[2], parts[3]);
+            if (isDone) {
+                taskList.getTask(taskList.getCount() - 1).setDone(true);
+            }
+            break;
+
         default:
-            return null;
+        // ignore invalid lines
         }
     }
 }
+
