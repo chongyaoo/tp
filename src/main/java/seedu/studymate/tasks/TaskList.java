@@ -91,4 +91,23 @@ public class TaskList {
         taskList.get(taskNumber - 1).setDone(false);
         MessageHandler.sendUnmarkMessage(taskList.get(taskNumber - 1));
     }
+
+    /**
+     * Adds a new task object to the task list.
+     * 
+     * @param task The task object
+     */
+    public void add(Task task) {
+        taskList.add(task);
+    }
+
+    /**
+     * Returns the list of all tasks in this TaskList.
+     *
+     * @return An ArrayList containing all Task objects in the list.
+     */
+    public ArrayList<Task> getTasks() {
+        return taskList;
+    }
+
 }
