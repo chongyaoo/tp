@@ -1,10 +1,12 @@
 package seedu.studymate;
 
+import seedu.studymate.database.Storage;
 import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.Command;
 import seedu.studymate.parser.CommandHandler;
 import seedu.studymate.parser.CommandType;
 import seedu.studymate.parser.Parser;
+import seedu.studymate.tasks.Task;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
@@ -14,14 +16,23 @@ public class StudyMate {
     /**
      * Main entry-point for the StudyMate application.
      */
-
+    private static final String FILE_PATH = "data/tasks.txt";
     private final static TaskList taskList = new TaskList();
 
     public static void main(String[] args) {
         sendWelcomeMessage();
 
+        Storage storage = new Storage(FILE_PATH);
         Scanner sc = new Scanner(System.in);
         Parser parser = new Parser();
+
+    // Load existing tasks from file.
+    try {
+        storage.load(taskList);
+        MessageHandler.sendMessage("Loaded " + taskList.getCount() + " task(s) from file.");
+        } catch (StudyMateException e) {
+        MessageHandler.sendMessage("Error loading tasks: " + e.getMessage());
+    }
 
         while (true) {
             try {
@@ -31,6 +42,8 @@ public class StudyMate {
                     break;
                 }
                 CommandHandler.executeCommand(taskList, cmd);
+
+                storage.save(taskList.getTasks());
             } catch (StudyMateException e) {
                 MessageHandler.sendMessage(e.getMessage());
             }

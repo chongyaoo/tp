@@ -108,4 +108,14 @@ public class TaskList {
         }
         MessageHandler.sendMarkMessage(tasks);
     }
+
+    /**
+     * Returns the list of all tasks in this TaskList.
+     *
+     * @return An ArrayList containing all Task objects in the list.
+     */
+    public ArrayList<Task> getTasks() {
+        return taskList;
+    }
+
 }
