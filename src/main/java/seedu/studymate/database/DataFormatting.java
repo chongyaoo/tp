@@ -1,5 +1,7 @@
 package seedu.studymate.database;
 
+import seedu.studymate.parser.DateTimeArg;
+
 /**
  * Class to manage all the data formatting
  */
@@ -20,7 +22,7 @@ public class DataFormatting {
      * Returns a string representation of the task suitable for saving to a file
      * @return The formatted string for saving
      */
-    public static String deadlineSaveString(Boolean isDone, String name, String deadline) {
+    public static String deadlineSaveString(Boolean isDone, String name, DateTimeArg deadline) {
         if (isDone) {
             return "D|1|" + name + "|" + deadline;
         }

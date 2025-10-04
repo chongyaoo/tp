@@ -2,7 +2,10 @@ package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,65 +68,54 @@ public class Parser {
             throw new StudyMateException("The description and deadline of a deadline cannot be empty!");
         }
 
-        // Assuming Command class supports description and deadline:
-        return new Command(CommandType.DEADLINE, desc, deadline);
+        try {
+            DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(deadline));
+            return new Command(CommandType.DEADLINE, desc, dateTimeArg);
+        } catch (DateTimeParseException e) {
+            throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+        }
     }
 
     private Command parseMark(String[] arguments) throws StudyMateException {
-        int[] ranges = parseIndexRange(arguments);
-        return new Command(CommandType.MARK, ranges[0], ranges[1]);
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.MARK, indexes);
     }
 
     private Command parseUnmark(String[] arguments) throws StudyMateException {
-        int[] ranges = parseIndexRange(arguments);
-        return new Command(CommandType.UNMARK, ranges[0], ranges[1]);
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.UNMARK, indexes);
     }
 
     private Command parseDelete(String[] arguments) throws StudyMateException {
-        int[] ranges = parseIndexRange(arguments);
-        return new Command(CommandType.DELETE, ranges[0], ranges[1]);
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.DELETE, indexes);
     }
 
-    private int[] parseIndexRange(String[] arguments) throws StudyMateException {
+    private LinkedHashSet<Integer> parseIndexes(String[] arguments) throws StudyMateException {
         // Check that the task number is not empty
         if (arguments[1].isEmpty()) {
             throw new StudyMateException("The " + arguments[0] + " command must be followed by a task number.");
         }
         try {
             String[] indexArgs = arguments[1].split(",");
-            int[] ranges = new int[2];
-            int maximum = Integer.MIN_VALUE;
-            int minimum = Integer.MAX_VALUE;
+            LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
             for (String arg: indexArgs) {
                 if (integerPattern.matcher(arg).find()) {
-                    int val = Integer.parseInt(arg);
-                    if (val > maximum) {
-                        maximum = val;
-                    }
-                    if (val < minimum) {
-                        minimum = val;
-                    }
+                    indexes.add(Integer.parseInt(arg) - 1);
                 } else if (multipleIntegerPattern.matcher(arg).find()) {
-                    int[] startAndEndArgs = Arrays.stream(arg.split("...")).mapToInt(Integer::parseInt).toArray();
+                    int[] startAndEndArgs = Arrays.stream(arg.split("...")).mapToInt(Integer::parseInt).
+                            toArray();
                     if (startAndEndArgs[0] > startAndEndArgs[1]) {
                         throw new NumberFormatException();
                     }
                     for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
-                        if (i > maximum) {
-                            maximum = i;
-                        }
-                        if (i < minimum) {
-                            minimum = i;
-                        }
+                        indexes.add(i - 1);
                     }
-                    ranges[0] = minimum;
-                    ranges[1] = maximum;
-                    return ranges;
                 } else {
                     throw new NumberFormatException();
                 }
             }
-            return ranges;
+            return indexes;
         } catch (NumberFormatException e) {
             throw new StudyMateException("The " + arguments[0] + " command must be followed by a valid input");
         }

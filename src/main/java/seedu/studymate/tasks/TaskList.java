@@ -1,7 +1,11 @@
 package seedu.studymate.tasks;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
+import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageHandler;
 
 /**
@@ -55,7 +59,7 @@ public class TaskList {
      * @param task     The description of the deadline
      * @param deadline The deadline time
      */
-    public void addDeadline(String task, String deadline) {
+    public void addDeadline(String task, DateTimeArg deadline) {
         Deadline newTask = new Deadline(task, deadline);
         taskList.add(newTask);
         MessageHandler.sendAddTaskMessage(newTask, getCount());
@@ -64,31 +68,44 @@ public class TaskList {
     /**
      * Deletes a task from the list at a specific task number
      *
-     * @param taskNumber The number of the task to delete
+     * @param indexes The list of task indexes to delete
      */
-    public void delete(int taskNumber) {
-        Task deletedTask = taskList.get(taskNumber - 1);
-        taskList.remove(taskNumber - 1);
-        MessageHandler.sendDeleteTaskMessage(deletedTask, getCount());
+    public void delete(LinkedHashSet<Integer> indexes) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        // sort indexes in reverse order to prevent index mashups
+        List<Integer> sorted_indexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
+        for (Integer index: sorted_indexes) {
+            tasks.add(taskList.get(index));
+            taskList.remove(index.intValue());
+        }
+        MessageHandler.sendDeleteTaskMessage(tasks, taskList.size());
     }
 
     /**
      * Marks a task as done
      *
-     * @param taskNumber The number of the task to mark
+     * @param indexes The list of task indexes to mark as done
      */
-    public void mark(int taskNumber) {
-        taskList.get(taskNumber - 1).setDone(true);
-        MessageHandler.sendMarkMessage(taskList.get(taskNumber - 1));
+    public void mark(LinkedHashSet<Integer> indexes) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (Integer index:indexes) {
+            taskList.get(index).setDone(true);
+            tasks.add(taskList.get(index));
+        }
+        MessageHandler.sendMarkMessage(tasks);
     }
 
     /**
      * Unmarks a task as not done
      *
-     * @param taskNumber The number of the task to unmark
+     * @param indexes The list of task indexes to mark as not done
      */
-    public void unmark(int taskNumber) {
-        taskList.get(taskNumber - 1).setDone(false);
-        MessageHandler.sendUnmarkMessage(taskList.get(taskNumber - 1));
+    public void unmark(LinkedHashSet<Integer> indexes) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (Integer index:indexes) {
+            taskList.get(index).setDone(false);
+            tasks.add(taskList.get(index));
+        }
+        MessageHandler.sendMarkMessage(tasks);
     }
 }
