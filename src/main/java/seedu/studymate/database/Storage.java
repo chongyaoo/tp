@@ -1,10 +1,18 @@
 package seedu.studymate.database;
 
-import seedu.studymate.tasks.*;
+import seedu.studymate.parser.DateTimeArg;
+import seedu.studymate.tasks.Task;
 import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.tasks.TaskList;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -22,7 +30,6 @@ public class Storage {
      * If file not found, creates a new empty one.
      */
     public void load(TaskList taskList) throws StudyMateException {
-        List<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
 
         if (!file.exists()) {
@@ -66,7 +73,7 @@ public class Storage {
      * @param line     The line from the save file representing a task.
      * @param taskList The TaskList to add the parsed task to.
      */
-    private void parseAndAddTask(String line, TaskList taskList) {
+    private void parseAndAddTask(String line, TaskList taskList) throws StudyMateException {
         String[] parts = line.split("\\|");
         String type = parts[0];
         boolean isDone = parts[1].equals("1");
@@ -81,8 +88,16 @@ public class Storage {
             break;
 
         case "D":
-            
-            taskList.addDeadline(parts[2], parts[3]);
+            String[] rawdateTime = parts[3].split("T");
+            DateTimeArg dateTimeArg;
+            if (!rawdateTime[0].equals(" ") && !rawdateTime[1].equals(" ")) {
+                dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]), LocalTime.parse(rawdateTime[1]));
+            } else if (!rawdateTime[0].equals(" ")) {
+                dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]));
+            } else {
+                throw new StudyMateException("Error parsing data!");
+            }
+            taskList.addDeadline(parts[2], dateTimeArg);
             if (isDone) {
                 taskList.getTask(taskList.getCount() - 1).setDone(true);
             }
