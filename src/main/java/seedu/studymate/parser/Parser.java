@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
@@ -19,9 +18,9 @@ public class Parser {
             throw new StudyMateException("Line cannot be empty");
         }
 
-        String clean_line = line.replaceAll("\\s+", " ");
+        String cleanLine = line.replaceAll("\\s+", " ");
 
-        String[] arguments = clean_line.split(" ",2);
+        String[] arguments = cleanLine.split(" ",2);
 
         switch (arguments[0].toLowerCase()) {
         case "todo":

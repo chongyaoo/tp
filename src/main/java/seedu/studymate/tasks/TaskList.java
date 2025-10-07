@@ -73,8 +73,8 @@ public class TaskList {
     public void delete(LinkedHashSet<Integer> indexes) {
         ArrayList<Task> tasks = new ArrayList<>();
         // sort indexes in reverse order to prevent index mashups
-        List<Integer> sorted_indexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
-        for (Integer index: sorted_indexes) {
+        List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
+        for (Integer index: sortedIndexes) {
             tasks.add(taskList.get(index));
             taskList.remove(index.intValue());
         }
