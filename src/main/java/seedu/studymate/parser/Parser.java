@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class Parser {
     private static final String DELIMITER_BY = "/by";
     private static final Pattern integerPattern = Pattern.compile("\\d");
-    private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d...\\d"));
+    private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
 
     public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
@@ -99,10 +99,8 @@ public class Parser {
             String[] indexArgs = arguments[1].split(",");
             LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
             for (String arg: indexArgs) {
-                if (integerPattern.matcher(arg).find()) {
-                    indexes.add(Integer.parseInt(arg) - 1);
-                } else if (multipleIntegerPattern.matcher(arg).find()) {
-                    int[] startAndEndArgs = Arrays.stream(arg.split("...")).mapToInt(Integer::parseInt).
+                if (multipleIntegerPattern.matcher(arg).find()) {
+                    int[] startAndEndArgs = Arrays.stream(arg.split("\\.\\.\\.")).mapToInt(Integer::parseInt).
                             toArray();
                     if (startAndEndArgs[0] > startAndEndArgs[1]) {
                         throw new NumberFormatException();
@@ -110,6 +108,8 @@ public class Parser {
                     for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
                         indexes.add(i - 1);
                     }
+                } else if (integerPattern.matcher(arg).find()) {
+                    indexes.add(Integer.parseInt(arg) - 1);
                 } else {
                     throw new NumberFormatException();
                 }
