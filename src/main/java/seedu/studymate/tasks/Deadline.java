@@ -23,6 +23,14 @@ public class Deadline extends Task {
     }
 
     /**
+     * Gets the deadline of the task
+     * @return deadline The deadline time of the task
+     */
+    public DateTimeArg getDeadline() {
+        return deadline;
+    }
+
+    /**
      * Returns a string representation of the task suitable for saving to a file
      * @return The formatted string for saving
      */
