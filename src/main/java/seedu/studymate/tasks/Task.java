@@ -34,6 +34,14 @@ public class Task {
     }
 
     /**
+     * Gets the completion status of the task
+     * @return isDone A boolean indicating if the task is done (true) or not (false)
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
+    /**
      * Returns a string representation of the task suitable for saving to a file
      * This method is intended to be overridden by subclasses to provide specific formatting
      * @return An empty string
