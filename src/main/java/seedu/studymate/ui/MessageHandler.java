@@ -5,6 +5,7 @@ import seedu.studymate.tasks.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class MessageHandler {
         System.out.println(LINE);
         System.out.println("Here are the tasks in your task list:");
         for (int i = 0; i < taskList.getCount(); i++) {
-            System.out.println((i+1) + ". " + taskList.getTask(i).toString());
+            System.out.println((i + 1) + ". " + taskList.getTask(i).toString());
         }
         System.out.println(LINE);
     }
@@ -59,7 +60,7 @@ public class MessageHandler {
         System.out.println(LINE);
         System.out.println("Here are your Reminders:");
         for (int i = 0; i < reminderList.getCount(); i++) {
-            System.out.println((i+1) + ". " + reminderList.getReminder(i).toString());
+            System.out.println((i + 1) + ". " + reminderList.getReminder(i).toString());
         }
         System.out.println(LINE);
     }
@@ -67,7 +68,7 @@ public class MessageHandler {
     /**
      * Prints a confirmation message after a task has been added
      *
-     * @param task The task that was added
+     * @param task  The task that was added
      * @param count The current number of tasks in the list
      */
     public static void sendAddTaskMessage(Task task, int count) {
@@ -91,7 +92,7 @@ public class MessageHandler {
     public static void sendDeleteTaskMessage(List<Task> tasks, int count) {
         System.out.println(LINE);
         System.out.println("Got it. I've deleted these tasks:");
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             System.out.println(task.toString());
         }
         if (count == 1) {
@@ -106,12 +107,12 @@ public class MessageHandler {
      * Prints a confirmation message after a reminder has been deleted
      *
      * @param reminders The list of tasks that was deleted
-     * @param count The current number of tasks in the list
+     * @param count     The current number of tasks in the list
      */
     public static void sendDeleteReminderMessage(List<Reminder> reminders, int count) {
         System.out.println(LINE);
         System.out.println("Got it. I've deleted these reminders:");
-        for (Reminder reminder: reminders) {
+        for (Reminder reminder : reminders) {
             System.out.println(reminder.toString());
         }
         if (count == 1) {
@@ -130,7 +131,7 @@ public class MessageHandler {
     public static void sendMarkMessage(List<Task> tasks) {
         System.out.println(LINE);
         System.out.println("Nice! I've marked these tasks as done:");
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             System.out.println(task.toString());
         }
         System.out.println(LINE);
@@ -144,34 +145,41 @@ public class MessageHandler {
     public static void sendUnmarkMessage(List<Task> tasks) {
         System.out.println(LINE);
         System.out.println("OK, I've marked these tasks as not done yet:");
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             System.out.println(task.toString());
         }
         System.out.println(LINE);
     }
 
     // TODO
-    public static void sendTimerStartMessage() {
+    public static void sendTimerStartMessage(int duration, String label) {
         System.out.println(LINE);
-        System.out.println("Timer start");
-        System.out.println(LINE);
-    }
-
-    public static void sendTimerPauseMessage() {
-        System.out.println(LINE);
-        System.out.println("Timer pause");
+        String output = "# TIMER\n" + "# RUNNING " + duration + ":00 left - " + label;
+        System.out.println(output);
         System.out.println(LINE);
     }
 
-    public static void sendTimerResumeMessage() {
+    public static void sendTimerPauseMessage(long remainingTime, String label) {
         System.out.println(LINE);
-        System.out.println("Timer resume");
+        int[] formattedTime = formatDuration(remainingTime);
+        String output = "# TIMER\n" + "# PAUSED " + formattedTime[0]
+                + ":" + formattedTime[1] + " left - " + label;
+        System.out.println(output);
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerResumeMessage(long remainingTime, String label) {
+        System.out.println(LINE);
+        int[] formattedTime = formatDuration(remainingTime);
+        String output = "# TIMER\n" + "# RUNNING " + formattedTime[0]
+                + ":" + formattedTime[1] + " left - " + label;
+        System.out.println(output);
         System.out.println(LINE);
     }
 
     public static void sendTimerResetMessage() {
         System.out.println(LINE);
-        System.out.println("Timer reset");
+        System.out.println("# TIMER\n" + "# RESET TIMER");
         System.out.println(LINE);
     }
 
@@ -183,7 +191,13 @@ public class MessageHandler {
 
     public static void sendTimerEndedMessage() {
         System.out.println(LINE);
-        System.out.println("Timer ended");
+        System.out.println("# TIMER\n" + "# TIMER HAS ENDED");
         System.out.println(LINE);
+    }
+
+    private static int[] formatDuration(long totalSeconds) {
+        int minutes = (int) (totalSeconds / 60);
+        int seconds = (int) (totalSeconds % 60);
+        return new int[]{minutes, seconds};
     }
 }

@@ -40,6 +40,7 @@ public class StudyMate {
                 String input = readInput(sc);
                 Command cmd = parser.parse(input);
                 if (cmd.type == CommandType.BYE) {
+                    CommandHandler.cleanup();
                     break;
                 }
                 CommandHandler.executeCommand(taskList, reminderList, cmd);
