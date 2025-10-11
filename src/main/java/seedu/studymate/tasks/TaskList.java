@@ -106,7 +106,7 @@ public class TaskList {
             taskList.get(index).setDone(false);
             tasks.add(taskList.get(index));
         }
-        MessageHandler.sendMarkMessage(tasks);
+        MessageHandler.sendUnmarkMessage(tasks);
     }
 
     /**
