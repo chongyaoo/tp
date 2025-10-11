@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
@@ -37,6 +39,8 @@ public class Parser {
             return parseDelete(arguments);
         case "bye":
             return new Command(CommandType.BYE);
+        case "rem":
+            return parseRem(arguments);
         default:
             throw new StudyMateException("Unknown command");
         }
@@ -120,4 +124,54 @@ public class Parser {
         }
     }
 
+    private Command parseRem(String[] arguments) throws StudyMateException { //including rem
+        if (arguments.length < 2) {
+            throw new StudyMateException("The rem command must be followed by a subcommand.");
+        }
+        String[] parts = arguments[1].trim().split("\\s+", 2);
+        String rest = parts.length > 1 ? parts[1].trim() : "";
+        return switch (parts[0]) {
+            case "rm" -> parseRemRm(parts);
+            case "ls" -> parseRemLs(rest);
+            default -> parseRemAdd(arguments[1]);
+        };
+    }
+
+    private Command parseRemRm(String[] arguments) throws StudyMateException {
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.REM_RM, indexes);
+    }
+
+    private Command parseRemLs(String rest) throws StudyMateException {
+        if (!Objects.equals(rest, "")) {
+            throw new StudyMateException("Too many arguments for ls command!");
+        }
+        return new Command(CommandType.REM_LS);
+    }
+
+    private Command parseRemAdd(String task) throws StudyMateException {
+        if (task == null || task.isBlank()) {
+            throw new StudyMateException("Input an event and a DATE/TIME for the reminder!");
+        }
+        String[] arguments = task.trim().split("\\s+");
+
+        int atIndex = 0;
+        for (int i = 0; i < arguments.length; i++) {
+            if (arguments[i].equals("@")) {
+                atIndex = i;
+                break;
+            }
+        }
+        if (atIndex == 0 || atIndex == arguments.length - 1) {
+            throw new StudyMateException("Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME");
+        }
+        String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex - 1));
+        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments, atIndex + 1, arguments.length - 1));
+        try {
+            DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+            return new Command(CommandType.REM_ADD, reminder, dateTimeArg);
+        } catch (DateTimeParseException e) {
+            throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+        }
+    }
 }

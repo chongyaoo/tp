@@ -1,5 +1,7 @@
 package seedu.studymate.ui;
 
+import seedu.studymate.tasks.Reminder;
+import seedu.studymate.tasks.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
@@ -45,6 +47,24 @@ public class MessageHandler {
     }
 
     /**
+     * Prints the Reminder list
+     *
+     * @param reminderList The TaskList object to be printed
+     */
+    public static void sendReminderList(ReminderList reminderList) {
+        if (reminderList.getCount() == 0) {
+            sendMessage("Reminders list is empty!");
+            return;
+        }
+        System.out.println(LINE);
+        System.out.println("Here are your Reminders:");
+        for (int i = 0; i < reminderList.getCount(); i++) {
+            System.out.println((i+1) + ". " + reminderList.getReminder(i).toString());
+        }
+        System.out.println(LINE);
+    }
+
+    /**
      * Prints a confirmation message after a task has been added
      *
      * @param task The task that was added
@@ -78,6 +98,26 @@ public class MessageHandler {
             System.out.println("Now you have 1 task in the task list.");
         } else {
             System.out.println("Now you have " + count + " tasks in the task list.");
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a confirmation message after a reminder has been deleted
+     *
+     * @param reminders The list of tasks that was deleted
+     * @param count The current number of tasks in the list
+     */
+    public static void sendDeleteReminderMessage(List<Reminder> reminders, int count) {
+        System.out.println(LINE);
+        System.out.println("Got it. I've deleted these reminders:");
+        for (Reminder reminder: reminders) {
+            System.out.println(reminder.toString());
+        }
+        if (count == 1) {
+            System.out.println("Now you have 1 reminder in the Reminders list.");
+        } else {
+            System.out.println("Now you have " + count + " reminders in the Reminders list.");
         }
         System.out.println(LINE);
     }
