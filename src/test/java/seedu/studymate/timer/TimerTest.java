@@ -21,10 +21,10 @@ public class TimerTest {
     private static final long DEFAULT_DURATION_SEC = 5; // 5 seconds for easy testing
     private static final String DEFAULT_LABEL = "Focus Session";
     private static final int DELTA = 1; // Margin of error for time calculations
+    private static final String STUB_TASK_NAME = "Review Git Workflow";
 
     private static class StubTaskList extends TaskList {
         private final ArrayList<Task> tasks = new ArrayList<>();
-        private static final String STUB_TASK_NAME = "Review Git Workflow";
 
         public StubTaskList() {
             // Initializing with a task so getTask(0) works
