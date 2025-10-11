@@ -7,7 +7,6 @@ import seedu.studymate.timer.Timer;
 import seedu.studymate.timer.TimerState;
 import seedu.studymate.ui.MessageHandler;
 
-import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,8 @@ public class CommandHandler {
      *
      * @param cmd Command class holding the command to be executed and the description
      */
-    public static void executeCommand(TaskList taskList, ReminderList reminderList, Command cmd) throws StudyMateException {
+    public static void executeCommand(TaskList taskList, ReminderList reminderList, Command cmd)
+            throws StudyMateException {
         switch (cmd.type) {
         case TODO -> handleToDo(taskList, cmd);
         case DEADLINE -> handleDeadline(taskList, cmd);
@@ -56,26 +56,18 @@ public class CommandHandler {
     }
 
     private static void handleMark(TaskList taskList, Command cmd) throws StudyMateException {
-        validateTaskNumber(cmd.indexes, taskList.getCount());
+        IndexValidator.validateIndexes(cmd.indexes, taskList.getCount());
         taskList.mark(cmd.indexes);
     }
 
     private static void handleUnmark(TaskList taskList, Command cmd) throws StudyMateException {
-        validateTaskNumber(cmd.indexes, taskList.getCount());
+        IndexValidator.validateIndexes(cmd.indexes, taskList.getCount());
         taskList.unmark(cmd.indexes);
     }
 
     private static void handleDelete(TaskList taskList, Command cmd) throws StudyMateException {
-        validateTaskNumber(cmd.indexes, taskList.getCount());
+        IndexValidator.validateIndexes(cmd.indexes, taskList.getCount());
         taskList.delete(cmd.indexes);
-    }
-
-    private static void validateTaskNumber(LinkedHashSet<Integer> indexes, int max) throws StudyMateException {
-        for (Integer index : indexes) {
-            if (index < 0 || index >= max) {
-                throw new StudyMateException("Invalid index ranges given!");
-            }
-        }
     }
 
     private static void handleRemAdd(ReminderList reminderList, Command cmd) {
@@ -87,7 +79,7 @@ public class CommandHandler {
     }
 
     private static void handleRemRm(ReminderList reminderList, Command cmd) throws StudyMateException {
-        validateTaskNumber(cmd.indexes, reminderList.getCount());
+        IndexValidator.validateIndexes(cmd.indexes, reminderList.getCount());
         reminderList.delete(cmd.indexes);
     }
 
@@ -103,16 +95,11 @@ public class CommandHandler {
         // Task Index provided
         if (cmd.indexes != null && !cmd.indexes.isEmpty()) {
             Integer index = cmd.indexes.iterator().next();
-
-            LinkedHashSet<Integer> indexSet = new LinkedHashSet<>();
-            indexSet.add(index);
-            validateTaskNumber(indexSet, taskList.getCount());
+            IndexValidator.validateIndex(index, taskList.getCount());
 
             timer = new Timer(taskList, durationSec, index);
-        }
-
-        // Custom label or "Focus session" provided
-        else {
+        } else {
+            // Custom label or "Focus session" provided
             String label = cmd.desc;
             timer = new Timer(label, durationSec);
         }

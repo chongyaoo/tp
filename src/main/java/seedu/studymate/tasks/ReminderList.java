@@ -23,13 +23,6 @@ public class ReminderList {
         reminderList = new ArrayList<>();
     }
 
-    /**
-     * Retrieves a task at a specific index
-     *
-     * @param // The index of the task to retrieve
-     * @return The task at the specified index
-     */
-
     public void addReminder(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
@@ -47,8 +40,8 @@ public class ReminderList {
     public void delete(LinkedHashSet<Integer> indexes) {
         ArrayList<Reminder> reminders = new ArrayList<>();
         // sort indexes in reverse order to prevent index mashups
-        List<Integer> sorted_indexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
-        for (Integer index: sorted_indexes) {
+        List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
+        for (Integer index: sortedIndexes) {
             reminders.add(reminderList.get(index));
             reminderList.remove(index.intValue());
         }
