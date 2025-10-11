@@ -51,6 +51,9 @@ public class Timer {
      * Pauses the timer
      */
     public void pause() {
+        if (startedAt == null) {
+            return;
+        }
         // Calculate time elapsed during RUNNING state
         Duration elapsed = Duration.between(startedAt, Instant.now());
 
@@ -69,6 +72,9 @@ public class Timer {
      * Resumes the timer
      */
     public void resume() {
+        if (state == TimerState.IDLE) {
+            return;
+        }
         startedAt = Instant.now();
         state = TimerState.RUNNING;
     }

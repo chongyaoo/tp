@@ -137,7 +137,7 @@ public class CommandHandler {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
-        if (activeTimer.getState() != TimerState.RUNNING) {
+        if (activeTimer.getState() == TimerState.IDLE) {
             throw new StudyMateException("Timer is not running");
         }
         if (activeTimer.getState() == TimerState.PAUSED) {
