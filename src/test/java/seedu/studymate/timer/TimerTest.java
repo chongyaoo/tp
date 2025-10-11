@@ -20,7 +20,7 @@ public class TimerTest {
 
     private static class StubTaskList extends TaskList {
         private final ArrayList<Task> tasks = new ArrayList<>();
-        private final static String STUB_TASK_NAME = "Review Git Workflow";
+        private static final String STUB_TASK_NAME = "Review Git Workflow";
 
         public StubTaskList() {
             // Initializing with a task so getTask(0) works
@@ -37,9 +37,9 @@ public class TimerTest {
     }
 
     private TaskList mockTaskList;
-    private final static long DEFAULT_DURATION_SEC = 5; // 5 seconds for easy testing
-    private final static String DEFAULT_LABEL = "Focus Session";
-    private final static int DELTA = 1; // Margin of error for time calculations
+    private static final long DEFAULT_DURATION_SEC = 5; // 5 seconds for easy testing
+    private static final String DEFAULT_LABEL = "Focus Session";
+    private static final int DELTA = 1; // Margin of error for time calculations
 
     @BeforeEach
     void setup() {
@@ -216,7 +216,6 @@ public class TimerTest {
     void testAccuracy_manySmallCycles() throws InterruptedException {
         long duration = 10;
         Timer timer = new Timer(DEFAULT_LABEL, duration);
-        double totalElapsed = 0.0;
         long sleepTimeMs = 1100; // Increased sleep time to guarantee >= 1s of elapsed time per cycle
 
         // Run and pause 5 times (total ~5.5s elapsed)
@@ -224,9 +223,6 @@ public class TimerTest {
             timer.start();
             Thread.sleep(sleepTimeMs);
             timer.pause();
-
-            // Increment total elapsed count by 1 (since 1.1s elapsed, 1 second was subtracted)
-            totalElapsed += 1.0;
         }
 
         // Calculation: 10s - 5s = 5s
