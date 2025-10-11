@@ -1,6 +1,5 @@
 package seedu.studymate.tasks;
 
-import seedu.studymate.database.DataFormatting;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
@@ -16,7 +15,7 @@ public class Reminder {
      * Constructs a Reminder with default status !isReminded
      *
      * @param name The name of the task
-     */
+     **/
     public Reminder(String name, DateTimeArg dateTime) {
         this.name = name;
         this.isReminder = false;

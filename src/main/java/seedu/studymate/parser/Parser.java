@@ -146,9 +146,9 @@ public class Parser {
         String[] parts = arguments[1].trim().split("\\s+", 2);
         String rest = parts.length > 1 ? parts[1].trim() : "";
         return switch (parts[0]) {
-            case "rm" -> parseRemRm(parts);
-            case "ls" -> parseRemLs(rest);
-            default -> parseRemAdd(arguments[1]);
+        case "rm" -> parseRemRm(parts);
+        case "ls" -> parseRemLs(rest);
+        default -> parseRemAdd(arguments[1]);
         };
     }
 
@@ -178,10 +178,12 @@ public class Parser {
             }
         }
         if (atIndex == 0 || atIndex == arguments.length - 1) {
-            throw new StudyMateException("Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME");
+            throw new StudyMateException("Input an event and a DATE/TIME for the reminder! " +
+                    "Use '@' between the event and the DATE/TIME");
         }
         String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex - 1));
-        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments, atIndex + 1, arguments.length - 1));
+        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments, atIndex + 1,
+                arguments.length - 1));
         try {
             DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
             return new Command(CommandType.REM_ADD, reminder, dateTimeArg);
@@ -200,7 +202,7 @@ public class Parser {
         // Setup variables
         Integer index = null;
         String label = null;
-        Integer minutes = 25; // Default duration is 25 minutes
+        int minutes = 25; // Default duration is 25 minutes
 
         // Match arguments
         Matcher matcher = TIMER_PATTERN.matcher(arguments.trim());
