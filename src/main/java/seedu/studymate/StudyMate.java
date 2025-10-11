@@ -6,6 +6,8 @@ import seedu.studymate.parser.Command;
 import seedu.studymate.parser.CommandHandler;
 import seedu.studymate.parser.CommandType;
 import seedu.studymate.parser.Parser;
+import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.tasks.Task;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
@@ -16,7 +18,8 @@ public class StudyMate {
      * Main entry-point for the StudyMate application.
      */
     private static final String FILE_PATH = "data/tasks.txt";
-    private static final TaskList taskList = new TaskList();
+    private final static TaskList taskList = new TaskList();
+    private final static ReminderList reminderList = new ReminderList();
 
     public static void main(String[] args) {
         sendWelcomeMessage();
@@ -40,7 +43,7 @@ public class StudyMate {
                 if (cmd.type == CommandType.BYE) {
                     break;
                 }
-                CommandHandler.executeCommand(taskList, cmd);
+                CommandHandler.executeCommand(taskList, reminderList, cmd);
 
                 storage.save(taskList.getTasks());
             } catch (StudyMateException e) {
