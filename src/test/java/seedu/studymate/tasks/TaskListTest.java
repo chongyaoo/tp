@@ -103,7 +103,9 @@ public class TaskListTest {
 
         // Mark all tasks first
         LinkedHashSet<Integer> allIndexes = new LinkedHashSet<>();
-        allIndexes.add(0); allIndexes.add(1); allIndexes.add(2);
+        allIndexes.add(0);
+        allIndexes.add(1);
+        allIndexes.add(2);
         taskList.mark(allIndexes);
         assertTrue(taskList.getTask(1).isDone());
 

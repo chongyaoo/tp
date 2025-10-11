@@ -149,4 +149,41 @@ public class MessageHandler {
         }
         System.out.println(LINE);
     }
+
+    // TODO
+    public static void sendTimerStartMessage() {
+        System.out.println(LINE);
+        System.out.println("Timer start");
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerPauseMessage() {
+        System.out.println(LINE);
+        System.out.println("Timer pause");
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerResumeMessage() {
+        System.out.println(LINE);
+        System.out.println("Timer resume");
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerResetMessage() {
+        System.out.println(LINE);
+        System.out.println("Timer reset");
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerStatMessage(String message) {
+        System.out.println(LINE);
+        System.out.println(message);
+        System.out.println(LINE);
+    }
+
+    public static void sendTimerEndedMessage() {
+        System.out.println(LINE);
+        System.out.println("Timer ended");
+        System.out.println(LINE);
+    }
 }

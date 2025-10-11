@@ -14,6 +14,9 @@ public class Parser {
     private static final String DELIMITER_BY = "/by";
     private static final Pattern integerPattern = Pattern.compile("\\d");
     private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
+    private static final Pattern TIMER_PATTERN =
+            Pattern.compile("^\\s*([^@]+)?\\s*(?:@\\s*(\\d+))?\\s*$");
+
 
     public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
@@ -22,13 +25,15 @@ public class Parser {
 
         String cleanLine = line.replaceAll("\\s+", " ");
 
-        String[] arguments = cleanLine.split(" ",2);
+        String[] arguments = cleanLine.split(" ", 2);
+        String argumentString = arguments.length > 1 ? arguments[1] : "";
+
 
         switch (arguments[0].toLowerCase()) {
         case "todo":
-            return parseToDo(arguments[1]);
+            return parseToDo(argumentString);
         case "deadline":
-            return parseDeadline(arguments[1]);
+            return parseDeadline(argumentString);
         case "list":
             return new Command(CommandType.LIST);
         case "mark":
@@ -41,6 +46,16 @@ public class Parser {
             return new Command(CommandType.BYE);
         case "rem":
             return parseRem(arguments);
+        case "start":
+            return parseTimerStart(argumentString);
+        case "pause":
+            return new Command(CommandType.PAUSE);
+        case "resume":
+            return new Command(CommandType.RESUME);
+        case "reset":
+            return new Command(CommandType.RESET);
+        case "stat":
+            return new Command(CommandType.STAT);
         default:
             throw new StudyMateException("Unknown command");
         }
@@ -102,7 +117,7 @@ public class Parser {
         try {
             String[] indexArgs = arguments[1].split(",");
             LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
-            for (String arg: indexArgs) {
+            for (String arg : indexArgs) {
                 if (multipleIntegerPattern.matcher(arg).find()) {
                     int[] startAndEndArgs = Arrays.stream(arg.split("\\.\\.\\.")).mapToInt(Integer::parseInt).
                             toArray();
@@ -173,5 +188,70 @@ public class Parser {
         } catch (DateTimeParseException e) {
             throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
         }
+    }
+
+    private Command parseTimerStart(String arguments) throws StudyMateException {
+        // Handle default case: 'Start' command with no arguments
+        if (arguments.trim().isEmpty()) {
+            // label = "Focus session", index = null, default duration = 25
+            return new Command(CommandType.START, null, "Focus session", 25);
+        }
+
+        // Setup variables
+        Integer index = null;
+        String label = null;
+        Integer minutes = 25; // Default duration is 25 minutes
+
+        // Match arguments
+        Matcher matcher = TIMER_PATTERN.matcher(arguments.trim());
+
+        if (!matcher.matches()) {
+            throw new StudyMateException("Invalid timer start format. Use: start [INDEX | NAME] [@MINUTES]");
+        }
+
+        String targetStr = matcher.group(1);
+        String minutesStr = matcher.group(2);
+
+        // Extract and validate minutes
+        if (minutesStr != null) {
+            try {
+                minutes = Integer.parseInt(minutesStr);
+                if (minutes <= 0) {
+                    throw new StudyMateException("Minutes for the timer must be a positive integer.");
+                }
+            } catch (NumberFormatException e) {
+                throw new StudyMateException("Minutes must be a valid integer.");
+            }
+        }
+
+        // Validate and extract Target (Index or Label)
+        if (targetStr != null) {
+            String trimmedTarget = targetStr.trim();
+            if (trimmedTarget.isEmpty()) {
+                throw new StudyMateException("Timer target cannot be empty.");
+            }
+
+            // Check if the target is an Index (contains only digits)
+            if (trimmedTarget.matches("\\d+")) {
+                try {
+                    index = Integer.parseInt(trimmedTarget);
+                    if (index <= 0) {
+                        throw new StudyMateException("List index must be a positive integer.");
+                    }
+                    index = index - 1; // Convert to 0-based index
+                } catch (NumberFormatException e) {
+                    throw new StudyMateException("List index must be a valid integer.");
+                }
+            } else {
+                // Target is treated as a Label
+                label = trimmedTarget;
+            }
+        } else {
+            // Target is null (i.e., only duration was specified, like 'start @ 45')
+            label = "Focus session";
+        }
+
+        // Create and return the Command object
+        return new Command(CommandType.START, index, label, minutes);
     }
 }

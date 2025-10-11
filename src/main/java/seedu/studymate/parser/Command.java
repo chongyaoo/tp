@@ -12,6 +12,9 @@ public class Command {
     // for operations done on a range of indices
     LinkedHashSet<Integer> indexes;
 
+    // Timer
+    Integer duration;
+
     public Command(CommandType type) {
         this.type = type;
     }
@@ -33,7 +36,7 @@ public class Command {
         this.datetime = datetimeArg;
     }
 
-    // possibly hacky, may need to change this but I cant think of better workarounds for reminder constuctor
+    // possibly hacky, may need to change this but I cant think of better workarounds for reminder constructor
     public Command(CommandType type, DateTimeArg datetimeArg, String message) {
         this.type = type;
         this.message = message;
@@ -43,5 +46,16 @@ public class Command {
     public Command(CommandType type, LinkedHashSet<Integer> indexes) {
         this.type = type;
         this.indexes = indexes;
+    }
+
+    // Timer Command
+    public Command(CommandType type, Integer index, String label, Integer duration) {
+        this.type = type;
+        if (index != null) {
+            this.indexes = new LinkedHashSet<>();
+            this.indexes.add(index);
+        }
+        this.desc = label;
+        this.duration = duration;
     }
 }
