@@ -29,7 +29,7 @@ public class StudyMate {
 
         // Load existing tasks from file.
         try {
-            storage.load(taskList);
+            storage.load(taskList, reminderList);
             MessageHandler.sendMessage("Loaded " + taskList.getCount() + " task(s) from file.");
         } catch (StudyMateException e) {
             MessageHandler.sendMessage("Error loading tasks: " + e.getMessage());
@@ -45,7 +45,7 @@ public class StudyMate {
                 }
                 CommandHandler.executeCommand(taskList, reminderList, cmd);
 
-                storage.save(taskList.getTasks());
+                storage.save(taskList.getTasks(), reminderList.getReminders());
             } catch (StudyMateException e) {
                 MessageHandler.sendMessage(e.getMessage());
             }

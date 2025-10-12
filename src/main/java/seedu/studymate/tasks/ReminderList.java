@@ -48,4 +48,8 @@ public class ReminderList {
         MessageHandler.sendDeleteReminderMessage(reminders, reminderList.size());
     }
 
+    public List<Reminder> getReminders() {
+        return reminderList;
+    }
+
 }
