@@ -181,9 +181,9 @@ public class Parser {
             throw new StudyMateException("Input an event and a DATE/TIME for the reminder! " +
                     "Use '@' between the event and the DATE/TIME");
         }
-        String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex - 1));
+        String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex));
         String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments, atIndex + 1,
-                arguments.length - 1));
+                arguments.length));
         try {
             DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
             return new Command(CommandType.REM_ADD, reminder, dateTimeArg);

@@ -31,8 +31,8 @@ public class MessageFormatting {
         return "[D][ ] " + name + " (by: " + deadline + ")";
     }
 
-    public static String reminderString(Boolean isReminder, String name, DateTimeArg dateTime) {
-        if (isReminder) {
+    public static String reminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
+        if (onReminder) {
             return "[R][O] " + name + " ( " + dateTime + ")";
         }
         return "[R][ ] " + name + " ( " + dateTime + ")";
