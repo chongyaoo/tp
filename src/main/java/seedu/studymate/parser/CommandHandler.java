@@ -24,22 +24,44 @@ public class CommandHandler {
     public static void executeCommand(TaskList taskList, ReminderList reminderList, Command cmd)
             throws StudyMateException {
         switch (cmd.type) {
+
+        // Task Commands
         case TODO -> handleToDo(taskList, cmd);
         case DEADLINE -> handleDeadline(taskList, cmd);
         case LIST -> handleList(taskList);
         case MARK -> handleMark(taskList, cmd);
         case UNMARK -> handleUnmark(taskList, cmd);
         case DELETE -> handleDelete(taskList, cmd);
+
+        // Reminder Commands
         case REM_ADD -> handleRemAdd(reminderList, cmd);
         case REM_LS -> handleRemList(reminderList);
         case REM_RM -> handleRemRm(reminderList, cmd);
-        // TODO: HANDLE TIMER COMMANDS
+
+        // Timer Commands
         case START -> handleTimerStart(taskList, cmd);
         case PAUSE -> handleTimerPause();
         case RESUME -> handleTimerResume();
         case RESET -> handleTimerReset();
         case STAT -> handleTimerStat();
+
+        // Exception Handling
         default -> throw new StudyMateException("Invalid Command");
+        }
+    }
+
+    /**
+     * Clears the timer when program is exited
+     */
+    public static void cleanup() {
+        if (activeTimer != null) {
+            activeTimer.reset();
+            activeTimer = null;
+        }
+
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+            scheduler = null;
         }
     }
 
@@ -107,22 +129,22 @@ public class CommandHandler {
         activeTimer = timer;
         activeTimer.start();
 
-        startTimerMonitoring(activeTimer);
-        MessageHandler.sendTimerStartMessage(); // TODO: IMPLEMENT START TIMER MESSAGE
+        startTimerMonitoring();
+        MessageHandler.sendTimerStartMessage(cmd.duration, activeTimer.getLabel());
     }
 
     private static void handleTimerPause() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
-        if (activeTimer.getState() != TimerState.RUNNING) {
+        if (activeTimer.getState() == TimerState.IDLE) {
             throw new StudyMateException("Timer is not running");
         }
         if (activeTimer.getState() == TimerState.PAUSED) {
             throw new StudyMateException("Timer is already paused");
         }
         activeTimer.pause();
-        MessageHandler.sendTimerPauseMessage(); // TODO: IMPLEMENT PAUSE TIMER MESSAGE
+        MessageHandler.sendTimerPauseMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
 
     private static void handleTimerResume() throws StudyMateException {
@@ -136,7 +158,7 @@ public class CommandHandler {
             throw new StudyMateException("Timer is already running");
         }
         activeTimer.resume();
-        MessageHandler.sendTimerResumeMessage(); // TODO: IMPLEMENT RESUME TIMER MESSAGE
+        MessageHandler.sendTimerResumeMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
 
     private static void handleTimerReset() throws StudyMateException {
@@ -150,33 +172,17 @@ public class CommandHandler {
         activeTimer.reset();
         activeTimer = null;
 
-        MessageHandler.sendTimerResetMessage(); // TODO: IMPLEMENT RESET TIMER MESSAGE
+        MessageHandler.sendTimerResetMessage();
     }
 
     private static void handleTimerStat() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
-        TimerState state = activeTimer.getState();
-        long remainingSec = activeTimer.getRemainingTime();
-        String formattedTime = formatDuration(remainingSec);
-        String label = activeTimer.getLabel();
-
-        String message = "Timer Status:\n"
-                + "  State: " + state.toString() + "\n"
-                + "  Time Left: " + formattedTime + "\n"
-                + "  Label: " + label;
-
-        MessageHandler.sendTimerStatMessage(message); // TODO: IMPLEMENT STAT TIMER MESSAGE
+        MessageHandler.sendTimerStatMessage(activeTimer.toString()); //
     }
 
-    private static String formatDuration(long totalSeconds) {
-        long minutes = totalSeconds / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    private static void startTimerMonitoring(Timer timer) {
+    private static void startTimerMonitoring() {
         // Initialise a scheduler to check if timer is done
         scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -193,7 +199,7 @@ public class CommandHandler {
 
             // Timer run out
             if (activeTimer.getState() == TimerState.IDLE) {
-                MessageHandler.sendTimerEndedMessage(); // TODO: IMPLEMENT TIMER ENDED MESSAGE
+                MessageHandler.sendTimerEndedMessage();
 
                 // Reset active timer when timer is done
                 if (scheduler != null) {

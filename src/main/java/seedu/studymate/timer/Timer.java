@@ -23,7 +23,8 @@ public class Timer {
     public Timer(TaskList taskList, long durationSec, Integer taskIndex) {
         this.state = TimerState.IDLE;
         this.remainingSec = durationSec;
-        this.label = "Task #" + taskIndex + " " + taskList.getTask(taskIndex).getName();
+        this.label = "Task #" + (taskIndex + 1) + " " +
+                taskList.getTask(taskIndex).getName();
     }
 
     /**
@@ -50,6 +51,9 @@ public class Timer {
      * Pauses the timer
      */
     public void pause() {
+        if (startedAt == null) {
+            return;
+        }
         // Calculate time elapsed during RUNNING state
         Duration elapsed = Duration.between(startedAt, Instant.now());
 
@@ -68,6 +72,9 @@ public class Timer {
      * Resumes the timer
      */
     public void resume() {
+        if (state == TimerState.IDLE) {
+            return;
+        }
         startedAt = Instant.now();
         state = TimerState.RUNNING;
     }
@@ -106,9 +113,16 @@ public class Timer {
 
     @Override
     public String toString() {
-        return String.format("# %s-%d (%s)",
-                state.toString(),
-                getRemainingTime(),
-                label);
+        int[] formattedTime = formatDuration(remainingSec);
+        return "Timer Status\n"
+                + "  State: " + state.toString() + "\n"
+                + "  Time Left: " + formattedTime[0] + ":" + formattedTime[1] + "\n"
+                + "  Label: " + label;
+    }
+
+    private static int[] formatDuration(long totalSeconds) {
+        int minutes = (int) (totalSeconds / 60);
+        int seconds = (int) (totalSeconds % 60);
+        return new int[]{minutes, seconds};
     }
 }
