@@ -1,5 +1,6 @@
 package seedu.studymate.tasks;
 
+import seedu.studymate.database.DataFormatting;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
@@ -46,13 +47,13 @@ public class Reminder {
     }
 
     /**
-     * Returns a string representation of the task suitable for saving to a file
-     * This method is intended to be overridden by subclasses to provide specific formatting
-     *
-     * @return An empty string
+     * Returns a string representation of the task suitable for saving to a file.
+     * This method is intended to be overridden by subclasses to provide specific formatting.
+     * 
+     * @return An empty String
      */
     public String toSaveString() {
-        return "";
+        return DataFormatting.reminderSaveString(isReminder, name, dateTime);
     }
 
     public String toString() {
