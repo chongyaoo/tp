@@ -8,7 +8,12 @@ import seedu.studymate.ui.MessageFormatting;
  */
 public class Reminder {
     protected final String name;
-    protected Boolean isReminder;
+
+    public Boolean getOnReminder() {
+        return onReminder;
+    }
+
+    protected Boolean onReminder;
     private final DateTimeArg dateTime;
 
     /**
@@ -18,7 +23,7 @@ public class Reminder {
      **/
     public Reminder(String name, DateTimeArg dateTime) {
         this.name = name;
-        this.isReminder = false;
+        this.onReminder = false;
         this.dateTime = dateTime;
     }
 
@@ -27,17 +32,17 @@ public class Reminder {
      *
      * @return The name of the task as a String
      */
-    public String getReminder() {
+    public String getName() {
         return name;
     }
 
     /**
      * Sets the completion status of the task
      *
-     * @param isReminder A boolean indicating if the task is done (true) or not (false)
+     * @param onReminder A boolean indicating if the task is done (true) or not (false)
      */
-    public void setReminded(Boolean isReminder) {
-        this.isReminder = isReminder;
+    public void setReminded(Boolean onReminder) {
+        this.onReminder = onReminder;
     }
 
     /**
@@ -51,7 +56,7 @@ public class Reminder {
     }
 
     public String toString() {
-        return MessageFormatting.reminderString(isReminder, name, dateTime);
+        return MessageFormatting.reminderString(onReminder, name, dateTime);
     }
 
 }
