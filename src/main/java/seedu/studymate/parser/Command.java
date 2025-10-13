@@ -36,13 +36,6 @@ public class Command {
         this.datetime = datetimeArg;
     }
 
-    // possibly hacky, may need to change this but I cant think of better workarounds for reminder constructor
-    public Command(CommandType type, DateTimeArg datetimeArg, String message) {
-        this.type = type;
-        this.message = message;
-        this.datetime = datetimeArg;
-    }
-
     public Command(CommandType type, LinkedHashSet<Integer> indexes) {
         this.type = type;
         this.indexes = indexes;
@@ -55,6 +48,21 @@ public class Command {
             this.indexes = new LinkedHashSet<>();
             this.indexes.add(index);
         }
+        this.desc = label;
+        this.duration = duration;
+    }
+
+    public Command(CommandType type, Integer index, Integer duration) {
+        this.type = type;
+        if (index != null) {
+            this.indexes = new LinkedHashSet<>();
+            this.indexes.add(index);
+        }
+        this.duration = duration;
+    }
+
+    public Command(CommandType type, String label, Integer duration) {
+        this.type = type;
         this.desc = label;
         this.duration = duration;
     }

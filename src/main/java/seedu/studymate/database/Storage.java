@@ -108,12 +108,17 @@ public class Storage {
         case "D":
             String[] rawdateTime = parts[3].split("T");
             DateTimeArg dateTimeArg;
-            if (rawdateTime[0].length() == 2 && !rawdateTime[1].equals(" ")) {
-                dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]), LocalTime.parse(rawdateTime[1]));
-            } else if (!rawdateTime[0].equals(" ")) {
-                dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]));
-            } else {
-                throw new StudyMateException("Error parsing data!");
+            try {
+                if (rawdateTime.length == 2 && !rawdateTime[1].trim().isEmpty()) {
+                    dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0].trim()),
+                            LocalTime.parse(rawdateTime[1].trim()));
+                } else if (!rawdateTime[0].trim().isEmpty()) {
+                    dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0].trim()));
+                } else {
+                    throw new StudyMateException("Error parsing deadline data!");
+                }
+            } catch (Exception e) {
+                throw new StudyMateException("Error parsing deadline date/time: " + e.getMessage());
             }
             taskList.addDeadline(parts[2], dateTimeArg);
             if (isDone) {
@@ -127,10 +132,17 @@ public class Storage {
             String name = parts[2];
             String[] rawDateTime = parts[3].split("T");
             DateTimeArg reminderTime;
-            if (rawDateTime.length == 2 && !rawDateTime[1].isBlank()) {
-                reminderTime = new DateTimeArg(LocalDate.parse(rawDateTime[0]), LocalTime.parse(rawDateTime[1]));
-            } else {
-                reminderTime = new DateTimeArg(LocalDate.parse(rawDateTime[0]));
+            try {
+                if (rawDateTime.length == 2 && !rawDateTime[1].trim().isEmpty()) {
+                    reminderTime = new DateTimeArg(LocalDate.parse(rawDateTime[0].trim()),
+                            LocalTime.parse(rawDateTime[1].trim()));
+                } else if (!rawDateTime[0].trim().isEmpty()) {
+                    reminderTime = new DateTimeArg(LocalDate.parse(rawDateTime[0].trim()));
+                } else {
+                    throw new StudyMateException("Error parsing reminder data!");
+                }
+            } catch (Exception e) {
+                throw new StudyMateException("Error parsing reminder date/time: " + e.getMessage());
             }
 
             reminderList.addReminder(name, reminderTime);
@@ -163,4 +175,3 @@ public class Storage {
     }
 
 }
-

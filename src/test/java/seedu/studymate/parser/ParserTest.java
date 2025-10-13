@@ -162,4 +162,189 @@ public class ParserTest {
     void testUnmarkWithoutIndexThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("unmark "));
     }
+
+    // Reminder command tests
+    @Test
+    void testRemAddCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem meeting @ 2024-12-15");
+        assertEquals(CommandType.REM_ADD, cmd.type);
+        assertEquals("meeting", cmd.desc);
+    }
+
+    @Test
+    void testRemLsCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem ls");
+        assertEquals(CommandType.REM_LS, cmd.type);
+    }
+
+    @Test
+    void testRemRmCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem rm 1");
+        assertEquals(CommandType.REM_RM, cmd.type);
+    }
+
+    @Test
+    void testRemRmMultipleCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem rm 1,2,3");
+        assertEquals(CommandType.REM_RM, cmd.type);
+    }
+
+    @Test
+    void testRemRmRangeCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem rm 1...3");
+        assertEquals(CommandType.REM_RM, cmd.type);
+    }
+
+    @Test
+    void testRemWithoutSubcommandThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem"));
+    }
+
+    @Test
+    void testRemAddWithoutAtDelimiterThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem meeting 2024-12-15"));
+    }
+
+    @Test
+    void testRemAddWithInvalidDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem meeting @ invalid-date"));
+    }
+
+    @Test
+    void testRemAddWithEmptyEventThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem @ 2024-12-15"));
+    }
+
+    @Test
+    void testRemAddWithEmptyDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem meeting @"));
+    }
+
+    @Test
+    void testRemLsWithExtraArgumentsThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem ls extra"));
+    }
+
+    @Test
+    void testRemRmWithoutIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem rm"));
+    }
+
+    // Timer command tests
+    @Test
+    void testTimerStartDefaultCommand() throws StudyMateException {
+        Command cmd = parser.parse("start");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals("Focus session", cmd.desc);
+        assertEquals(Integer.valueOf(25), cmd.duration);
+    }
+
+    @Test
+    void testTimerStartWithDurationCommand() throws StudyMateException {
+        Command cmd = parser.parse("start @45");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals("Focus session", cmd.desc);
+        assertEquals(Integer.valueOf(45), cmd.duration);
+    }
+
+    @Test
+    void testTimerStartWithLabelCommand() throws StudyMateException {
+        Command cmd = parser.parse("start Study Math");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals("Study Math", cmd.desc);
+        assertEquals(Integer.valueOf(25), cmd.duration);
+    }
+
+    @Test
+    void testTimerStartWithLabelAndDurationCommand() throws StudyMateException {
+        Command cmd = parser.parse("start Study Physics @30");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals("Study Physics", cmd.desc);
+        assertEquals(Integer.valueOf(30), cmd.duration);
+    }
+
+    @Test
+    void testTimerStartWithIndexCommand() throws StudyMateException {
+        Command cmd = parser.parse("start 1");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals(Integer.valueOf(0), cmd.indexes.iterator().next()); // 1-based to 0-based conversion
+        assertEquals(Integer.valueOf(25), cmd.duration);
+    }
+
+    @Test
+    void testTimerStartWithIndexAndDurationCommand() throws StudyMateException {
+        Command cmd = parser.parse("start 2 @60");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals(Integer.valueOf(1), cmd.indexes.iterator().next()); // 1-based to 0-based conversion
+        assertEquals(Integer.valueOf(60), cmd.duration);
+    }
+
+    @Test
+    void testTimerPauseCommand() throws StudyMateException {
+        Command cmd = parser.parse("pause");
+        assertEquals(CommandType.PAUSE, cmd.type);
+    }
+
+    @Test
+    void testTimerResumeCommand() throws StudyMateException {
+        Command cmd = parser.parse("resume");
+        assertEquals(CommandType.RESUME, cmd.type);
+    }
+
+    @Test
+    void testTimerResetCommand() throws StudyMateException {
+        Command cmd = parser.parse("reset");
+        assertEquals(CommandType.RESET, cmd.type);
+    }
+
+    @Test
+    void testTimerStatCommand() throws StudyMateException {
+        Command cmd = parser.parse("stat");
+        assertEquals(CommandType.STAT, cmd.type);
+    }
+
+    @Test
+    void testTimerStartWithZeroMinutesThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start @0"));
+    }
+
+    @Test
+    void testTimerStartWithNegativeMinutesThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start @-5"));
+    }
+
+    @Test
+    void testTimerStartWithInvalidMinutesThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start @abc"));
+    }
+
+    @Test
+    void testTimerStartWithZeroIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start 0"));
+    }
+
+    // Test index parsing with spaces (for the trimming fix)
+    @Test
+    void testMarkWithSpacesInIndexes() throws StudyMateException {
+        Command cmd = parser.parse("mark 1, 2, 3");
+        assertEquals(CommandType.MARK, cmd.type);
+        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(0, 1, 2));
+        assertEquals(expected, cmd.indexes);
+    }
+
+    @Test
+    void testDeleteWithSpacesInRange() throws StudyMateException {
+        Command cmd = parser.parse("delete 1 ... 3 , 5");
+        assertEquals(CommandType.DELETE, cmd.type);
+        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(0, 1, 2, 4));
+        assertEquals(expected, cmd.indexes);
+    }
+
+    @Test
+    void testUnmarkWithSpacesInIndexes() throws StudyMateException {
+        Command cmd = parser.parse("unmark 2 , 4 , 6");
+        assertEquals(CommandType.UNMARK, cmd.type);
+        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(1, 3, 5));
+        assertEquals(expected, cmd.indexes);
+    }
 }

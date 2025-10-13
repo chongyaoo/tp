@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'jacoco'
 }
 
 repositories {
@@ -16,6 +17,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 
     testLogging {
         events "passed", "skipped", "failed"
@@ -26,6 +28,83 @@ test {
         showStackTraces true
         showStandardStreams = false
     }
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+
+    doLast {
+        def xmlFile = reports.xml.outputLocation.get().asFile
+
+        try {
+            def parser = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder()
+            // Disable DTD validation to avoid external DTD issues
+            parser.setEntityResolver({ publicId, systemId ->
+                return new org.xml.sax.InputSource(new java.io.StringReader(""))
+            })
+
+            def doc = parser.parse(xmlFile)
+            def reportElement = doc.documentElement
+
+            // Get the direct children counters of the report element (these are the aggregated totals)
+            def reportCounters = reportElement.getChildNodes()
+            def instructions = null
+            def branches = null
+
+            for (int i = 0; i < reportCounters.getLength(); i++) {
+                def node = reportCounters.item(i)
+                if (node.getNodeName() == "counter") {
+                    def type = node.getAttribute("type")
+                    if (type == "INSTRUCTION") {
+                        instructions = node
+                    } else if (type == "BRANCH") {
+                        branches = node
+                    }
+                }
+            }
+
+            if (instructions) {
+                def missed = instructions.getAttribute("missed") as Integer
+                def covered = instructions.getAttribute("covered") as Integer
+                def total = missed + covered
+                def percentage = total > 0 ? (covered * 100.0 / total) : 0
+
+                println ""
+                println "========================================="
+                println "CODE COVERAGE SUMMARY"
+                println "========================================="
+                println "Instructions: ${String.format("%.1f", percentage)}% (${covered}/${total})"
+
+                if (branches) {
+                    def branchMissed = branches.getAttribute("missed") as Integer
+                    def branchCovered = branches.getAttribute("covered") as Integer
+                    def branchTotal = branchMissed + branchCovered
+                    def branchPercentage = branchTotal > 0 ? (branchCovered * 100.0 / branchTotal) : 0
+                    println "Branches: ${String.format("%.1f", branchPercentage)}% (${branchCovered}/${branchTotal})"
+                }
+            } else {
+                println "Could not find aggregated INSTRUCTION counter in report"
+            }
+
+        } catch (Exception e) {
+            println "Could not parse coverage details: ${e.message}"
+        }
+
+        println ""
+        println "HTML Report: ${reports.html.outputLocation.get().asFile.toURI()}"
+        println "XML Report: ${reports.xml.outputLocation.get().asFile.toURI()}"
+        println "========================================="
+    }
+}
+
+
+jacoco {
+    toolVersion = "0.8.8"
 }
 
 application {

@@ -112,23 +112,27 @@ public class Parser {
     private LinkedHashSet<Integer> parseIndexes(String[] arguments) throws StudyMateException {
         // Check that the task number is not empty
         if (arguments.length <= 1) {
-            throw new StudyMateException("The " + arguments[0] + " command must be followed by a task number.");
+            throw new StudyMateException("The " + arguments[0] +
+                    " command must be followed by a task number.");
         }
         try {
             String[] indexArgs = arguments[1].split(",");
             LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
             for (String arg : indexArgs) {
-                if (multipleIntegerPattern.matcher(arg).find()) {
-                    int[] startAndEndArgs = Arrays.stream(arg.split("\\.\\.\\.")).mapToInt(Integer::parseInt).
-                            toArray();
+                String trimmedArg = arg.trim().replace(" ", ""); // Trim whitespace to handle "1, 2" inputs
+                if (multipleIntegerPattern.matcher(trimmedArg).find()) {
+                    String[] rangeParts = trimmedArg.split("\\.\\.\\.");
+                    int[] startAndEndArgs = Arrays.stream(rangeParts)
+                            .mapToInt(s -> Integer.parseInt(s.trim())) // Trim range tokens as well
+                            .toArray();
                     if (startAndEndArgs[0] > startAndEndArgs[1]) {
                         throw new NumberFormatException();
                     }
                     for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
                         indexes.add(i - 1);
                     }
-                } else if (integerPattern.matcher(arg).find()) {
-                    indexes.add(Integer.parseInt(arg) - 1);
+                } else if (integerPattern.matcher(trimmedArg).find()) {
+                    indexes.add(Integer.parseInt(trimmedArg) - 1);
                 } else {
                     throw new NumberFormatException();
                 }
@@ -182,8 +186,8 @@ public class Parser {
                     "Use '@' between the event and the DATE/TIME");
         }
         String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex));
-        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments, atIndex + 1,
-                arguments.length));
+        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                atIndex + 1, arguments.length));
         try {
             DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
             return new Command(CommandType.REM_ADD, reminder, dateTimeArg);

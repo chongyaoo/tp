@@ -16,20 +16,20 @@ Now you have 2 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Submit report (by: 2025-10-15 )
+[D][ ] Submit report (by: 2025-10-15)
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Prepare presentation (by: 2025-10-20 )
+[D][ ] Prepare presentation (by: 2025-10-20)
 Now you have 4 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][ ] Read chapter 1
 2. [T][ ] Complete assignment
-3. [D][ ] Submit report (by: 2025-10-15 )
-4. [D][ ] Prepare presentation (by: 2025-10-20 )
+3. [D][ ] Submit report (by: 2025-10-15)
+4. [D][ ] Prepare presentation (by: 2025-10-20)
 ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
@@ -38,7 +38,7 @@ ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15 )
+[D][X] Submit report (by: 2025-10-15)
 ____________________________________________________________
 ____________________________________________________________
 OK, I've marked these tasks as not done yet:
@@ -48,16 +48,16 @@ ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Read chapter 1
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15 )
+[D][X] Submit report (by: 2025-10-15)
 ____________________________________________________________
 ____________________________________________________________
 Here are your Reminders:
-1. [R][ ] Study session ( 2025-10-14 )
-2. [R][ ] Team meeting ( 2025-10-16 )
+1. [R][ ] Study session (2025-10-14)
+2. [R][ ] Team meeting (2025-10-16)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these reminders:
-[R][ ] Study session ( 2025-10-14 )
+[R][ ] Study session (2025-10-14)
 Now you have 1 reminder in the Reminders list.
 ____________________________________________________________
 ____________________________________________________________
@@ -75,11 +75,11 @@ A timer is already running or paused. Please stop it first.
 ____________________________________________________________
 ____________________________________________________________
 # TIMER
-# PAUSED 25:0 left - Focus session
+# PAUSED 25:00 left - Focus session
 ____________________________________________________________
 ____________________________________________________________
 # TIMER
-# RUNNING 25:0 left - Focus session
+# RUNNING 25:00 left - Focus session
 ____________________________________________________________
 ____________________________________________________________
 # TIMER
@@ -95,8 +95,8 @@ Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these tasks:
-[D][ ] Prepare presentation (by: 2025-10-20 )
-[D][X] Submit report (by: 2025-10-15 )
+[D][ ] Prepare presentation (by: 2025-10-20)
+[D][X] Submit report (by: 2025-10-15)
 Now you have 1 task in the task list.
 ____________________________________________________________
 ____________________________________________________________
