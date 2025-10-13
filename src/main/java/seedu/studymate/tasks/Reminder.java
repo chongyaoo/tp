@@ -9,11 +9,6 @@ import seedu.studymate.ui.MessageFormatting;
  */
 public class Reminder {
     protected final String name;
-
-    public Boolean getOnReminder() {
-        return onReminder;
-    }
-
     protected Boolean onReminder;
     private final DateTimeArg dateTime;
 
@@ -46,6 +41,10 @@ public class Reminder {
         this.onReminder = onReminder;
     }
 
+    public Boolean getOnReminder() {
+        return onReminder;
+    }
+
     /**
      * Returns a string representation of the task suitable for saving to a file.
      * This method is intended to be overridden by subclasses to provide specific formatting.
@@ -53,7 +52,7 @@ public class Reminder {
      * @return An empty String
      */
     public String toSaveString() {
-        return DataFormatting.reminderSaveString(isReminder, name, dateTime);
+        return DataFormatting.reminderSaveString(onReminder, name, dateTime);
     }
 
     public String toString() {
