@@ -119,7 +119,7 @@ public class Parser {
             String[] indexArgs = arguments[1].split(",");
             LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
             for (String arg : indexArgs) {
-                String trimmedArg = arg.trim(); // Trim whitespace to handle "1, 2" inputs
+                String trimmedArg = arg.trim().replace(" ", ""); // Trim whitespace to handle "1, 2" inputs
                 if (multipleIntegerPattern.matcher(trimmedArg).find()) {
                     String[] rangeParts = trimmedArg.split("\\.\\.\\.");
                     int[] startAndEndArgs = Arrays.stream(rangeParts)
