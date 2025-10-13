@@ -25,9 +25,8 @@ public class DateTimeArg {
         return LocalDateTime.of(date, time);
     }
 
-    // using spaces to denote empty, might be hacky
     @Override
     public String toString() {
-        return (date == null ? " " : date) + (time == null ? " " : "T" + time);
+        return (date == null ? "" : date) + (time == null ? "" : "T" + time);
     }
 }
