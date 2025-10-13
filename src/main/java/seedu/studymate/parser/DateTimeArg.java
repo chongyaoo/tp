@@ -28,6 +28,6 @@ public class DateTimeArg {
     // using spaces to denote empty, might be hacky
     @Override
     public String toString() {
-        return (date == null ? " " : date) + "T" + (time == null ? " " : time);
+        return (date == null ? " " : date) + (time == null ? " " : "T" + time);
     }
 }

@@ -16,7 +16,6 @@ import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Handles reading and writing tasks to the save file.
@@ -109,7 +108,7 @@ public class Storage {
         case "D":
             String[] rawdateTime = parts[3].split("T");
             DateTimeArg dateTimeArg;
-            if (!rawdateTime[0].equals(" ") && !rawdateTime[1].equals(" ")) {
+            if (rawdateTime[0].length() == 2 && !rawdateTime[1].equals(" ")) {
                 dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]), LocalTime.parse(rawdateTime[1]));
             } else if (!rawdateTime[0].equals(" ")) {
                 dateTimeArg = new DateTimeArg(LocalDate.parse(rawdateTime[0]));

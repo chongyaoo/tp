@@ -3,12 +3,10 @@ package seedu.studymate.reminders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
@@ -16,7 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import seedu.studymate.parser.DateTimeArg;
-import seedu.studymate.tasks.*;
+import seedu.studymate.tasks.Reminder;
+import seedu.studymate.tasks.ReminderList;
 
 public class RemListTest {
     ReminderList reminderList;
