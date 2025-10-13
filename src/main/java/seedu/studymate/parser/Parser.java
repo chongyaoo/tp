@@ -111,7 +111,7 @@ public class Parser {
 
     private LinkedHashSet<Integer> parseIndexes(String[] arguments) throws StudyMateException {
         // Check that the task number is not empty
-        if (arguments[1].isEmpty()) {
+        if (arguments.length <= 1) {
             throw new StudyMateException("The " + arguments[0] + " command must be followed by a task number.");
         }
         try {
