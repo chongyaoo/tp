@@ -33,8 +33,8 @@ public class MessageFormatting {
 
     public static String reminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
         if (onReminder) {
-            return "[R][O] " + name + " ( " + dateTime + ")";
+            return "[R][O] " + name + " (" + dateTime + ")";
         }
-        return "[R][ ] " + name + " ( " + dateTime + ")";
+        return "[R][ ] " + name + " (" + dateTime + ")";
     }
 }
