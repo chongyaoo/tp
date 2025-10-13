@@ -51,11 +51,21 @@ jacocoTestReport {
             def doc = parser.parse(xmlFile)
             def reportElement = doc.documentElement
 
-            def instructions = reportElement.getElementsByTagName("counter").find {
-                it.getAttribute("type") == "INSTRUCTION"
-            }
-            def branches = reportElement.getElementsByTagName("counter").find {
-                it.getAttribute("type") == "BRANCH"
+            // Get the direct children counters of the report element (these are the aggregated totals)
+            def reportCounters = reportElement.getChildNodes()
+            def instructions = null
+            def branches = null
+
+            for (int i = 0; i < reportCounters.getLength(); i++) {
+                def node = reportCounters.item(i)
+                if (node.getNodeName() == "counter") {
+                    def type = node.getAttribute("type")
+                    if (type == "INSTRUCTION") {
+                        instructions = node
+                    } else if (type == "BRANCH") {
+                        branches = node
+                    }
+                }
             }
 
             if (instructions) {
@@ -77,6 +87,8 @@ jacocoTestReport {
                     def branchPercentage = branchTotal > 0 ? (branchCovered * 100.0 / branchTotal) : 0
                     println "Branches: ${String.format("%.1f", branchPercentage)}% (${branchCovered}/${branchTotal})"
                 }
+            } else {
+                println "Could not find aggregated INSTRUCTION counter in report"
             }
 
         } catch (Exception e) {
