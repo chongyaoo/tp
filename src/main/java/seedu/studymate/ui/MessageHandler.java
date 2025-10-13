@@ -153,25 +153,24 @@ public class MessageHandler {
     // TODO
     public static void sendTimerStartMessage(int duration, String label) {
         System.out.println(LINE);
-        String output = "# TIMER\n" + "# RUNNING " + duration + ":00 left - " + label;
+        String formattedTime = formatDurationString(duration * 60L); // Convert minutes to seconds
+        String output = "# TIMER\n" + "# RUNNING " + formattedTime + " left - " + label;
         System.out.println(output);
         System.out.println(LINE);
     }
 
     public static void sendTimerPauseMessage(long remainingTime, String label) {
         System.out.println(LINE);
-        int[] formattedTime = formatDuration(remainingTime);
-        String output = "# TIMER\n" + "# PAUSED " + formattedTime[0]
-                + ":" + formattedTime[1] + " left - " + label;
+        String formattedTime = formatDurationString(remainingTime);
+        String output = "# TIMER\n" + "# PAUSED " + formattedTime + " left - " + label;
         System.out.println(output);
         System.out.println(LINE);
     }
 
     public static void sendTimerResumeMessage(long remainingTime, String label) {
         System.out.println(LINE);
-        int[] formattedTime = formatDuration(remainingTime);
-        String output = "# TIMER\n" + "# RUNNING " + formattedTime[0]
-                + ":" + formattedTime[1] + " left - " + label;
+        String formattedTime = formatDurationString(remainingTime);
+        String output = "# TIMER\n" + "# RUNNING " + formattedTime + " left - " + label;
         System.out.println(output);
         System.out.println(LINE);
     }
@@ -194,9 +193,9 @@ public class MessageHandler {
         System.out.println(LINE);
     }
 
-    private static int[] formatDuration(long totalSeconds) {
+    private static String formatDurationString(long totalSeconds) {
         int minutes = (int) (totalSeconds / 60);
         int seconds = (int) (totalSeconds % 60);
-        return new int[]{minutes, seconds};
+        return String.format("%d:%02d", minutes, seconds);
     }
 }
