@@ -1,2 +1,39 @@
+todo Read chapter 1
+todo Complete assignment
+deadline Submit report /by 2025-10-15
+deadline Prepare presentation /by 2025-10-20
 list
+mark 1
+mark 2,3
+unmark 1
+mark 1...3
+rem Study session @ 2025-10-14
+rem Team meeting @ 2025-10-16
+rem ls
+rem rm 1
+start
+start @ 30
+start Focus time @ 45
+start 2 @ 25
+pause
+resume
+reset
+stat
+delete 1
+delete 2,3
+delete 1...1
+todo
+deadline
+deadline Test task
+deadline Test task /by
+deadline Test task /by invalid-date
+mark
+mark invalid
+delete
+delete invalid
+rem
+rem rm
+rem rm invalid
+start invalid @ text
+start @ -5
 bye
