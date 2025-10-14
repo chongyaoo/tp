@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import seedu.studymate.parser.DateTimeArg;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 
 import java.io.IOException;

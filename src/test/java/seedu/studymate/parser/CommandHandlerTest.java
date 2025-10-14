@@ -3,7 +3,7 @@ package seedu.studymate.parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.studymate.exceptions.StudyMateException;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 
 import java.util.LinkedHashSet;
