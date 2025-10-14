@@ -7,8 +7,10 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 public class Parser {
     private static final String DELIMITER_BY = "/by";
@@ -16,7 +18,7 @@ public class Parser {
     private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
     private static final Pattern TIMER_PATTERN =
             Pattern.compile("^\\s*([^@]+)?\\s*(?:@\\s*(\\d+))?\\s*$");
-
+    private static final Logger logger = Logger.getLogger("Parser Logger");
 
     public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
@@ -28,7 +30,7 @@ public class Parser {
         String[] arguments = cleanLine.split(" ", 2);
         String argumentString = arguments.length > 1 ? arguments[1] : "";
 
-
+        logger.log(Level.INFO, "Command received: " + arguments[0]);
         switch (arguments[0].toLowerCase()) {
         case "todo":
             return parseToDo(argumentString);
@@ -65,6 +67,7 @@ public class Parser {
         if (desc.isEmpty()) {
             throw new StudyMateException("The description of a todo cannot be empty.");
         }
+        logger.log(Level.INFO, "ToDo description: " + desc);
         return new Command(CommandType.TODO, desc);
     }
 
@@ -88,6 +91,8 @@ public class Parser {
 
         try {
             DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(deadline));
+            logger.log(Level.INFO, "Deadline description: " + desc);
+            logger.log(Level.INFO, "Deadline's deadline: " + dateTimeArg);
             return new Command(CommandType.DEADLINE, desc, dateTimeArg);
         } catch (DateTimeParseException e) {
             throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
@@ -137,6 +142,8 @@ public class Parser {
                     throw new NumberFormatException();
                 }
             }
+            assert(!indexes.isEmpty());
+            logger.log(Level.INFO, "ArrayList indexes : " + indexes);
             return indexes;
         } catch (NumberFormatException e) {
             throw new StudyMateException("The " + arguments[0] + " command must be followed by a valid input");
@@ -149,6 +156,7 @@ public class Parser {
         }
         String[] parts = arguments[1].trim().split("\\s+", 2);
         String rest = parts.length > 1 ? parts[1].trim() : "";
+        logger.log(Level.INFO, "rem command recorded : " + parts[0]);
         return switch (parts[0]) {
         case "rm" -> parseRemRm(parts);
         case "ls" -> parseRemLs(rest);
@@ -190,6 +198,8 @@ public class Parser {
                 atIndex + 1, arguments.length));
         try {
             DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+            logger.log(Level.INFO, "Reminder name : " + reminder);
+            logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
             return new Command(CommandType.REM_ADD, reminder, dateTimeArg);
         } catch (DateTimeParseException e) {
             throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
@@ -258,6 +268,9 @@ public class Parser {
         }
 
         // Create and return the Command object
+        logger.log(Level.INFO, "Timer duration : " + minutes);
+        logger.log(Level.INFO, "Timer label : " + label);
+        logger.log(Level.INFO, "Target of timer : " + index);
         return new Command(CommandType.START, index, label, minutes);
     }
 }
