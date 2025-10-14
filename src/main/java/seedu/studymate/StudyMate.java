@@ -6,7 +6,8 @@ import seedu.studymate.parser.Command;
 import seedu.studymate.parser.CommandHandler;
 import seedu.studymate.parser.CommandType;
 import seedu.studymate.parser.Parser;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.ReminderList;
+import seedu.studymate.reminders.Scheduler;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
@@ -19,6 +20,8 @@ public class StudyMate {
     private static final String FILE_PATH = "data/tasks.txt";
     private static final TaskList taskList = new TaskList();
     private static final ReminderList reminderList = new ReminderList();
+    private static final Scheduler scheduler = new Scheduler(reminderList);
+
 
     public static void main(String[] args) {
         sendWelcomeMessage();
