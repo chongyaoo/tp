@@ -1,4 +1,4 @@
-package seedu.studymate.tasks;
+package seedu.studymate.reminders;
 
 import seedu.studymate.database.DataFormatting;
 import seedu.studymate.parser.DateTimeArg;
@@ -11,6 +11,7 @@ public class Reminder {
     protected final String name;
     protected Boolean onReminder;
     private final DateTimeArg dateTime;
+    private Schedule schedule;
 
     /**
      * Constructs a Reminder with default status !isReminded
@@ -45,10 +46,21 @@ public class Reminder {
         return onReminder;
     }
 
+    public Boolean isDue() {
+        return schedule.isDue();
+    }
+
+    public void isFired() {
+        schedule.isFired();
+        if (!schedule.isRecurring()) {
+            onReminder = false;
+        }
+    }
+
     /**
      * Returns a string representation of the task suitable for saving to a file.
      * This method is intended to be overridden by subclasses to provide specific formatting.
-     * 
+     *
      * @return An empty String
      */
     public String toSaveString() {

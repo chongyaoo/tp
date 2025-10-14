@@ -1,7 +1,7 @@
 package seedu.studymate.ui;
 
-import seedu.studymate.tasks.Reminder;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.Reminder;
+import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 

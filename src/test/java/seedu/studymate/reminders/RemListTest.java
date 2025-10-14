@@ -14,8 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import seedu.studymate.parser.DateTimeArg;
-import seedu.studymate.tasks.Reminder;
-import seedu.studymate.tasks.ReminderList;
 
 public class RemListTest {
     ReminderList reminderList;

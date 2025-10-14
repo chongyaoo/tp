@@ -1,4 +1,4 @@
-package seedu.studymate.tasks;
+package seedu.studymate.reminders;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,7 +1,7 @@
 package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.timer.Timer;
 import seedu.studymate.timer.TimerState;

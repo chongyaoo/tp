@@ -1,8 +1,8 @@
 package seedu.studymate.database;
 
 import seedu.studymate.parser.DateTimeArg;
-import seedu.studymate.tasks.Reminder;
-import seedu.studymate.tasks.ReminderList;
+import seedu.studymate.reminders.Reminder;
+import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.Task;
 import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.tasks.TaskList;
