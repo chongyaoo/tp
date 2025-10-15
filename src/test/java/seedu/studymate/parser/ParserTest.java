@@ -167,7 +167,7 @@ public class ParserTest {
     @Test
     void testRemAddCommand() throws StudyMateException {
         Command cmd = parser.parse("rem meeting @ 2024-12-15");
-        assertEquals(CommandType.REM_ADD, cmd.type);
+        assertEquals(CommandType.REM_ADD_ONETIME, cmd.type);
         assertEquals("meeting", cmd.desc);
     }
 

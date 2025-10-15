@@ -8,6 +8,15 @@ public class DateTimeArg {
     private LocalDate date;
     private LocalTime time;
 
+    public DateTimeArg (LocalDate date) {
+        this.date = date;
+    }
+
+    public DateTimeArg (LocalDate date, LocalTime time) {
+        this.date = date;
+        this.time = time;
+    }
+
     public void setDate(LocalDate date) {
         this.date = date;
     }
@@ -31,15 +40,6 @@ public class DateTimeArg {
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.date = localDateTime.toLocalDate();
         this.time = localDateTime.toLocalTime();
-    }
-
-    public DateTimeArg (LocalDate date) {
-        this.date = date;
-    }
-
-    public DateTimeArg (LocalDate date, LocalTime time) {
-        this.date = date;
-        this.time = time;
     }
 
     // using spaces to denote empty, might be hacky

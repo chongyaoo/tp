@@ -40,7 +40,8 @@ public class MessageFormatting {
         return "[RO][ ] " + name + " (" + dateTime + ")";
     }
 
-    public static String recReminderString(Boolean onReminder, String name, DateTimeArg dateTime, Duration reminderInterval) {
+    public static String recReminderString(Boolean onReminder, String name, DateTimeArg dateTime,
+                                           Duration reminderInterval) {
         if (onReminder) {
             return "[RR][O] " + name + " (" + dateTime + ")";
         }

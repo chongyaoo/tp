@@ -108,7 +108,7 @@ public class CommandHandler {
         reminderList.addReminderOneTime(cmd.desc, cmd.datetime);
     }
 
-    private static void handleRemList(ReminderList reminderList) throws StudyMateException {
+    private static void handleRemList(ReminderList reminderList) {
         MessageHandler.sendReminderList(reminderList);
     }
 
@@ -200,6 +200,7 @@ public class CommandHandler {
 
         Runnable timerCheckTask = () -> {
             if (activeTimer == null || activeTimer.getState() != TimerState.RUNNING) {
+                // does scheduler cleanup when timer isn't running
                 if (activeTimer != null && !scheduler.isShutdown()) {
                     scheduler.shutdown();
                     scheduler = null;

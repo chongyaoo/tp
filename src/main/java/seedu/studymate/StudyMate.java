@@ -61,15 +61,7 @@ public class StudyMate {
      * Sends a welcome message to user
      */
     private static void sendWelcomeMessage() {
-        MessageHandler.sendMessage(
-                " ██║    ██║ ██████  ██╗     ██╗      █████╗",
-                " ██║    ██║ ██╔═══╝ ██║     ██║     ██╔══██╗",
-                " █████████║ █████╗  ██║     ██║     ██║  ██║  ",
-                " ██╔════██║ ██╔══╝  ██║     ██║     ██║  ██║ ",
-                " ██║    ██║ ███████╗███████╗███████╗╚█████╔╝ ",
-                " ╚═╝    ╚═╝ ╚══════╝╚══════╝╚══════╝ ╚════╝ ",
-                "         F R O M   S T U D Y M A T E"
-        );
+        MessageHandler.sendMessage("Hello from StudyMate!");
     }
 
     /**

@@ -32,7 +32,7 @@ public class RemListTest {
         LocalTime time = dateTime.toLocalTime();
         DateTimeArg remDateTime = new DateTimeArg(date, time);
 
-        reminderList.addReminder("running", remDateTime);
+        reminderList.addReminderOneTime("running", remDateTime);
         assertEquals(1, reminderList.getCount());
         Reminder rem = reminderList.getReminder(0);
         assertInstanceOf(Reminder.class, rem);
@@ -49,10 +49,10 @@ public class RemListTest {
         LocalTime time = dateTime.toLocalTime();
         DateTimeArg remDateTime = new DateTimeArg(date, time);
 
-        reminderList.addReminder("running", remDateTime);
-        reminderList.addReminder("running 5km", remDateTime);
-        reminderList.addReminder("running 10km", remDateTime);
-        reminderList.addReminder("running 15km", remDateTime);
+        reminderList.addReminderOneTime("running", remDateTime);
+        reminderList.addReminderOneTime("running 5km", remDateTime);
+        reminderList.addReminderOneTime("running 10km", remDateTime);
+        reminderList.addReminderOneTime("running 15km", remDateTime);
     }
 
     //test for deleting one reminder
