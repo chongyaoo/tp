@@ -24,6 +24,7 @@ public class Storage {
     private final String filePath;
 
     public Storage(String filePath) {
+        assert filePath != null && !filePath.isEmpty() : "File path should not be null or empty";
         this.filePath = filePath;
     }
 
@@ -38,6 +39,7 @@ public class Storage {
             try {
                 file.getParentFile().mkdirs(); // ensure directory exists
                 file.createNewFile();
+                assert file.exists() : "File should exist after creation attempt";
             } catch (IOException e) {
                 throw new StudyMateException("Error creating save file: " + e.getMessage());
             }
