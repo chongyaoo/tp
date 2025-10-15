@@ -50,7 +50,6 @@ public class TaskList {
     public void addToDo(String task) {
         ToDo newTask = new ToDo(task);
         taskList.add(newTask);
-        MessageHandler.sendAddTaskMessage(newTask, getCount());
     }
 
     /**
@@ -62,7 +61,6 @@ public class TaskList {
     public void addDeadline(String task, DateTimeArg deadline) {
         Deadline newTask = new Deadline(task, deadline);
         taskList.add(newTask);
-        MessageHandler.sendAddTaskMessage(newTask, getCount());
     }
 
     /**
