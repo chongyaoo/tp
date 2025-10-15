@@ -9,6 +9,10 @@ import java.util.Optional;
 public interface Schedule {
     //DateTimeArg nextTriggerAfter(Instant now); // when should it fire next?
 
+    default Duration interval() {
+        return null;
+    }
+
     default void snooze(Duration d) {}
 
     default boolean isRecurring() {
@@ -20,4 +24,7 @@ public interface Schedule {
     };
 
     default void isFired() {};
+
+    default void setRemindAt(DateTimeArg remindAt) {}
+
 }

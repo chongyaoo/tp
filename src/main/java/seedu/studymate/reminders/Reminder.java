@@ -4,21 +4,31 @@ import seedu.studymate.database.DataFormatting;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
+import java.time.Duration;
+
 /**
  * A reminder has a DateTime for reminding, and the task to remind
  */
 public class Reminder {
     protected final String name;
     protected Boolean onReminder;
-    private final DateTimeArg dateTime;
-    private Schedule schedule;
+    protected Schedule schedule;
+    protected DateTimeArg dateTime;
 
     /**
      * Constructs a Reminder with default status !isReminded
      *
      * @param name The name of the task
      **/
-    public Reminder(String name, DateTimeArg dateTime) {
+    public Reminder(String name, DateTimeArg dateTime) { //One-Time Schedule
+        this.schedule = new OneTimeSchedule(dateTime);
+        this.name = name;
+        this.onReminder = false;
+        this.dateTime = dateTime;
+    }
+
+    public Reminder(String name, DateTimeArg dateTime, Duration interval) { //Recurring Schedule
+        this.schedule = new RecurringSchedule(dateTime, interval);
         this.name = name;
         this.onReminder = false;
         this.dateTime = dateTime;
@@ -68,8 +78,10 @@ public class Reminder {
     }
 
     public String toString() {
-        return MessageFormatting.reminderString(onReminder, name, dateTime);
+        if (schedule.isRecurring()) {
+            return MessageFormatting.recReminderString(onReminder, name, dateTime, schedule.interval());
+        }
+        return MessageFormatting.oneTimeReminderString(onReminder, name, dateTime);
     }
-
 }
 

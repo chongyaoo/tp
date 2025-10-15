@@ -147,7 +147,7 @@ public class Storage {
                 throw new StudyMateException("Error parsing reminder date/time: " + e.getMessage());
             }
 
-            reminderList.addReminder(name, reminderTime);
+            //reminderList.addReminder(name, reminderTime);
 
             if (isDone) {
                 reminderList.getReminder(reminderList.getCount() - 1).setReminded(true);

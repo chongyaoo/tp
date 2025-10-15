@@ -34,7 +34,8 @@ public class CommandHandler {
         case DELETE -> handleDelete(taskList, cmd);
 
         // Reminder Commands
-        case REM_ADD -> handleRemAdd(reminderList, cmd);
+        case REM_ADD_REC -> handleRemAddRec(reminderList, cmd);
+        case REM_ADD_ONETIME -> handleRemAddOneTime(reminderList, cmd);
         case REM_LS -> handleRemList(reminderList);
         case REM_RM -> handleRemRm(reminderList, cmd);
 
@@ -92,8 +93,12 @@ public class CommandHandler {
         taskList.delete(cmd.indexes);
     }
 
-    private static void handleRemAdd(ReminderList reminderList, Command cmd) {
-        reminderList.addReminder(cmd.desc, cmd.datetime);
+    private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
+        reminderList.addReminderRec(cmd.message, cmd.datetime, cmd.remindInterval);
+    }
+
+    private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) {
+        reminderList.addReminderOneTime(cmd.desc, cmd.datetime);
     }
 
     private static void handleRemList(ReminderList reminderList) throws StudyMateException {

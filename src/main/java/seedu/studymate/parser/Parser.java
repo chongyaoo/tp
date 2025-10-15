@@ -2,6 +2,7 @@ package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -158,9 +159,9 @@ public class Parser {
         String rest = parts.length > 1 ? parts[1].trim() : "";
         logger.log(Level.INFO, "rem command recorded : " + parts[0]);
         return switch (parts[0]) {
-        case "rm" -> parseRemRm(parts);
-        case "ls" -> parseRemLs(rest);
-        default -> parseRemAdd(arguments[1]);
+            case "rm" -> parseRemRm(parts);
+            case "ls" -> parseRemLs(rest);
+            default -> parseRemAdd(arguments[1]);
         };
     }
 
@@ -193,16 +194,75 @@ public class Parser {
             throw new StudyMateException("Input an event and a DATE/TIME for the reminder! " +
                     "Use '@' between the event and the DATE/TIME");
         }
+
+        int rIndex = 0;
+        for (int i = 0; i < arguments.length; i++) {
+            if (arguments[i].equals("-r")) {
+                rIndex = i;
+                break;
+            }
+        }
+        if (rIndex == arguments.length - 1) {
+            throw new StudyMateException("Input a recurring duration after the -r flag!");
+        }
+
         String reminder = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, atIndex));
-        String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
-                atIndex + 1, arguments.length));
-        try {
-            DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
-            logger.log(Level.INFO, "Reminder name : " + reminder);
-            logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
-            return new Command(CommandType.REM_ADD, reminder, dateTimeArg);
-        } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+
+        if (rIndex == 0) { //non-recurring reminder
+            String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                    atIndex + 1, arguments.length));
+            try {
+                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+                logger.log(Level.INFO, "Reminder name : " + reminder);
+                logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
+                return new Command(CommandType.REM_ADD_ONETIME, reminder, dateTimeArg);
+            } catch (DateTimeParseException e) {
+                throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+            }
+
+        }
+        else { //recurring reminder
+            String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                    atIndex + 1, rIndex));
+            String recurringString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                    rIndex + 1, arguments.length));
+            Duration recurringDuration = parseInterval(recurringString);
+            try {
+                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+                logger.log(Level.INFO, "Reminder name : " + reminder);
+                logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
+                return new Command(CommandType.REM_ADD_REC, reminder, dateTimeArg, recurringDuration);
+            } catch (DateTimeParseException e) {
+                throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+            }
+        }
+    }
+
+
+    private Duration parseInterval(String input) throws StudyMateException {
+        input = input.trim().toLowerCase(); // normalize input, e.g., "1D" -> "1d"
+
+        if (!input.matches("\\d+[smhdw]")) { //matches formatting pattern of number + unit
+            throw new StudyMateException("Invalid interval format: " + input);
+        }
+
+        // Extract value and unit
+        long value = Long.parseLong(input.substring(0, input.length() - 1));
+        char unit = input.charAt(input.length() - 1);
+
+        switch (unit) {
+            case 's':
+                return Duration.ofSeconds(value);
+            case 'm':
+                return Duration.ofMinutes(value);
+            case 'h':
+                return Duration.ofHours(value);
+            case 'd':
+                return Duration.ofDays(value);
+            case 'w':
+                return Duration.ofDays(value * 7);
+            default:
+                throw new StudyMateException("Unknown duration unit: " + unit);
         }
     }
 

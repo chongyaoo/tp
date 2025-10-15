@@ -150,6 +150,43 @@ public class MessageHandler {
         System.out.println(LINE);
     }
 
+    /**
+     * Prints a confirmation message after a recurring Reminder has been added
+     *
+     * @param reminder  The task that was added
+     * @param count The current number of reminders in the list
+     */
+    public static void sendAddReminderRecMessage(Reminder reminder, int count) {
+        System.out.println(LINE);
+        System.out.println("Got it. I've added this recurring reminder:");
+        System.out.println(reminder.toString());
+        if (count == 1) {
+            System.out.println("Now you have 1 reminder in the reminder list.");
+        } else {
+            System.out.println("Now you have " + count + " reminders in the reminder list.");
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a confirmation message after a recurring Reminder has been added
+     *
+     * @param reminder  The task that was added
+     * @param count The current number of reminders in the list
+     */
+    public static void sendAddReminderOneTimeMessage(Reminder reminder, int count) {
+        System.out.println(LINE);
+        System.out.println("Got it. I've added this One-Time reminder:");
+        System.out.println(reminder.toString());
+        if (count == 1) {
+            System.out.println("Now you have 1 reminder in the reminder list.");
+        } else {
+            System.out.println("Now you have " + count + " reminders in the reminder list.");
+        }
+        System.out.println(LINE);
+    }
+
+
     // TODO
     public static void sendTimerStartMessage(int duration, String label) {
         System.out.println(LINE);

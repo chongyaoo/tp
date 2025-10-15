@@ -1,5 +1,6 @@
 package seedu.studymate.parser;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 
 public class Command {
@@ -11,9 +12,13 @@ public class Command {
     DateTimeArg datetime;
     // for operations done on a range of indices
     LinkedHashSet<Integer> indexes;
+    boolean isRecurring;
 
     // Timer
     Integer duration;
+
+    // Rem trigger interval
+    Duration remindInterval;
 
     public Command(CommandType type) {
         this.type = type;
@@ -66,4 +71,13 @@ public class Command {
         this.desc = label;
         this.duration = duration;
     }
+
+    // recurring reminder
+    public Command(CommandType type, String name, DateTimeArg remindAt, Duration remindInterval) {
+        this.type = type;
+        this.message = name;
+        this.datetime = remindAt;
+        this.remindInterval = remindInterval;
+    }
+
 }
