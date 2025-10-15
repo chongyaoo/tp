@@ -6,7 +6,11 @@ import java.time.*;
 
 public class RecurringSchedule implements Schedule {
     private final DateTimeArg remindAt;
-    private Duration interval;
+    private final Duration interval;
+
+    public Duration interval() {
+        return interval;
+    }
 
     public RecurringSchedule(DateTimeArg remindAt, Duration interval) {
         this.remindAt = remindAt;

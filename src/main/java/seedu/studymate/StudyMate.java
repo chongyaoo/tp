@@ -83,4 +83,6 @@ public class StudyMate {
         }
         return scanner.nextLine().trim();
     }
+
+
 }

@@ -1,5 +1,6 @@
 package seedu.studymate.reminders;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -23,10 +24,16 @@ public class ReminderList {
         reminderList = new ArrayList<>();
     }
 
-    public void addReminder(String name, DateTimeArg dateTime) {
+    public void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
+        Reminder newReminder = new Reminder(name, dateTime, interval);
+        reminderList.add(newReminder);
+        MessageHandler.sendAddReminderRecMessage(newReminder, getCount());
+    }
+
+    public void addReminderOneTime(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
-        //MessageHandler.sendAddTaskMessage(newTask, getCount());
+        MessageHandler.sendAddReminderOneTimeMessage(newReminder, getCount());
     }
 
     public int getCount() {

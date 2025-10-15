@@ -2,6 +2,8 @@ package seedu.studymate.ui;
 
 import seedu.studymate.parser.DateTimeArg;
 
+import java.time.Duration;
+
 /**
  * Class to manage all message formatting
  */
@@ -31,10 +33,17 @@ public class MessageFormatting {
         return "[D][ ] " + name + " (by: " + deadline + ")";
     }
 
-    public static String reminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
+    public static String oneTimeReminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
         if (onReminder) {
-            return "[R][O] " + name + " (" + dateTime + ")";
+            return "[RO][O] " + name + " (" + dateTime + ")";
         }
-        return "[R][ ] " + name + " (" + dateTime + ")";
+        return "[RO][ ] " + name + " (" + dateTime + ")";
+    }
+
+    public static String recReminderString(Boolean onReminder, String name, DateTimeArg dateTime, Duration reminderInterval) {
+        if (onReminder) {
+            return "[RR][O] " + name + " (" + dateTime + ")";
+        }
+        return "[R][ ] " + name + " (" + dateTime + ", interval: " + reminderInterval + ")";
     }
 }
