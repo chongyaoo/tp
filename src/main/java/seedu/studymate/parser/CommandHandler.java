@@ -2,6 +2,7 @@ package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.reminders.ReminderList;
+import seedu.studymate.tasks.Task;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.timer.Timer;
 import seedu.studymate.timer.TimerState;
@@ -68,10 +69,16 @@ public class CommandHandler {
 
     private static void handleToDo(TaskList taskList, Command cmd) {
         taskList.addToDo(cmd.desc);
+        int listCount = taskList.getCount();
+        Task newTask = taskList.getTask(listCount - 1);
+        MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
     private static void handleDeadline(TaskList taskList, Command cmd) {
         taskList.addDeadline(cmd.desc, cmd.datetime);
+        int listCount = taskList.getCount();
+        Task newTask = taskList.getTask(listCount - 1);
+        MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
     private static void handleList(TaskList taskList) {
