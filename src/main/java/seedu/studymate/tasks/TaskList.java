@@ -17,7 +17,7 @@ import seedu.studymate.ui.MessageHandler;
 public class TaskList {
 
     private final ArrayList<Task> taskList;
-    private static final Logger logger = Logger.getLogger("TaskList Logger");
+    private final static Logger logger = Logger.getLogger("TaskList Logger");
 
     /**
      * Constructs an empty TaskList

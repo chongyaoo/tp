@@ -15,8 +15,7 @@ public class Timer {
     private long remainingSec;              // Time remaining
     private Instant startedAt;              // Timer start time
     private final String label;             // Timer label
-
-    private static final Logger logger = Logger.getLogger("Timer Logger"); // Logger
+    private final static Logger logger = Logger.getLogger("Timer Logger"); // Logger
 
     /**
      * Constructs a timer with a link to task
@@ -47,7 +46,9 @@ public class Timer {
      * Starts the timer
      */
     public void start() {
-        assert (state == TimerState.IDLE);
+        if (state != TimerState.IDLE) {
+            return;
+        }
         state = TimerState.RUNNING;
         startedAt = Instant.now();
         assert (state == TimerState.RUNNING);
@@ -58,7 +59,9 @@ public class Timer {
      * Pauses the timer
      */
     public void pause() {
-        assert(state == TimerState.RUNNING);
+        if (state != TimerState.RUNNING) {
+            return;
+        }
         // Calculate time elapsed during RUNNING state
         Duration elapsed = Duration.between(startedAt, Instant.now());
 
@@ -79,7 +82,9 @@ public class Timer {
      * Resumes the timer
      */
     public void resume() {
-        assert(state == TimerState.PAUSED);
+        if (state != TimerState.PAUSED) {
+            return;
+        }
         startedAt = Instant.now();
         state = TimerState.RUNNING;
         logger.log(Level.INFO, "Timer resumed");

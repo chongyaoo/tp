@@ -218,10 +218,11 @@ public class TimerTest {
         long duration = 10;
         Timer timer = new Timer(DEFAULT_LABEL, duration);
         long sleepTimeMs = 1100; // Increased sleep time to guarantee >= 1s of elapsed time per cycle
-
+        timer.start();
+        timer.pause();
         // Run and pause 5 times (total ~5.5s elapsed)
-        for (int i = 0; i < 5; i++) {
-            timer.start();
+        for (int i = 0; i < 4; i++) {
+            timer.resume();
             Thread.sleep(sleepTimeMs);
             timer.pause();
         }
