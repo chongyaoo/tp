@@ -184,6 +184,14 @@ public class CommandHandler {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
+
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+            logger.log(Level.INFO, "Scheduler shut down with reset command");
+            scheduler = null;
+        }
+
+        assert(scheduler == null);
         activeTimer.reset();
         activeTimer = null;
 
@@ -205,11 +213,11 @@ public class CommandHandler {
         logger.log(Level.INFO, "Starting timer monitoring");
 
         Runnable timerCheckTask = () -> {
-            if (activeTimer == null || activeTimer.getState() == TimerState.IDLE) {
+            if (activeTimer == null) {
                 // does scheduler cleanup when timer isn't running
-                if (activeTimer != null && !scheduler.isShutdown()) {
+                if (!scheduler.isShutdown()) {
                     scheduler.shutdown();
-                    logger.log(Level.INFO, "Scheduler shutdown");
+                    logger.log(Level.INFO, "Scheduler shutdown (Active timer is null)");
                     scheduler = null;
                 }
                 return;
@@ -230,7 +238,7 @@ public class CommandHandler {
                 // Reset active timer when timer is done
                 if (scheduler != null) {
                     scheduler.shutdown();
-                    logger.log(Level.INFO, "Scheduler shutdown");
+                    logger.log(Level.INFO, "Scheduler shutdown (Timer ended)");
                     scheduler = null;
                 }
                 activeTimer = null;
