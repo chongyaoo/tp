@@ -15,7 +15,7 @@ public class Timer {
     private long remainingSec;              // Time remaining
     private Instant startedAt;              // Timer start time
     private final String label;             // Timer label
-    private final static Logger logger = Logger.getLogger("Timer Logger"); // Logger
+    private static final Logger logger = Logger.getLogger("Timer Logger"); // Logger
 
     /**
      * Constructs a timer with a link to task
