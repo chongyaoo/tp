@@ -37,7 +37,7 @@ public class Task {
      * Gets the completion status of the task
      * @return isDone A boolean indicating if the task is done (true) or not (false)
      */
-    public boolean isDone() {
+    public boolean getDone() {
         return isDone;
     }
 
