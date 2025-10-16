@@ -185,6 +185,7 @@ public class CommandHandler {
             throw new StudyMateException("No timer is currently active");
         }
         activeTimer.reset();
+        activeTimer = null;
 
         MessageHandler.sendTimerResetMessage();
     }
