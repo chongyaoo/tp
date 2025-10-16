@@ -35,7 +35,7 @@ public class TaskListTest {
         Task task = taskList.getTask(0);
         assertInstanceOf(ToDo.class, task);
         assertEquals("read book", task.getName());
-        assertFalse(task.isDone());
+        assertFalse(task.getDone());
     }
 
     // Test Adding Deadline Task
@@ -51,7 +51,7 @@ public class TaskListTest {
         Task task = taskList.getTask(0);
         assertInstanceOf(Deadline.class, task);
         assertEquals("submit report", task.getName());
-        assertFalse(task.isDone());
+        assertFalse(task.getDone());
         Deadline deadlineTask = (Deadline) task;
         assertEquals(deadlineTime, deadlineTask.getDeadline());
 
@@ -75,9 +75,9 @@ public class TaskListTest {
         LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(1));
         taskList.mark(indexes);
 
-        assertTrue(taskList.getTask(1).isDone());
-        assertFalse(taskList.getTask(0).isDone());
-        assertFalse(taskList.getTask(2).isDone());
+        assertTrue(taskList.getTask(1).getDone());
+        assertFalse(taskList.getTask(0).getDone());
+        assertFalse(taskList.getTask(2).getDone());
     }
 
     // Test marking 2 tasks
@@ -91,9 +91,9 @@ public class TaskListTest {
         indexes.add(2);
         taskList.mark(indexes);
 
-        assertTrue(taskList.getTask(0).isDone());
-        assertFalse(taskList.getTask(1).isDone());
-        assertTrue(taskList.getTask(2).isDone());
+        assertTrue(taskList.getTask(0).getDone());
+        assertFalse(taskList.getTask(1).getDone());
+        assertTrue(taskList.getTask(2).getDone());
     }
 
     // Test unmarking 1 task
@@ -107,14 +107,14 @@ public class TaskListTest {
         allIndexes.add(1);
         allIndexes.add(2);
         taskList.mark(allIndexes);
-        assertTrue(taskList.getTask(1).isDone());
+        assertTrue(taskList.getTask(1).getDone());
 
         // Unmark Task 2 (index 1)
         LinkedHashSet<Integer> unmarkIndexes = new LinkedHashSet<>(Collections.singletonList(1));
         taskList.unmark(unmarkIndexes);
 
-        assertFalse(taskList.getTask(1).isDone());
-        assertTrue(taskList.getTask(0).isDone()); // Check others remain marked
+        assertFalse(taskList.getTask(1).getDone());
+        assertTrue(taskList.getTask(0).getDone()); // Check others remain marked
     }
 
     // --- Test Cases for Deletion ---

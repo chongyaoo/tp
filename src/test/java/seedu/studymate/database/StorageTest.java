@@ -69,7 +69,7 @@ class StorageTest {
 
         assertEquals(1, tasks.getCount());
         assertEquals("Read book", tasks.getTask(0).getName());
-        assertTrue(tasks.getTask(0).isDone());
+        assertTrue(tasks.getTask(0).getDone());
     }
 
     /**
@@ -96,6 +96,6 @@ class StorageTest {
 
         assertEquals(1, tasks.getCount());
         assertEquals("Submit report", tasks.getTask(0).getName());
-        assertFalse(tasks.getTask(0).isDone());
+        assertFalse(tasks.getTask(0).getDone());
     }
 }

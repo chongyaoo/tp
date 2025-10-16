@@ -11,11 +11,15 @@ import seedu.studymate.ui.MessageHandler;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommandHandler {
 
     private static Timer activeTimer = null;
     private static ScheduledExecutorService scheduler = null;
+
+    private static final Logger logger = Logger.getLogger("Command Handler Logger");
 
     /**
      * Executes the appropriate command based on the parsed input
@@ -139,8 +143,9 @@ public class CommandHandler {
         }
 
         activeTimer = timer;
+        assert(activeTimer.getState() == TimerState.IDLE);
         activeTimer.start();
-
+        assert(activeTimer.getState() == TimerState.RUNNING);
         startTimerMonitoring();
         MessageHandler.sendTimerStartMessage(cmd.duration, activeTimer.getLabel());
     }
@@ -155,6 +160,7 @@ public class CommandHandler {
         if (activeTimer.getState() == TimerState.PAUSED) {
             throw new StudyMateException("Timer is already paused");
         }
+        assert(activeTimer.getState() == TimerState.RUNNING);
         activeTimer.pause();
         MessageHandler.sendTimerPauseMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
@@ -169,6 +175,7 @@ public class CommandHandler {
         if (activeTimer.getState() == TimerState.RUNNING) {
             throw new StudyMateException("Timer is already running");
         }
+        assert(activeTimer.getState() == TimerState.PAUSED);
         activeTimer.resume();
         MessageHandler.sendTimerResumeMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
@@ -177,10 +184,14 @@ public class CommandHandler {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
+
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
+            logger.log(Level.INFO, "Scheduler shut down with reset command");
             scheduler = null;
         }
+
+        assert(scheduler == null);
         activeTimer.reset();
         activeTimer = null;
 
@@ -191,20 +202,29 @@ public class CommandHandler {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
+
         MessageHandler.sendTimerStatMessage(activeTimer.toString()); //
     }
 
     private static void startTimerMonitoring() {
+        assert(scheduler == null);
         // Initialise a scheduler to check if timer is done
         scheduler = Executors.newSingleThreadScheduledExecutor();
+        logger.log(Level.INFO, "Starting timer monitoring");
 
         Runnable timerCheckTask = () -> {
-            if (activeTimer == null || activeTimer.getState() != TimerState.RUNNING) {
+            if (activeTimer == null) {
                 // does scheduler cleanup when timer isn't running
-                if (activeTimer != null && !scheduler.isShutdown()) {
+                if (!scheduler.isShutdown()) {
                     scheduler.shutdown();
+                    logger.log(Level.INFO, "Scheduler shutdown (Active timer is null)");
                     scheduler = null;
                 }
+                return;
+            }
+
+            // If PAUSED, the timer will not advance, and the code below will be skipped.
+            if (activeTimer.getState() != TimerState.RUNNING) {
                 return;
             }
 
@@ -213,10 +233,12 @@ public class CommandHandler {
             // Timer run out
             if (activeTimer.getState() == TimerState.IDLE) {
                 MessageHandler.sendTimerEndedMessage();
+                logger.log(Level.INFO, "Timer ended");
 
                 // Reset active timer when timer is done
                 if (scheduler != null) {
                     scheduler.shutdown();
+                    logger.log(Level.INFO, "Scheduler shutdown (Timer ended)");
                     scheduler = null;
                 }
                 activeTimer = null;
@@ -225,5 +247,6 @@ public class CommandHandler {
 
         // Schedule check every second
         scheduler.scheduleAtFixedRate(timerCheckTask, 0, 1, TimeUnit.SECONDS);
+        logger.log(Level.INFO, "Scheduler initialised and checking every second");
     }
 }

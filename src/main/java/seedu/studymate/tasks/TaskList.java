@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageHandler;
@@ -13,7 +15,7 @@ import seedu.studymate.ui.MessageHandler;
  * It provides methods for adding, deleting, marking, and unmarking tasks
  */
 public class TaskList {
-
+    private static final Logger logger = Logger.getLogger("TaskList Logger");
     private final ArrayList<Task> taskList;
 
     /**
@@ -21,6 +23,7 @@ public class TaskList {
      */
     public TaskList() {
         taskList = new ArrayList<>();
+        logger.log(Level.INFO, "Created tasklist");
     }
 
     /**
@@ -30,6 +33,7 @@ public class TaskList {
      * @return The task at the specified index
      */
     public Task getTask(int index) {
+        logger.log(Level.INFO, "Task retrieved: " + taskList.get(index).toString());
         return taskList.get(index);
     }
 
@@ -39,6 +43,7 @@ public class TaskList {
      * @return The number of tasks
      */
     public int getCount() {
+        logger.log(Level.INFO, "Task list count retrieved: " + taskList.size());
         return taskList.size();
     }
 
@@ -50,6 +55,8 @@ public class TaskList {
     public void addToDo(String task) {
         ToDo newTask = new ToDo(task);
         taskList.add(newTask);
+        assert (taskList.contains(newTask));
+        logger.log(Level.INFO, "Added To Do: " + newTask.toString());
     }
 
     /**
@@ -61,6 +68,8 @@ public class TaskList {
     public void addDeadline(String task, DateTimeArg deadline) {
         Deadline newTask = new Deadline(task, deadline);
         taskList.add(newTask);
+        assert (taskList.contains(newTask));
+        logger.log(Level.INFO, "Added Deadline: " + newTask.toString());
     }
 
     /**
@@ -72,9 +81,15 @@ public class TaskList {
         ArrayList<Task> tasks = new ArrayList<>();
         // sort indexes in reverse order to prevent index mashups
         List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
-        for (Integer index: sortedIndexes) {
+        for (Integer index : sortedIndexes) {
             tasks.add(taskList.get(index));
             taskList.remove(index.intValue());
+        }
+        int i = 0;
+        for (Integer index : sortedIndexes) {
+            assert (!taskList.contains(tasks.get(i)));
+            logger.log(Level.INFO, "Deleted: " + tasks.get(i).toString());
+            i += 1;
         }
         MessageHandler.sendDeleteTaskMessage(tasks, taskList.size());
     }
@@ -86,8 +101,10 @@ public class TaskList {
      */
     public void mark(LinkedHashSet<Integer> indexes) {
         ArrayList<Task> tasks = new ArrayList<>();
-        for (Integer index:indexes) {
+        for (Integer index : indexes) {
             taskList.get(index).setDone(true);
+            assert(taskList.get(index).getDone());
+            logger.log(Level.INFO, "Marked task: " + taskList.get(index).toString());
             tasks.add(taskList.get(index));
         }
         MessageHandler.sendMarkMessage(tasks);
@@ -100,8 +117,10 @@ public class TaskList {
      */
     public void unmark(LinkedHashSet<Integer> indexes) {
         ArrayList<Task> tasks = new ArrayList<>();
-        for (Integer index:indexes) {
+        for (Integer index : indexes) {
             taskList.get(index).setDone(false);
+            assert(!taskList.get(index).getDone());
+            logger.log(Level.INFO, "Unmarked task: " + taskList.get(index).toString());
             tasks.add(taskList.get(index));
         }
         MessageHandler.sendUnmarkMessage(tasks);
@@ -113,6 +132,7 @@ public class TaskList {
      * @return An ArrayList containing all Task objects in the list.
      */
     public ArrayList<Task> getTasks() {
+        logger.log(Level.INFO, "Task List Retrieved");
         return taskList;
     }
 }

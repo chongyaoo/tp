@@ -2,6 +2,8 @@ package seedu.studymate.timer;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import seedu.studymate.tasks.TaskList;
 
@@ -9,6 +11,7 @@ import seedu.studymate.tasks.TaskList;
  * Represents a timer to be used for focus sessions
  */
 public class Timer {
+    private static final Logger logger = Logger.getLogger("Timer Logger"); // Logger
     private TimerState state;               // State of timer
     private long remainingSec;              // Time remaining
     private Instant startedAt;              // Timer start time
@@ -43,15 +46,20 @@ public class Timer {
      * Starts the timer
      */
     public void start() {
+        if (state != TimerState.IDLE) {
+            return;
+        }
         state = TimerState.RUNNING;
         startedAt = Instant.now();
+        assert (state == TimerState.RUNNING);
+        logger.log(Level.INFO, "Started Timer");
     }
 
     /**
      * Pauses the timer
      */
     public void pause() {
-        if (startedAt == null) {
+        if (state != TimerState.RUNNING) {
             return;
         }
         // Calculate time elapsed during RUNNING state
@@ -63,8 +71,10 @@ public class Timer {
         if (remainingSec <= 0) {
             remainingSec = 0;
             state = TimerState.IDLE;
+            logger.log(Level.INFO, "Timer ended");
         } else {
             state = TimerState.PAUSED;
+            logger.log(Level.INFO, "Timer paused");
         }
     }
 
@@ -72,11 +82,12 @@ public class Timer {
      * Resumes the timer
      */
     public void resume() {
-        if (state == TimerState.IDLE) {
+        if (state != TimerState.PAUSED) {
             return;
         }
         startedAt = Instant.now();
         state = TimerState.RUNNING;
+        logger.log(Level.INFO, "Timer resumed");
     }
 
     /**
@@ -85,6 +96,7 @@ public class Timer {
     public void reset() {
         state = TimerState.IDLE;
         remainingSec = 0;
+        logger.log(Level.INFO, "Timer reset");
     }
 
     public long getRemainingTime() {
@@ -92,6 +104,7 @@ public class Timer {
             return remainingSec;
         }
 
+        assert (state == TimerState.RUNNING);
         Duration elapsed = Duration.between(startedAt, Instant.now());
         long currentRemaining = remainingSec - elapsed.getSeconds();
 
@@ -108,21 +121,25 @@ public class Timer {
     }
 
     public String getLabel() {
+        logger.log(Level.INFO, "Retrieve timer label: " + label);
         return label;
     }
 
     @Override
     public String toString() {
         int[] formattedTime = formatDuration(remainingSec);
-        return "Timer Status\n"
+        String output = "Timer Status\n"
                 + "  State: " + state.toString() + "\n"
                 + "  Time Left: " + formattedTime[0] + ":" + formattedTime[1] + "\n"
                 + "  Label: " + label;
+        logger.log(Level.INFO, "Retrieve timer string:\n" + output);
+        return output;
     }
 
     private static int[] formatDuration(long totalSeconds) {
         int minutes = (int) (totalSeconds / 60);
         int seconds = (int) (totalSeconds % 60);
+        logger.log(Level.INFO, "Format duration: " + minutes + ":" + seconds);
         return new int[]{minutes, seconds};
     }
 }
