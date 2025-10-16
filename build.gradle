@@ -51,6 +51,64 @@ jacocoTestReport {
             def doc = parser.parse(xmlFile)
             def reportElement = doc.documentElement
 
+            // Parse per-class coverage first
+            println ""
+            println "========================================="
+            println "PER-CLASS COVERAGE REPORT"
+            println "========================================="
+
+            def packages = doc.getElementsByTagName("package")
+            for (int p = 0; p < packages.getLength(); p++) {
+                def packageNode = packages.item(p)
+                def packageName = packageNode.getAttribute("name")
+
+                // Only show main source packages (exclude test packages)
+                if (!packageName.contains("test")) {
+                    def classes = packageNode.getElementsByTagName("class")
+                    for (int c = 0; c < classes.getLength(); c++) {
+                        def classNode = classes.item(c)
+                        def className = classNode.getAttribute("name")
+
+                        // Extract just the class name from the full path
+                        def simpleClassName = className.substring(className.lastIndexOf('/') + 1)
+
+                        def classCounters = classNode.getChildNodes()
+                        def instructions = null
+                        def branches = null
+
+                        for (int i = 0; i < classCounters.getLength(); i++) {
+                            def node = classCounters.item(i)
+                            if (node.getNodeName() == "counter") {
+                                def type = node.getAttribute("type")
+                                if (type == "INSTRUCTION") {
+                                    instructions = node
+                                } else if (type == "BRANCH") {
+                                    branches = node
+                                }
+                            }
+                        }
+
+                        if (instructions) {
+                            def missed = instructions.getAttribute("missed") as Integer
+                            def covered = instructions.getAttribute("covered") as Integer
+                            def total = missed + covered
+                            def percentage = total > 0 ? (covered * 100.0 / total) : 0
+
+                            def branchInfo = ""
+                            if (branches) {
+                                def branchMissed = branches.getAttribute("missed") as Integer
+                                def branchCovered = branches.getAttribute("covered") as Integer
+                                def branchTotal = branchMissed + branchCovered
+                                def branchPercentage = branchTotal > 0 ? (branchCovered * 100.0 / branchTotal) : 0
+                                branchInfo = ", Branches: ${String.format("%.1f", branchPercentage)}% (${branchCovered}/${branchTotal})"
+                            }
+
+                            println "${simpleClassName}: Instructions: ${String.format("%.1f", percentage)}% (${covered}/${total})${branchInfo}"
+                        }
+                    }
+                }
+            }
+
             // Get the direct children counters of the report element (these are the aggregated totals)
             def reportCounters = reportElement.getChildNodes()
             def instructions = null
@@ -76,7 +134,7 @@ jacocoTestReport {
 
                 println ""
                 println "========================================="
-                println "CODE COVERAGE SUMMARY"
+                println "OVERALL COVERAGE SUMMARY"
                 println "========================================="
                 println "Instructions: ${String.format("%.1f", percentage)}% (${covered}/${total})"
 

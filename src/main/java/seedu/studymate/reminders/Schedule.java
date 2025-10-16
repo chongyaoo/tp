@@ -3,8 +3,6 @@ package seedu.studymate.reminders;
 import seedu.studymate.parser.DateTimeArg;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Optional;
 
 public interface Schedule {
     //DateTimeArg nextTriggerAfter(Instant now); // when should it fire next?
@@ -21,9 +19,9 @@ public interface Schedule {
 
     default boolean isDue() {
         return false;
-    };
+    }
 
-    default void isFired() {};
+    default void isFired() {}
 
     default void setRemindAt(DateTimeArg remindAt) {}
 

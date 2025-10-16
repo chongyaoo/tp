@@ -159,9 +159,9 @@ public class Parser {
         String rest = parts.length > 1 ? parts[1].trim() : "";
         logger.log(Level.INFO, "rem command recorded : " + parts[0]);
         return switch (parts[0]) {
-            case "rm" -> parseRemRm(parts);
-            case "ls" -> parseRemLs(rest);
-            default -> parseRemAdd(arguments[1]);
+        case "rm" -> parseRemRm(parts);
+        case "ls" -> parseRemLs(rest);
+        default -> parseRemAdd(arguments[1]);
         };
     }
 
@@ -220,8 +220,7 @@ public class Parser {
                 throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
             }
 
-        }
-        else { //recurring reminder
+        } else { //recurring reminder
             String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
                     atIndex + 1, rIndex));
             String recurringString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
@@ -251,18 +250,18 @@ public class Parser {
         char unit = input.charAt(input.length() - 1);
 
         switch (unit) {
-            case 's':
-                return Duration.ofSeconds(value);
-            case 'm':
-                return Duration.ofMinutes(value);
-            case 'h':
-                return Duration.ofHours(value);
-            case 'd':
-                return Duration.ofDays(value);
-            case 'w':
-                return Duration.ofDays(value * 7);
-            default:
-                throw new StudyMateException("Unknown duration unit: " + unit);
+        case 's':
+            return Duration.ofSeconds(value);
+        case 'm':
+            return Duration.ofMinutes(value);
+        case 'h':
+            return Duration.ofHours(value);
+        case 'd':
+            return Duration.ofDays(value);
+        case 'w':
+            return Duration.ofDays(value * 7);
+        default:
+            throw new StudyMateException("Unknown duration unit: " + unit);
         }
     }
 
