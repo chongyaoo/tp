@@ -11,11 +11,11 @@ import seedu.studymate.tasks.TaskList;
  * Represents a timer to be used for focus sessions
  */
 public class Timer {
+    private static final Logger logger = Logger.getLogger("Timer Logger"); // Logger
     private TimerState state;               // State of timer
     private long remainingSec;              // Time remaining
     private Instant startedAt;              // Timer start time
     private final String label;             // Timer label
-    private static final Logger logger = Logger.getLogger("Timer Logger"); // Logger
 
     /**
      * Constructs a timer with a link to task

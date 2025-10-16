@@ -15,9 +15,8 @@ import seedu.studymate.ui.MessageHandler;
  * It provides methods for adding, deleting, marking, and unmarking tasks
  */
 public class TaskList {
-
-    private final ArrayList<Task> taskList;
     private static final Logger logger = Logger.getLogger("TaskList Logger");
+    private final ArrayList<Task> taskList;
 
     /**
      * Constructs an empty TaskList
