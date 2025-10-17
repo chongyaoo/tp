@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageHandler;
@@ -14,7 +16,7 @@ import seedu.studymate.ui.MessageHandler;
  * It provides methods for adding, deleting, marking, and unmarking tasks
  */
 public class ReminderList {
-
+    private static final Logger logger = Logger.getLogger("TaskList Logger");
     private final ArrayList<Reminder> reminderList;
 
     /**
@@ -28,12 +30,14 @@ public class ReminderList {
         Reminder newReminder = new Reminder(name, dateTime, interval);
         reminderList.add(newReminder);
         MessageHandler.sendAddReminderRecMessage(newReminder, getCount());
+        assert(reminderList.contains(newReminder));
     }
 
     public void addReminderOneTime(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
         MessageHandler.sendAddReminderOneTimeMessage(newReminder, getCount());
+        assert(reminderList.contains(newReminder));
     }
 
     public int getCount() {
@@ -51,6 +55,12 @@ public class ReminderList {
         for (Integer index: sortedIndexes) {
             reminders.add(reminderList.get(index));
             reminderList.remove(index.intValue());
+        }
+        int i = 0;
+        for (Integer index : sortedIndexes) {
+            assert (!reminderList.contains(reminders.get(i)));
+            logger.log(Level.INFO, "Deleted: " + reminders.get(i).toString());
+            i += 1;
         }
         MessageHandler.sendDeleteReminderMessage(reminders, reminderList.size());
     }
