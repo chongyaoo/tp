@@ -4,7 +4,7 @@ package seedu.studymate.tasks;
  * The base class for all tasks
  * It provides core functionality common to all task types, such as a name and a completion status
  */
-public class Task {
+public abstract class Task {
     protected final String name;
     protected Boolean isDone;
 
@@ -46,7 +46,5 @@ public class Task {
      * This method is intended to be overridden by subclasses to provide specific formatting
      * @return An empty string
      */
-    public String toSaveString() {
-        return "";
-    }
+    public abstract String toSaveString();
 }
