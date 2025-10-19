@@ -186,6 +186,14 @@ public class MessageHandler {
         System.out.println(LINE);
     }
 
+    public static void sendRemindersDone(List<Reminder> reminders) {
+        System.out.println(LINE);
+        System.out.println("The following reminders are done!");
+        for (Reminder reminder : reminders) {
+            System.out.println(reminder);
+        }
+        System.out.println(LINE);
+    }
 
     // TODO
     public static void sendTimerStartMessage(int duration, String label) {
