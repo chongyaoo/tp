@@ -33,6 +33,7 @@ public class CommandHandler {
         // Task Commands
         case TODO -> handleToDo(taskList, cmd);
         case DEADLINE -> handleDeadline(taskList, cmd);
+        case EVENT -> handleEvent(taskList, cmd);
         case LIST -> handleList(taskList);
         case MARK -> handleMark(taskList, cmd);
         case UNMARK -> handleUnmark(taskList, cmd);
@@ -79,7 +80,14 @@ public class CommandHandler {
     }
 
     private static void handleDeadline(TaskList taskList, Command cmd) {
-        taskList.addDeadline(cmd.desc, cmd.datetime);
+        taskList.addDeadline(cmd.desc, cmd.datetime0);
+        int listCount = taskList.getCount();
+        Task newTask = taskList.getTask(listCount - 1);
+        MessageHandler.sendAddTaskMessage(newTask, listCount);
+    }
+
+    private static void handleEvent(TaskList taskList, Command cmd) {
+        taskList.addEvent(cmd.desc, cmd.datetime0, cmd.datetime1);
         int listCount = taskList.getCount();
         Task newTask = taskList.getTask(listCount - 1);
         MessageHandler.sendAddTaskMessage(newTask, listCount);
@@ -105,11 +113,11 @@ public class CommandHandler {
     }
 
     private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
-        reminderList.addReminderRec(cmd.message, cmd.datetime, cmd.remindInterval);
+        reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.remindInterval);
     }
 
     private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) {
-        reminderList.addReminderOneTime(cmd.desc, cmd.datetime);
+        reminderList.addReminderOneTime(cmd.desc, cmd.datetime0);
     }
 
     private static void handleRemList(ReminderList reminderList) {

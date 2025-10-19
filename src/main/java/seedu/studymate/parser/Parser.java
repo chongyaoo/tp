@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 public class Parser {
     private static final String DELIMITER_BY = "/by";
+    private static final String DELIMITER_FROM = "/from";
+    private static final String DELIMITER_TO = "/to";
     private static final Pattern integerPattern = Pattern.compile("\\d");
     private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
     private static final Pattern TIMER_PATTERN =
@@ -37,6 +39,8 @@ public class Parser {
             return parseToDo(argumentString);
         case "deadline":
             return parseDeadline(argumentString);
+        case "event":
+            return parseEvent(argumentString);
         case "list":
             return new Command(CommandType.LIST);
         case "mark":
@@ -97,6 +101,51 @@ public class Parser {
             return new Command(CommandType.DEADLINE, desc, dateTimeArg);
         } catch (DateTimeParseException e) {
             throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+        }
+    }
+
+    private Command parseEvent(String arguments) throws StudyMateException {
+        if (arguments.isEmpty()) {
+            throw new StudyMateException("The description of the event task cannot be empty!");
+        }
+
+        if (!arguments.contains(DELIMITER_FROM) || !arguments.contains(DELIMITER_TO)) {
+            throw new StudyMateException("The event task must have both " + DELIMITER_FROM + " and " + DELIMITER_TO +
+                    " delimiters!");
+        }
+
+        // Ensure /from comes before /to
+        int fromIndex = arguments.indexOf(DELIMITER_FROM);
+        int toIndex = arguments.indexOf(DELIMITER_TO);
+        if (fromIndex >= toIndex) {
+            throw new StudyMateException("The " + DELIMITER_FROM + " delimiter must come before " + DELIMITER_TO + "!");
+        }
+
+        // Split the content into description, from and to parts
+        String[] firstSplit = arguments.split(Pattern.quote(DELIMITER_FROM), 2);
+        String desc = firstSplit[0].trim();
+
+        if (firstSplit.length < 2) {
+            throw new StudyMateException("The description, from date and to date of an event cannot be empty!");
+        }
+
+        String[] secondSplit = firstSplit[1].split(Pattern.quote(DELIMITER_TO), 2);
+        String fromDate = secondSplit[0].trim();
+        String toDate = secondSplit.length > 1 ? secondSplit[1].trim() : "";
+
+        if (desc.isEmpty() || fromDate.isEmpty() || toDate.isEmpty()) {
+            throw new StudyMateException("The description, from date and to date of an event cannot be empty!");
+        }
+
+        try {
+            DateTimeArg fromDateTimeArg = new DateTimeArg(LocalDate.parse(fromDate));
+            DateTimeArg toDateTimeArg = new DateTimeArg(LocalDate.parse(toDate));
+            logger.log(Level.INFO, "Event description: " + desc);
+            logger.log(Level.INFO, "Event's from date: " + fromDateTimeArg);
+            logger.log(Level.INFO, "Event's to date: " + toDateTimeArg);
+            return new Command(CommandType.EVENT, desc, fromDateTimeArg, toDateTimeArg);
+        } catch (DateTimeParseException e) {
+            throw new StudyMateException("Bad date syntax! The syntax is yyyy-mm-dd!");
         }
     }
 

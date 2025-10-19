@@ -74,7 +74,10 @@ public class Reminder {
      * @return An empty String
      */
     public String toSaveString() {
-        return DataFormatting.reminderSaveString(onReminder, name, dateTime);
+        if (schedule.isRecurring()) {
+            return DataFormatting.recurringReminderSaveString(onReminder, name, dateTime, schedule.interval());
+        }
+        return DataFormatting.oneTimeReminderSaveString(onReminder, name, dateTime);
     }
 
     public String toString() {

@@ -57,6 +57,25 @@ public class TaskListTest {
 
     }
 
+    // Test Adding Event Task
+    @Test
+    void testAddEvent() {
+        LocalDate fromDate = LocalDate.of(2025, 10, 20);
+        LocalDate toDate = LocalDate.of(2025, 10, 22);
+        DateTimeArg fromDateTime = new DateTimeArg(fromDate);
+        DateTimeArg toDateTime = new DateTimeArg(toDate);
+
+        taskList.addEvent("Team meeting", fromDateTime, toDateTime);
+        assertEquals(1, taskList.getCount());
+        Task task = taskList.getTask(0);
+        assertInstanceOf(Event.class, task);
+        assertEquals("Team meeting", task.getName());
+        assertFalse(task.getDone());
+        Event eventTask = (Event) task;
+        assertEquals(fromDateTime, eventTask.getFrom());
+        assertEquals(toDateTime, eventTask.getTo());
+    }
+
     // --- Test Cases for Mark/Unmark ---
 
     // Helper Function to test marking/unmarking

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,10 +24,10 @@ public class RemListTest {
         reminderList = new ReminderList();
     }
 
-    // --- Test Cases for Adding Tasks ---
+    // --- Test Cases for Adding Reminders ---
 
     @Test
-    void testAdd() {
+    void testAddOneTime() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -37,6 +38,69 @@ public class RemListTest {
         Reminder rem = reminderList.getReminder(0);
         assertInstanceOf(Reminder.class, rem);
         assertEquals("running", rem.getName());
+        assertFalse(rem.getOnReminder());
+    }
+
+    @Test
+    void testAddRecurring() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        Duration interval = Duration.ofDays(7);
+
+        reminderList.addReminderRec("Weekly meeting", remDateTime, interval);
+        assertEquals(1, reminderList.getCount());
+        Reminder rem = reminderList.getReminder(0);
+        assertInstanceOf(Reminder.class, rem);
+        assertEquals("Weekly meeting", rem.getName());
+        assertFalse(rem.getOnReminder());
+    }
+
+    // --- Test Cases for Reminder Status ---
+
+    @Test
+    void testSetRemindedOneTime() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+
+        reminderList.addReminderOneTime("Doctor appointment", remDateTime);
+        Reminder rem = reminderList.getReminder(0);
+
+        // Initially not reminded
+        assertFalse(rem.getOnReminder());
+
+        // Set as reminded
+        rem.setReminded(true);
+        assertEquals(true, rem.getOnReminder());
+
+        // Set back to not reminded
+        rem.setReminded(false);
+        assertFalse(rem.getOnReminder());
+    }
+
+    @Test
+    void testSetRemindedRecurring() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        Duration interval = Duration.ofDays(7);
+
+        reminderList.addReminderRec("Weekly meeting", remDateTime, interval);
+        Reminder rem = reminderList.getReminder(0);
+
+        // Initially not reminded
+        assertFalse(rem.getOnReminder());
+
+        // Set as reminded
+        rem.setReminded(true);
+        assertEquals(true, rem.getOnReminder());
+
+        // Set back to not reminded
+        rem.setReminded(false);
         assertFalse(rem.getOnReminder());
     }
 
@@ -53,6 +117,21 @@ public class RemListTest {
         reminderList.addReminderOneTime("running 5km", remDateTime);
         reminderList.addReminderOneTime("running 10km", remDateTime);
         reminderList.addReminderOneTime("running 15km", remDateTime);
+    }
+
+    // Helper function to populate a list with recurring reminders for deletion
+    private void populateListWithRecurringForDeletion() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        Duration weeklyInterval = Duration.ofDays(7);
+        Duration dailyInterval = Duration.ofDays(1);
+
+        reminderList.addReminderRec("Weekly standup", remDateTime, weeklyInterval);
+        reminderList.addReminderRec("Daily exercise", remDateTime, dailyInterval);
+        reminderList.addReminderRec("Weekly review", remDateTime, weeklyInterval);
+        reminderList.addReminderRec("Daily meditation", remDateTime, dailyInterval);
     }
 
     //test for deleting one reminder
@@ -85,5 +164,37 @@ public class RemListTest {
         assertEquals(2, reminderList.getCount());
         assertEquals("running", reminderList.getReminder(0).getName());
         assertEquals("running 10km", reminderList.getReminder(1).getName()); // Task C shifts from 2 to 1
+    }
+
+    // Test deleting one recurring reminder
+    @Test
+    void testDeleteSingleRecurringReminder() {
+        populateListWithRecurringForDeletion();
+        assertEquals(4, reminderList.getCount());
+
+        // Delete Reminder at index 2 (Weekly review)
+        LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(2));
+        reminderList.delete(indexes);
+
+        assertEquals(3, reminderList.getCount());
+        assertEquals("Weekly standup", reminderList.getReminder(0).getName());
+        assertEquals("Daily exercise", reminderList.getReminder(1).getName());
+        assertEquals("Daily meditation", reminderList.getReminder(2).getName()); // Shifted from index 3
+    }
+
+    // Test deleting multiple recurring reminders
+    @Test
+    void testDeleteMultipleRecurringReminders() {
+        populateListWithRecurringForDeletion();
+
+        // Delete Reminders at index 0 and 2 (Weekly standup and Weekly review)
+        LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
+        indexes.add(0);
+        indexes.add(2);
+        reminderList.delete(indexes);
+
+        assertEquals(2, reminderList.getCount());
+        assertEquals("Daily exercise", reminderList.getReminder(0).getName()); // Shifted from index 1
+        assertEquals("Daily meditation", reminderList.getReminder(1).getName()); // Shifted from index 3
     }
 }

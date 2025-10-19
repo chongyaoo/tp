@@ -9,7 +9,8 @@ public class Command {
     public String desc;
     // for reminders
     public String message;
-    DateTimeArg datetime;
+    DateTimeArg datetime0;
+    DateTimeArg datetime1;
     // for operations done on a range of indices
     LinkedHashSet<Integer> indexes;
     boolean isRecurring;
@@ -29,16 +30,17 @@ public class Command {
         this.desc = desc;
     }
 
-    public Command(CommandType type, String desc, String message) {
+    public Command(CommandType type, String desc, DateTimeArg dateTimeArg) {
         this.type = type;
         this.desc = desc;
-        this.message = message;
+        this.datetime0 = dateTimeArg;
     }
 
-    public Command(CommandType type, String desc, DateTimeArg datetimeArg) {
+    public Command(CommandType type, String desc, DateTimeArg datetimeArg0, DateTimeArg dateTimeArg1) {
         this.type = type;
         this.desc = desc;
-        this.datetime = datetimeArg;
+        this.datetime0 = datetimeArg0;
+        this.datetime1 = dateTimeArg1;
     }
 
     public Command(CommandType type, LinkedHashSet<Integer> indexes) {
@@ -76,7 +78,7 @@ public class Command {
     public Command(CommandType type, String name, DateTimeArg remindAt, Duration remindInterval) {
         this.type = type;
         this.message = name;
-        this.datetime = remindAt;
+        this.datetime0 = remindAt;
         this.remindInterval = remindInterval;
     }
 

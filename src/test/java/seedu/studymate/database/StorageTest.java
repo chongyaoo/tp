@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StorageTest {
 
     private static final String TEST_FILE_PATH = "test_data/test_storage.txt";
+    private static final char DELIM = 0x1F; // for serialisation
     private Storage storage;
     private TaskList tasks;
     private ReminderList reminders;
@@ -56,7 +58,7 @@ class StorageTest {
         storage.save(tasks.getTasks(), reminders.getReminders());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
-        assertTrue(content.contains("T|1|Read book"));
+        assertTrue(content.contains("T" + DELIM + "1" + DELIM + "Read book"));
     }
 
     /**
@@ -64,7 +66,8 @@ class StorageTest {
      */
     @Test
     public void test_todo_load() throws Exception {
-        Files.write(Paths.get(TEST_FILE_PATH), List.of("T|1|Read book"), StandardOpenOption.CREATE);
+        Files.write(Paths.get(TEST_FILE_PATH), List.of("T" + DELIM + "1" + DELIM + "Read book"),
+                StandardOpenOption.CREATE);
         storage.load(tasks, reminders);
 
         assertEquals(1, tasks.getCount());
@@ -83,7 +86,7 @@ class StorageTest {
         storage.save(tasks.getTasks(), reminders.getReminders());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
-        assertTrue(content.contains("D|0|Submit report|2025-10-15"));
+        assertTrue(content.contains("D" + DELIM + "0" + DELIM + "Submit report" + DELIM + "2025-10-15"));
     }
 
     /**
@@ -91,11 +94,106 @@ class StorageTest {
      */
     @Test
     public void test_deadline_load() throws Exception {
-        Files.write(Paths.get(TEST_FILE_PATH), List.of("D|0|Submit report|2025-10-15"), StandardOpenOption.CREATE);
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of("D" + DELIM + "0" + DELIM + "Submit report" + DELIM + "2025-10-15"),
+                StandardOpenOption.CREATE);
         storage.load(tasks, reminders);
 
         assertEquals(1, tasks.getCount());
         assertEquals("Submit report", tasks.getTask(0).getName());
         assertFalse(tasks.getTask(0).getDone());
+    }
+
+    /**
+     * Tests that an Event task is saved correctly
+     */
+    @Test
+    public void test_event_save() throws Exception {
+        tasks.addEvent("Team meeting",
+                new DateTimeArg(LocalDate.parse("2025-10-20")),
+                new DateTimeArg(LocalDate.parse("2025-10-22")));
+
+        storage.save(tasks.getTasks(), reminders.getReminders());
+        String content = Files.readString(Paths.get(TEST_FILE_PATH));
+
+        assertTrue(content.contains("E" + DELIM + "0" + DELIM + "Team meeting" + DELIM + "2025-10-20" + DELIM +
+                "2025-10-22"));
+    }
+
+    /**
+     * Tests that a saved Event task is read correctly
+     */
+    @Test
+    public void test_event_load() throws Exception {
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of("E" + DELIM + "0" + DELIM + "Team meeting" + DELIM + "2025-10-20" + DELIM + "2025-10-22"),
+                StandardOpenOption.CREATE);
+        storage.load(tasks, reminders);
+
+        assertEquals(1, tasks.getCount());
+        assertEquals("Team meeting", tasks.getTask(0).getName());
+        assertFalse(tasks.getTask(0).getDone());
+    }
+
+    /**
+     * Tests that a one-time reminder is saved correctly
+     */
+    @Test
+    public void test_oneTimeReminder_save() throws Exception {
+        reminders.addReminderOneTime("Doctor appointment",
+                new DateTimeArg(LocalDate.parse("2025-10-25")));
+
+        storage.save(tasks.getTasks(), reminders.getReminders());
+        String content = Files.readString(Paths.get(TEST_FILE_PATH));
+
+        assertTrue(content.contains("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM +
+                "2025-10-25"));
+    }
+
+    /**
+     * Tests that a saved one-time reminder is read correctly
+     */
+    @Test
+    public void test_oneTimeReminder_load() throws Exception {
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM + "2025-10-25"),
+                StandardOpenOption.CREATE);
+        storage.load(tasks, reminders);
+
+        assertEquals(1, reminders.getCount());
+        assertEquals("Doctor appointment", reminders.getReminder(0).getName());
+        assertFalse(reminders.getReminder(0).getOnReminder());
+    }
+
+    /**
+     * Tests that a recurring reminder is saved correctly
+     */
+    @Test
+    public void test_recurringReminder_save() throws Exception {
+        reminders.addReminderRec("Weekly meeting",
+                new DateTimeArg(LocalDate.parse("2025-10-25")),
+                Duration.ofDays(7));
+
+        storage.save(tasks.getTasks(), reminders.getReminders());
+        String content = Files.readString(Paths.get(TEST_FILE_PATH));
+
+        assertTrue(content.contains("R" + DELIM + "1" + DELIM + "0" + DELIM + "Weekly meeting" + DELIM + "2025-10-25" +
+                DELIM + "PT168H"));
+    }
+
+    /**
+     * Tests that a saved recurring reminder is read correctly
+     */
+    @Test
+    public void test_recurringReminder_load() throws Exception {
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of("R" + DELIM + "1" + DELIM + "0" + DELIM + "Weekly meeting" + DELIM + "2025-10-25" + DELIM +
+                        "P7D"),
+                StandardOpenOption.CREATE);
+        storage.load(tasks, reminders);
+
+        assertEquals(1, reminders.getCount());
+        assertEquals("Weekly meeting", reminders.getReminder(0).getName());
+        assertFalse(reminders.getReminder(0).getOnReminder());
     }
 }

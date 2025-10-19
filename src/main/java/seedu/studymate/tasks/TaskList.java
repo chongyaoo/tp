@@ -56,7 +56,7 @@ public class TaskList {
         ToDo newTask = new ToDo(task);
         taskList.add(newTask);
         assert (taskList.contains(newTask));
-        logger.log(Level.INFO, "Added To Do: " + newTask.toString());
+        logger.log(Level.INFO, "Added To Do: " + newTask);
     }
 
     /**
@@ -69,7 +69,21 @@ public class TaskList {
         Deadline newTask = new Deadline(task, deadline);
         taskList.add(newTask);
         assert (taskList.contains(newTask));
-        logger.log(Level.INFO, "Added Deadline: " + newTask.toString());
+        logger.log(Level.INFO, "Added Deadline: " + newTask);
+    }
+
+    /**
+     * Adds an Event task to the list
+     *
+     * @param task The description of the deadline
+     * @param from The DateTimeArg from
+     * @param to The DateTimeArg to
+     */
+    public void addEvent(String task, DateTimeArg from, DateTimeArg to) {
+        Event newTask = new Event(task, from, to);
+        taskList.add(newTask);
+        assert (taskList.contains(newTask));
+        logger.log(Level.INFO, "Added Event: " + newTask);
     }
 
     /**
@@ -85,11 +99,9 @@ public class TaskList {
             tasks.add(taskList.get(index));
             taskList.remove(index.intValue());
         }
-        int i = 0;
-        for (Integer index : sortedIndexes) {
-            assert (!taskList.contains(tasks.get(i)));
-            logger.log(Level.INFO, "Deleted: " + tasks.get(i).toString());
-            i += 1;
+        for (Task task : tasks) {
+            assert (!taskList.contains(task));
+            logger.log(Level.INFO, "Deleted: " + task);
         }
         MessageHandler.sendDeleteTaskMessage(tasks, taskList.size());
     }
