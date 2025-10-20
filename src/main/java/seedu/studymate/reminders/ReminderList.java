@@ -56,11 +56,9 @@ public class ReminderList {
             reminders.add(reminderList.get(index));
             reminderList.remove(index.intValue());
         }
-        int i = 0;
-        for (Integer index : sortedIndexes) {
-            assert (!reminderList.contains(reminders.get(i)));
-            logger.log(Level.INFO, "Deleted: " + reminders.get(i).toString());
-            i += 1;
+        for (Reminder reminder : reminders) {
+            assert (!reminderList.contains(reminder));
+            logger.log(Level.INFO, "Deleted: " + reminder.toString());
         }
         MessageHandler.sendDeleteReminderMessage(reminders, reminderList.size());
     }
