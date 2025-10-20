@@ -57,7 +57,7 @@ public class Scheduler {
      * Checks for due reminders and returns them.
      * Call this manually or let start() handle it automatically.
      */
-    public List<Reminder> tick() {
+    public synchronized List<Reminder> tick() {
         List<Reminder> remindersToOutput = new java.util.ArrayList<>();
         for (Reminder r : reminderList.getReminders()) {
             if (r.isDue()) {
