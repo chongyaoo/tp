@@ -33,6 +33,19 @@ public class MessageFormatting {
         return "[D][ ] " + name + " (by: " + deadline + ")";
     }
 
+    /**
+     * Returns a human-readable string representation of the event, including its completion status, from DateTimeArg
+     * and end DateTimeArg
+     *
+     * @return The formatted string for display
+     */
+    public static String eventString(Boolean isDone, String name, DateTimeArg from, DateTimeArg to) {
+        if (isDone) {
+            return "[E][X] " + name + " (from: " + from + ", to: " + to + ")";
+        }
+        return "[E][ ] " + name + " (from: " + from + ", to: " + to + ")";
+    }
+
     public static String oneTimeReminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
         if (onReminder) {
             return "[RO][O] " + name + " (" + dateTime + ")";

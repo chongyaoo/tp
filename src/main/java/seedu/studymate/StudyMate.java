@@ -10,7 +10,6 @@ import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.reminders.Scheduler;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
-
 import java.util.Scanner;
 
 public class StudyMate {
@@ -20,8 +19,6 @@ public class StudyMate {
     private static final String FILE_PATH = "data/tasks.txt";
     private static final TaskList taskList = new TaskList();
     private static final ReminderList reminderList = new ReminderList();
-    private static final Scheduler scheduler = new Scheduler(reminderList);
-
 
     public static void main(String[] args) {
         sendWelcomeMessage();
@@ -29,6 +26,7 @@ public class StudyMate {
         Storage storage = new Storage(FILE_PATH);
         Scanner sc = new Scanner(System.in);
         Parser parser = new Parser();
+        Scheduler scheduler = new Scheduler(reminderList);
 
         // Load existing tasks from file.
         try {
@@ -37,7 +35,7 @@ public class StudyMate {
         } catch (StudyMateException e) {
             MessageHandler.sendMessage("Error loading tasks: " + e.getMessage());
         }
-
+        scheduler.start();
         while (true) {
             try {
                 String input = readInput(sc);
@@ -53,6 +51,7 @@ public class StudyMate {
                 MessageHandler.sendMessage(e.getMessage());
             }
         }
+        scheduler.shutdown();
         sc.close();
         sendExitMessage();
     }

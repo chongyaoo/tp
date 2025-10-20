@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 public class Storage {
     private final String filePath;
+    private final char delim = 0x1F; // for serialisation
 
     public Storage(String filePath) {
         assert filePath != null && !filePath.isEmpty() : "File path should not be null or empty";
@@ -88,7 +90,7 @@ public class Storage {
      * @throws StudyMateException If the line format is invalid.
      */
     private void parseAndAddLine(String line, TaskList taskList, ReminderList reminderList) throws StudyMateException {
-        String[] parts = line.split("\\|");
+        String[] parts = line.split(Character.toString(delim));
 
         /* Skip all the lines that have less than 3 parts. */
         if (parts.length < 3) {
@@ -127,13 +129,57 @@ public class Storage {
                 taskList.getTask(taskList.getCount() - 1).setDone(true);
             }
             break;
-        case "R":
-            if (parts.length < 4) {
+
+        case "E":
+            if (parts.length < 5) {
                 return;
             }
-            String name = parts[2];
-            String[] rawDateTime = parts[3].split("T");
+            String eventName = parts[2];
+            String[] rawFromDateTime = parts[3].split("T");
+            String[] rawToDateTime = parts[4].split("T");
+            DateTimeArg fromDateTimeArg;
+            DateTimeArg toDateTimeArg;
+
+            try {
+                // Parse from date
+                if (rawFromDateTime.length == 2 && !rawFromDateTime[1].trim().isEmpty()) {
+                    fromDateTimeArg = new DateTimeArg(LocalDate.parse(rawFromDateTime[0].trim()),
+                            LocalTime.parse(rawFromDateTime[1].trim()));
+                } else if (!rawFromDateTime[0].trim().isEmpty()) {
+                    fromDateTimeArg = new DateTimeArg(LocalDate.parse(rawFromDateTime[0].trim()));
+                } else {
+                    throw new StudyMateException("Error parsing event from date!");
+                }
+
+                // Parse to date
+                if (rawToDateTime.length == 2 && !rawToDateTime[1].trim().isEmpty()) {
+                    toDateTimeArg = new DateTimeArg(LocalDate.parse(rawToDateTime[0].trim()),
+                            LocalTime.parse(rawToDateTime[1].trim()));
+                } else if (!rawToDateTime[0].trim().isEmpty()) {
+                    toDateTimeArg = new DateTimeArg(LocalDate.parse(rawToDateTime[0].trim()));
+                } else {
+                    throw new StudyMateException("Error parsing event to date!");
+                }
+            } catch (Exception e) {
+                throw new StudyMateException("Error parsing event date/time: " + e.getMessage());
+            }
+
+            taskList.addEvent(eventName, fromDateTimeArg, toDateTimeArg);
+            if (isDone) {
+                taskList.getTask(taskList.getCount() - 1).setDone(true);
+            }
+            break;
+
+        case "R":
+            if (parts.length < 5) {
+                return;
+            }
+            boolean isRecurring = parts[1].equals("1");
+            boolean isReminderDone = parts[2].equals("1");
+            String reminderName = parts[3];
+            String[] rawDateTime = parts[4].split("T");
             DateTimeArg reminderTime;
+
             try {
                 if (rawDateTime.length == 2 && !rawDateTime[1].trim().isEmpty()) {
                     reminderTime = new DateTimeArg(LocalDate.parse(rawDateTime[0].trim()),
@@ -147,9 +193,19 @@ public class Storage {
                 throw new StudyMateException("Error parsing reminder date/time: " + e.getMessage());
             }
 
-            //reminderList.addReminder(name, reminderTime);
+            if (isRecurring) {
+                // Recurring reminder: parse interval from parts[5]
+                if (parts.length < 6) {
+                    throw new StudyMateException("Recurring reminder missing interval!");
+                }
+                Duration interval = Duration.parse(parts[5]);
+                reminderList.addReminderRec(reminderName, reminderTime, interval);
+            } else {
+                // One-time reminder
+                reminderList.addReminderOneTime(reminderName, reminderTime);
+            }
 
-            if (isDone) {
+            if (isReminderDone) {
                 reminderList.getReminder(reminderList.getCount() - 1).setReminded(true);
             }
             break;
@@ -159,21 +215,4 @@ public class Storage {
         // ignore invalid lines
         }
     }
-
-    /**
-     * Saves all reminders to the file.
-     * 
-     * @param reminders The list of reminders that needs to be saved.
-     * @throws StudyMateException If an error occurs while writing to the file.
-     */
-    public void saveReminders(List<Reminder> reminders) throws StudyMateException {
-        try (FileWriter fw = new FileWriter(filePath, true)) {
-            for (Reminder reminder : reminders) {
-                fw.write(reminder.toSaveString() + System.lineSeparator());
-            }
-        } catch (IOException e) {
-            throw new StudyMateException("Error saving reminders: " + e.getMessage());
-        }
-    }
-
 }

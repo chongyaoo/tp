@@ -3,6 +3,7 @@ package seedu.studymate.parser;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class DateTimeArg {
     private LocalDate date;
@@ -45,7 +46,8 @@ public class DateTimeArg {
     // using spaces to denote empty, might be hacky
     @Override
     public String toString() {
-        return (date == null ? "" : date) + (time == null ? "" : "T" + time);
+        return (date == null ? "" : date) +
+                (time == null ? "" : "T" + time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
     }
 
 }

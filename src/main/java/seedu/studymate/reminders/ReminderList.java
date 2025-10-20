@@ -26,29 +26,29 @@ public class ReminderList {
         reminderList = new ArrayList<>();
     }
 
-    public void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
+    public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
         Reminder newReminder = new Reminder(name, dateTime, interval);
         reminderList.add(newReminder);
         MessageHandler.sendAddReminderRecMessage(newReminder, getCount());
         assert(reminderList.contains(newReminder));
     }
 
-    public void addReminderOneTime(String name, DateTimeArg dateTime) {
+    public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
         MessageHandler.sendAddReminderOneTimeMessage(newReminder, getCount());
         assert(reminderList.contains(newReminder));
     }
 
-    public int getCount() {
+    public synchronized int getCount() {
         return reminderList.size();
     }
 
-    public Reminder getReminder(int index) {
+    public synchronized Reminder getReminder(int index) {
         return reminderList.get(index);
     }
 
-    public void delete(LinkedHashSet<Integer> indexes) {
+    public synchronized void delete(LinkedHashSet<Integer> indexes) {
         ArrayList<Reminder> reminders = new ArrayList<>();
         // sort indexes in reverse order to prevent index mashups
         List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
@@ -56,16 +56,14 @@ public class ReminderList {
             reminders.add(reminderList.get(index));
             reminderList.remove(index.intValue());
         }
-        int i = 0;
-        for (Integer index : sortedIndexes) {
-            assert (!reminderList.contains(reminders.get(i)));
-            logger.log(Level.INFO, "Deleted: " + reminders.get(i).toString());
-            i += 1;
+        for (Reminder reminder : reminders) {
+            assert (!reminderList.contains(reminder));
+            logger.log(Level.INFO, "Deleted: " + reminder.toString());
         }
         MessageHandler.sendDeleteReminderMessage(reminders, reminderList.size());
     }
 
-    public List<Reminder> getReminders() {
+    public synchronized List<Reminder> getReminders() {
         return reminderList;
     }
 

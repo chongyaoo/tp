@@ -148,6 +148,74 @@ public class ParserTest {
         assertThrows(StudyMateException.class, () -> parser.parse("deadline submit assignment /by invalid-date"));
     }
 
+    // Event command tests
+    @Test
+    void testEventCommand() throws StudyMateException {
+        Command cmd = parser.parse("event Team meeting /from 2025-10-20 /to 2025-10-22");
+        assertEquals(CommandType.EVENT, cmd.type);
+        assertEquals("Team meeting", cmd.desc);
+    }
+
+    @Test
+    void testEventWithLongDescription() throws StudyMateException {
+        Command cmd = parser.parse("event Project presentation and demo /from 2025-11-01 /to 2025-11-05");
+        assertEquals(CommandType.EVENT, cmd.type);
+        assertEquals("Project presentation and demo", cmd.desc);
+    }
+
+    @Test
+    void testEmptyEventDescriptionThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event "));
+    }
+
+    @Test
+    void testEventWithoutFromDelimiterThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /to 2025-10-22"));
+    }
+
+    @Test
+    void testEventWithoutToDelimiterThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20"));
+    }
+
+    @Test
+    void testEventWithoutBothDelimitersThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting"));
+    }
+
+    @Test
+    void testEventWithReversedDelimitersThrowsException() {
+        assertThrows(StudyMateException.class, () ->
+                parser.parse("event Team meeting /to 2025-10-22 /from 2025-10-20"));
+    }
+
+    @Test
+    void testEventWithInvalidFromDateThrowsException() {
+        assertThrows(StudyMateException.class, () ->
+                parser.parse("event Team meeting /from invalid-date /to 2025-10-22"));
+    }
+
+    @Test
+    void testEventWithInvalidToDateThrowsException() {
+        assertThrows(StudyMateException.class, () ->
+                parser.parse("event Team meeting /from 2025-10-20 /to invalid-date"));
+    }
+
+    @Test
+    void testEventWithEmptyFromDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from /to 2025-10-22"));
+    }
+
+    @Test
+    void testEventWithEmptyToDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20 /to"));
+    }
+
+    @Test
+    void testEventWithEmptyDescriptionThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("event /from 2025-10-20 /to 2025-10-22"));
+    }
+
     @Test
     void testMarkWithoutIndexThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("mark "));
