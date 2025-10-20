@@ -10,7 +10,7 @@ import seedu.studymate.ui.MessageFormatting;
  */
 public class Deadline extends Task {
 
-    private final DateTimeArg deadline;
+    private DateTimeArg deadline;
 
     /**
      * Constructs Deadline task with the given name and a deadline
@@ -28,6 +28,14 @@ public class Deadline extends Task {
      */
     public DateTimeArg getDeadline() {
         return deadline;
+    }
+
+    /**
+     * Sets the deadline of the task
+     * @param deadline The new deadline time of the task
+     */
+    public void setDeadline(DateTimeArg deadline) {
+        this.deadline = deadline;
     }
 
     /**

@@ -1,6 +1,7 @@
 package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.reminders.Reminder;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.Task;
 import seedu.studymate.tasks.TaskList;
@@ -8,6 +9,7 @@ import seedu.studymate.timer.Timer;
 import seedu.studymate.timer.TimerState;
 import seedu.studymate.ui.MessageHandler;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +36,12 @@ public class CommandHandler {
         case TODO -> handleToDo(taskList, cmd);
         case DEADLINE -> handleDeadline(taskList, cmd);
         case EVENT -> handleEvent(taskList, cmd);
-        case LIST -> handleList(taskList);
+        case LIST -> handleList(taskList, cmd);
+        case FIND -> handleFind(taskList, cmd);
+        case EDIT_DESC -> handleEdit(taskList, cmd);
+        case EDIT_DEADLINE -> handleEdit(taskList, cmd);
+        case EDIT_FROM -> handleEdit(taskList, cmd);
+        case EDIT_TO -> handleEdit(taskList, cmd);
         case MARK -> handleMark(taskList, cmd);
         case UNMARK -> handleUnmark(taskList, cmd);
         case DELETE -> handleDelete(taskList, cmd);
@@ -67,7 +74,9 @@ public class CommandHandler {
         }
 
         if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
+            if (!scheduler.isShutdown()) {
+                scheduler.shutdownNow();
+            }
             scheduler = null;
         }
     }
@@ -93,8 +102,18 @@ public class CommandHandler {
         MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
-    private static void handleList(TaskList taskList) {
-        MessageHandler.sendTaskList(taskList);
+    private static void handleList(TaskList taskList, Command cmd) {
+        if (cmd.isSorted) {
+            ArrayList<Task> result = taskList.getSorted();
+            MessageHandler.sendSortedTaskList(result);
+        } else {
+            MessageHandler.sendTaskList(taskList);
+        }
+    }
+
+    private static void handleFind(TaskList taskList, Command cmd) {
+        ArrayList<Task> result = taskList.findTasks(cmd.substring);
+        MessageHandler.sendFindResults(result);
     }
 
     private static void handleMark(TaskList taskList, Command cmd) throws StudyMateException {
@@ -107,6 +126,17 @@ public class CommandHandler {
         taskList.unmark(cmd.indexes);
     }
 
+    private static void handleEdit(TaskList taskList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndex(cmd.index, taskList.getCount());
+        switch (cmd.type) {
+        case EDIT_DESC -> taskList.editDesc(cmd.index, cmd.desc);
+        case EDIT_DEADLINE -> taskList.editDeadline(cmd.index, cmd.datetime0);
+        case EDIT_FROM -> taskList.editFrom(cmd.index, cmd.datetime0);
+        case EDIT_TO -> taskList.editTo(cmd.index, cmd.datetime0);
+        default -> throw new StudyMateException("Something wrong happened");
+        }
+    }
+
     private static void handleDelete(TaskList taskList, Command cmd) throws StudyMateException {
         IndexValidator.validateIndexes(cmd.indexes, taskList.getCount());
         taskList.delete(cmd.indexes);
@@ -114,10 +144,16 @@ public class CommandHandler {
 
     private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
         reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.remindInterval);
+        int reminderCount = reminderList.getCount();
+        Reminder newReminder = reminderList.getReminder(reminderCount - 1);
+        MessageHandler.sendAddReminderRecMessage(newReminder, reminderCount);
     }
 
     private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) {
         reminderList.addReminderOneTime(cmd.desc, cmd.datetime0);
+        int reminderCount = reminderList.getCount();
+        Reminder newReminder = reminderList.getReminder(reminderCount - 1);
+        MessageHandler.sendAddReminderOneTimeMessage(newReminder, reminderCount);
     }
 
     private static void handleRemList(ReminderList reminderList) {

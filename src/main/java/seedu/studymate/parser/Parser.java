@@ -4,6 +4,7 @@ import seedu.studymate.exceptions.StudyMateException;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -17,10 +18,18 @@ public class Parser {
     private static final String DELIMITER_BY = "/by";
     private static final String DELIMITER_FROM = "/from";
     private static final String DELIMITER_TO = "/to";
+
+    private static final String SORTED_FLAG = "-s";
+    private static final String DESCRIPTION_FLAG = "-n";
+    private static final String DEADLINE_FLAG = "-d";
+    private static final String FROM_FLAG = "-f";
+    private static final String TO_FLAG = "-t";
+
     private static final Pattern integerPattern = Pattern.compile("\\d");
     private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
     private static final Pattern TIMER_PATTERN =
             Pattern.compile("^\\s*([^@]+)?\\s*(?:@\\s*(\\d+))?\\s*$");
+
     private static final Logger logger = Logger.getLogger("Parser Logger");
 
     public Command parse(String line) throws StudyMateException {
@@ -42,11 +51,15 @@ public class Parser {
         case "event":
             return parseEvent(argumentString);
         case "list":
-            return new Command(CommandType.LIST);
+            return parseList(argumentString);
+        case "find":
+            return parseFind(argumentString);
         case "mark":
             return parseMark(arguments);
         case "unmark":
             return parseUnmark(arguments);
+        case "edit":
+            return parseEdit(argumentString);
         case "delete":
             return parseDelete(arguments);
         case "bye":
@@ -149,6 +162,23 @@ public class Parser {
         }
     }
 
+    private Command parseFind(String arguments) throws StudyMateException {
+        if (arguments.isEmpty()) {
+            throw new StudyMateException("The substring cannot be empty!");
+        }
+        return new Command(arguments, CommandType.FIND);
+    }
+
+    private Command parseList(String arguments) throws StudyMateException {
+        if (arguments.equals(SORTED_FLAG)) {
+            return new Command(CommandType.LIST, true);
+        } else if (arguments.isEmpty()) {
+            return new Command(CommandType.LIST);
+        } else {
+            throw new StudyMateException("Invalid flags for list command!");
+        }
+    }
+
     private Command parseMark(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.MARK, indexes);
@@ -157,6 +187,43 @@ public class Parser {
     private Command parseUnmark(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.UNMARK, indexes);
+    }
+
+    private Command parseEdit(String arguments) throws StudyMateException {
+        String[] editArgs = arguments.split(" ", 3);
+        if (editArgs.length < 3) {
+            throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
+                    "Note that -flag can be n for name, d for deadline, f for from, t for to");
+        }
+        try {
+            int index = Integer.parseInt(editArgs[0]) - 1;
+            switch (editArgs[1]) {
+            case DESCRIPTION_FLAG -> {
+                return new Command(CommandType.EDIT_DESC, index, editArgs[2]);
+            }
+            case DEADLINE_FLAG -> {
+                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                return new Command(CommandType.EDIT_DEADLINE, index, dateTimeArg);
+            }
+            case FROM_FLAG -> {
+                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                return new Command(CommandType.EDIT_FROM, index, dateTimeArg);
+            }
+            case TO_FLAG -> {
+                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                return new Command(CommandType.EDIT_TO, index, dateTimeArg);
+            }
+            default -> throw new StudyMateException(
+                    "Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
+                            "Note that -flag can be n for name, d for deadline, f for from, t for to");
+            }
+        } catch (NumberFormatException e) {
+            throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
+                    "Note that -flag can be n for name, d for deadline, f for from, t for to");
+        } catch (DateTimeParseException e) {
+            throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
+                    "Note that -flag can be n for name, d for deadline, f for from, t for to");
+        }
     }
 
     private Command parseDelete(String[] arguments) throws StudyMateException {
@@ -261,12 +328,12 @@ public class Parser {
             String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
                     atIndex + 1, arguments.length));
             try {
-                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+                DateTimeArg dateTimeArg = parseDateTimeString(dateTimeString);
                 logger.log(Level.INFO, "Reminder name : " + reminder);
                 logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
                 return new Command(CommandType.REM_ADD_ONETIME, reminder, dateTimeArg);
             } catch (DateTimeParseException e) {
-                throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+                throw new StudyMateException("Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!");
             }
 
         } else { //recurring reminder
@@ -276,16 +343,28 @@ public class Parser {
                     rIndex + 1, arguments.length));
             Duration recurringDuration = parseInterval(recurringString);
             try {
-                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(dateTimeString));
+                DateTimeArg dateTimeArg = parseDateTimeString(dateTimeString);
                 logger.log(Level.INFO, "Reminder name : " + reminder);
                 logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
                 return new Command(CommandType.REM_ADD_REC, reminder, dateTimeArg, recurringDuration);
             } catch (DateTimeParseException e) {
-                throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+                throw new StudyMateException("Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!");
             }
         }
     }
 
+    private DateTimeArg parseDateTimeString(String dateTimeString) throws DateTimeParseException {
+        String[] parts = dateTimeString.trim().split(" ");
+
+        if (parts.length != 2) {
+            throw new DateTimeParseException("Time is required! Format: yyyy-mm-dd hh:mm", dateTimeString, 0);
+        }
+
+        // Parse date and time (both required)
+        LocalDate date = LocalDate.parse(parts[0]);
+        LocalTime time = LocalTime.parse(parts[1]);
+        return new DateTimeArg(date, time);
+    }
 
     private Duration parseInterval(String input) throws StudyMateException {
         input = input.trim().toLowerCase(); // normalize input, e.g., "1D" -> "1d"

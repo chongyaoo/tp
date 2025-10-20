@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class DateTimeArg {
+public class DateTimeArg implements Comparable<DateTimeArg> {
     private LocalDate date;
     private LocalTime time;
 
@@ -47,7 +47,23 @@ public class DateTimeArg {
     @Override
     public String toString() {
         return (date == null ? "" : date) +
-                (time == null ? "" : "T" + time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                (time == null ? "" : "T" + time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
+    @Override
+    public int compareTo(DateTimeArg other) {
+        int dateComparison = this.date.compareTo(other.date);
+        if (dateComparison != 0) {
+            return dateComparison;
+        }
+
+        // Dates are equal, compare times if both exist
+        if (this.time != null && other.time != null) {
+            return this.time.compareTo(other.time);
+        }
+
+        // If one has time and the other doesn't, treat them as equal
+        return 0;
+    }
 }
+

@@ -7,19 +7,22 @@ public class Command {
     public CommandType type;
     // for descriptions
     public String desc;
+    public String substring;
+    public boolean isSorted = false;
     // for reminders
     public String message;
-    DateTimeArg datetime0;
-    DateTimeArg datetime1;
+    public DateTimeArg datetime0;
+    public DateTimeArg datetime1;
     // for operations done on a range of indices
-    LinkedHashSet<Integer> indexes;
-    boolean isRecurring;
+    public LinkedHashSet<Integer> indexes;
+    public int index;
+    public boolean isRecurring;
 
     // Timer
-    Integer duration;
+    public Integer duration;
 
     // Rem trigger interval
-    Duration remindInterval;
+    public Duration remindInterval;
 
     public Command(CommandType type) {
         this.type = type;
@@ -28,6 +31,28 @@ public class Command {
     public Command(CommandType type, String desc) {
         this.type = type;
         this.desc = desc;
+    }
+
+    public Command(CommandType type, int index, String desc) {
+        this.type = type;
+        this.index = index;
+        this.desc = desc;
+    }
+
+    public Command(CommandType type, int index, DateTimeArg dateTimeArg) {
+        this.type = type;
+        this.index = index;
+        this.datetime0 = dateTimeArg;
+    }
+
+    public Command(String substring, CommandType type) {
+        this.type = type;
+        this.substring = substring;
+    }
+
+    public Command(CommandType type, boolean isSorted) {
+        this.type = type;
+        this.isSorted = isSorted;
     }
 
     public Command(CommandType type, String desc, DateTimeArg dateTimeArg) {

@@ -5,8 +5,8 @@ import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
 public class Event extends Task {
-    private final DateTimeArg from;
-    private final DateTimeArg to;
+    private DateTimeArg from;
+    private DateTimeArg to;
 
     public Event(String task, DateTimeArg from, DateTimeArg to) {
         super(task);
@@ -20,6 +20,22 @@ public class Event extends Task {
 
     public DateTimeArg getTo() {
         return to;
+    }
+
+    /**
+     * Sets the from date of the event
+     * @param from The new from date
+     */
+    public void setFrom(DateTimeArg from) {
+        this.from = from;
+    }
+
+    /**
+     * Sets the to date of the event
+     * @param to The new to date
+     */
+    public void setTo(DateTimeArg to) {
+        this.to = to;
     }
 
     @Override
