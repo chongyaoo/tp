@@ -70,27 +70,27 @@ Here are the tasks in your task list:
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this One-Time reminder:
-[RO][ ] Project sync (2025-11-01)
+[RO][ ] Project sync (2025-11-01T14:30)
 Now you have 1 reminder in the reminder list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this recurring reminder:
-[R][ ] Weekly check-in (2025-11-03, interval: PT168H)
+[R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
 Now you have 2 reminders in the reminder list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your Reminders:
-1. [RO][ ] Project sync (2025-11-01)
-2. [R][ ] Weekly check-in (2025-11-03, interval: PT168H)
+1. [RO][ ] Project sync (2025-11-01T14:30)
+2. [R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these reminders:
-[R][ ] Weekly check-in (2025-11-03, interval: PT168H)
+[R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
 Now you have 1 reminder in the Reminders list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your Reminders:
-1. [RO][ ] Project sync (2025-11-01)
+1. [RO][ ] Project sync (2025-11-01T14:30)
 ____________________________________________________________
 ____________________________________________________________
 The rm command must be followed by a task number.
@@ -102,7 +102,7 @@ ____________________________________________________________
 Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME
 ____________________________________________________________
 ____________________________________________________________
-Bad deadline syntax! The syntax is yyyy-mm-dd!
+Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!
 ____________________________________________________________
 ____________________________________________________________
 Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME

@@ -10,8 +10,8 @@ mark 2...4
 list
 delete 2...3
 list
-rem Project sync @ 2025-11-01
-rem Weekly check-in @ 2025-11-03 -r 7d
+rem Project sync @ 2025-11-01 14:30
+rem Weekly check-in @ 2025-11-03 09:00 -r 7d
 rem ls
 rem rm 2
 rem ls
@@ -19,7 +19,7 @@ rem rm
 rem meeting 2025-11-05
 rem meeting @
 rem meeting @ invalid-date
-rem @ 2025-11-05
+rem @ 2025-11-05 10:00
 rem
 start
 pause

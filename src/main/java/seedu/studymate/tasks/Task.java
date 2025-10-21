@@ -5,7 +5,7 @@ package seedu.studymate.tasks;
  * It provides core functionality common to all task types, such as a name and a completion status
  */
 public abstract class Task {
-    protected final String name;
+    protected String name;
     protected Boolean isDone;
 
     /**
@@ -39,6 +39,14 @@ public abstract class Task {
      */
     public boolean getDone() {
         return isDone;
+    }
+
+    /**
+     * Sets the name/description of the task
+     * @param name The new name/description for the task
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

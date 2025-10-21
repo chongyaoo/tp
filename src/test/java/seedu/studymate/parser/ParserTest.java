@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.studymate.exceptions.StudyMateException;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -234,7 +235,7 @@ public class ParserTest {
     // Reminder command tests
     @Test
     void testRemAddCommand() throws StudyMateException {
-        Command cmd = parser.parse("rem meeting @ 2024-12-15");
+        Command cmd = parser.parse("rem meeting @ 2024-12-15 18:00");
         assertEquals(CommandType.REM_ADD_ONETIME, cmd.type);
         assertEquals("meeting", cmd.desc);
     }
@@ -278,24 +279,62 @@ public class ParserTest {
         assertThrows(StudyMateException.class, () -> parser.parse("rem meeting @ invalid-date"));
     }
 
+    // Find command tests
     @Test
-    void testRemAddWithEmptyEventThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("rem @ 2024-12-15"));
+    void testFindCommand() throws StudyMateException {
+        Command cmd = parser.parse("find book");
+        assertEquals(CommandType.FIND, cmd.type);
+        assertEquals("book", cmd.substring);
     }
 
     @Test
-    void testRemAddWithEmptyDateThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("rem meeting @"));
+    void testFindWithMultipleWords() throws StudyMateException {
+        Command cmd = parser.parse("find submit assignment");
+        assertEquals(CommandType.FIND, cmd.type);
+        assertEquals("submit assignment", cmd.substring);
     }
 
     @Test
-    void testRemLsWithExtraArgumentsThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("rem ls extra"));
+    void testFindWithSpecialCharacters() throws StudyMateException {
+        Command cmd = parser.parse("find CS2103T");
+        assertEquals(CommandType.FIND, cmd.type);
+        assertEquals("CS2103T", cmd.substring);
     }
 
     @Test
-    void testRemRmWithoutIndexThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("rem rm"));
+    void testFindCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("FIND test");
+        assertEquals(CommandType.FIND, cmd.type);
+        assertEquals("test", cmd.substring);
+    }
+
+    @Test
+    void testFindWithExtraSpaces() throws StudyMateException {
+        Command cmd = parser.parse("find   read   book");
+        assertEquals(CommandType.FIND, cmd.type);
+        assertEquals("read book", cmd.substring);
+    }
+
+    @Test
+    void testFindWithoutKeywordThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("find "));
+    }
+
+    @Test
+    void testListSortedCommand() throws StudyMateException {
+        Command cmd = parser.parse("list -s");
+        assertEquals(CommandType.LIST, cmd.type);
+        assertEquals(true, cmd.isSorted);
+    }
+
+    @Test
+    void testListWithInvalidFlagThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("list -x"));
+    }
+
+    @Test
+    void testListWithExtraArgumentsThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("list extra arguments"));
     }
 
     // Timer command tests
@@ -414,5 +453,95 @@ public class ParserTest {
         assertEquals(CommandType.UNMARK, cmd.type);
         LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(1, 3, 5));
         assertEquals(expected, cmd.indexes);
+    }
+
+    // Edit command tests
+    @Test
+    void testEditDescriptionCommand() throws StudyMateException {
+        Command cmd = parser.parse("edit 1 -n new description");
+        assertEquals(CommandType.EDIT_DESC, cmd.type);
+        assertEquals(0, cmd.index); // 1-based to 0-based conversion
+        assertEquals("new description", cmd.desc);
+    }
+
+    @Test
+    void testEditDeadlineCommand() throws StudyMateException {
+        Command cmd = parser.parse("edit 2 -d 2025-12-31");
+        assertEquals(CommandType.EDIT_DEADLINE, cmd.type);
+        assertEquals(1, cmd.index); // 1-based to 0-based conversion
+        assertEquals(LocalDate.of(2025, 12, 31), cmd.datetime0.getDate());
+    }
+
+    @Test
+    void testEditFromCommand() throws StudyMateException {
+        Command cmd = parser.parse("edit 3 -f 2025-11-15");
+        assertEquals(CommandType.EDIT_FROM, cmd.type);
+        assertEquals(2, cmd.index); // 1-based to 0-based conversion
+        assertEquals(LocalDate.of(2025, 11, 15), cmd.datetime0.getDate());
+    }
+
+    @Test
+    void testEditToCommand() throws StudyMateException {
+        Command cmd = parser.parse("edit 4 -t 2025-11-20");
+        assertEquals(CommandType.EDIT_TO, cmd.type);
+        assertEquals(3, cmd.index); // 1-based to 0-based conversion
+        assertEquals(LocalDate.of(2025, 11, 20), cmd.datetime0.getDate());
+    }
+
+    @Test
+    void testEditWithLongDescription() throws StudyMateException {
+        Command cmd = parser.parse("edit 1 -n This is a very long task description with multiple words");
+        assertEquals(CommandType.EDIT_DESC, cmd.type);
+        assertEquals("This is a very long task description with multiple words", cmd.desc);
+    }
+
+    @Test
+    void testEditWithoutIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit -n new description"));
+    }
+
+    @Test
+    void testEditWithoutFlagThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 new description"));
+    }
+
+    @Test
+    void testEditWithoutValueThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -n"));
+    }
+
+    @Test
+    void testEditWithInvalidFlagThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -x value"));
+    }
+
+    @Test
+    void testEditWithInvalidIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit abc -n description"));
+    }
+
+    @Test
+    void testEditWithInvalidDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -d invalid-date"));
+    }
+
+    @Test
+    void testEditDeadlineWithInvalidDateFormatThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -d 2025/12/31"));
+    }
+
+    @Test
+    void testEditFromWithInvalidDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -f not-a-date"));
+    }
+
+    @Test
+    void testEditToWithInvalidDateThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -t 31-12-2025"));
+    }
+
+    @Test
+    void testEditEmptyCommandThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit"));
     }
 }

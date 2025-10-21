@@ -1,10 +1,12 @@
 package seedu.studymate.ui;
 
+import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.reminders.Reminder;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +44,43 @@ public class MessageHandler {
         System.out.println("Here are the tasks in your task list:");
         for (int i = 0; i < taskList.getCount(); i++) {
             System.out.println((i + 1) + ". " + taskList.getTask(i).toString());
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints the sorted task list
+     *
+     * @param taskList The TaskList object to be printed
+     */
+    public static void sendSortedTaskList(ArrayList<Task> taskList) {
+        if (taskList.isEmpty()) {
+            sendMessage("Task list has no deadlines or events!");
+            return;
+        }
+        System.out.println(LINE);
+        System.out.println("Here are the deadlines and events in your task list," +
+                " sorted by their deadlines and/or start times:");
+        for (int i = 0; i < taskList.size(); i++) {
+            System.out.println((i + 1) + ". " + taskList.get(i).toString());
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints the resulting tasks found
+     *
+     * @param taskList The TaskList object to be printed
+     */
+    public static void sendFindResults(ArrayList<Task> taskList) {
+        if (taskList.isEmpty()) {
+            sendMessage("No results found!");
+            return;
+        }
+        System.out.println(LINE);
+        System.out.println("Here are the tasks with the matching substring found!:");
+        for (int i = 0; i < taskList.size(); i++) {
+            System.out.println((i + 1) + ". " + taskList.get(i).toString());
         }
         System.out.println(LINE);
     }
@@ -147,6 +186,54 @@ public class MessageHandler {
         for (Task task : tasks) {
             System.out.println(task.toString());
         }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a message to confirm that a task has been unmarked
+     *
+     * @param task The task who had its description edited
+     */
+    public static void sendEditDescMessage(Task task) {
+        System.out.println(LINE);
+        System.out.println("OK, I've edited the description of the task to:");
+        System.out.println(task);
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a message to confirm that a task has been unmarked
+     *
+     * @param task The task who had its description edited
+     */
+    public static void sendEditDeadlineMessage(Task task, DateTimeArg dateTimeArg) {
+        System.out.println(LINE);
+        System.out.println("OK, I've edited the deadline of the deadline " + task.getName() + "to:");
+        System.out.println(dateTimeArg);
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a message to confirm that a task has been unmarked
+     *
+     * @param task The task who had its description edited
+     */
+    public static void sendEditFromMessage(Task task, DateTimeArg dateTimeArg) {
+        System.out.println(LINE);
+        System.out.println("OK, I've edited the from date of the event " + task.getName() + "to:");
+        System.out.println(dateTimeArg);
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a message to confirm that a task has been unmarked
+     *
+     * @param task The task who had its description edited
+     */
+    public static void sendEditToMessage(Task task, DateTimeArg dateTimeArg) {
+        System.out.println(LINE);
+        System.out.println("OK, I've edited the to date of the event " + task.getName() + "to:");
+        System.out.println(dateTimeArg);
         System.out.println(LINE);
     }
 

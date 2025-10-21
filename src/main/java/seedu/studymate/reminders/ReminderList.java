@@ -29,14 +29,12 @@ public class ReminderList {
     public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
         Reminder newReminder = new Reminder(name, dateTime, interval);
         reminderList.add(newReminder);
-        MessageHandler.sendAddReminderRecMessage(newReminder, getCount());
         assert(reminderList.contains(newReminder));
     }
 
     public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
-        MessageHandler.sendAddReminderOneTimeMessage(newReminder, getCount());
         assert(reminderList.contains(newReminder));
     }
 
