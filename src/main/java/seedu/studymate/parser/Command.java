@@ -24,6 +24,9 @@ public class Command {
     // Rem trigger interval
     public Duration remindInterval;
 
+    // Rem snooze interval
+    public Duration snoozeDuration;
+
     public Command(CommandType type) {
         this.type = type;
     }
@@ -97,6 +100,12 @@ public class Command {
         this.type = type;
         this.desc = label;
         this.duration = duration;
+    }
+
+    public Command(CommandType type, int index, Duration snoozeDuration) {
+        this.type = type;
+        this.index = index;
+        this.snoozeDuration = snoozeDuration;
     }
 
     // recurring reminder

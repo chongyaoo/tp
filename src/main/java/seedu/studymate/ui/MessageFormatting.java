@@ -47,17 +47,25 @@ public class MessageFormatting {
     }
 
     public static String oneTimeReminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
+        String dateTimeString = dateTime.toString().replace("T", " ");
         if (onReminder) {
-            return "[RO][O] " + name + " (" + dateTime + ")";
+            return "[RO][O] " + name + " (" + dateTimeString + ")";
         }
-        return "[RO][ ] " + name + " (" + dateTime + ")";
+        return "[RO][ ] " + name + " (" + dateTimeString + ")";
     }
 
     public static String recReminderString(Boolean onReminder, String name, DateTimeArg dateTime,
                                            Duration reminderInterval) {
+        String returnString;
+        String dateTimeString = dateTime.toString().replace("T", " ");
+        String reminderIntervalString = reminderInterval.toString().replace("PT", "");
         if (onReminder) {
-            return "[RR][O] " + name + " (" + dateTime + ")";
+            returnString = "[RR][O] " + name + " (interval: " + reminderIntervalString + ")\n" +
+                    "Next reminder: " + dateTimeString;
+            return returnString;
         }
-        return "[R][ ] " + name + " (" + dateTime + ", interval: " + reminderInterval + ")";
+        returnString = "[RR][ ] " + name + " (interval: " + reminderIntervalString + ")\n" +
+                "Next reminder: " + dateTimeString;
+        return returnString;
     }
 }

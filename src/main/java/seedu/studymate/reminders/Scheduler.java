@@ -57,11 +57,13 @@ public class Scheduler {
      * Checks for due reminders and returns them.
      * Call this manually or let start() handle it automatically.
      */
-    public synchronized List<Reminder> tick() {
-        List<Reminder> remindersToOutput = new java.util.ArrayList<>();
+    public synchronized List<IndexedReminder> tick() {
+        List<IndexedReminder> remindersToOutput = new java.util.ArrayList<>();
         for (Reminder r : reminderList.getReminders()) {
             if (r.isDue()) {
-                remindersToOutput.add(r);
+                int index = reminderList.getReminderIndex(r) + 1;
+                IndexedReminder indexedReminder = new IndexedReminder(index, r);
+                remindersToOutput.add(indexedReminder);
                 r.isFired();
             }
         }
@@ -69,9 +71,9 @@ public class Scheduler {
     }
 
     private void checkAndNotify() {
-        List<Reminder> dueReminders = tick();
+        List<IndexedReminder> dueReminders = tick();
         if (!dueReminders.isEmpty()) {
-            MessageHandler.sendRemindersDone(dueReminders);
+            MessageHandler.sendReminder(dueReminders);
         }
     }
 }

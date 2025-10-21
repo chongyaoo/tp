@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageHandler;
 
@@ -29,13 +30,13 @@ public class ReminderList {
     public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
         Reminder newReminder = new Reminder(name, dateTime, interval);
         reminderList.add(newReminder);
-        assert(reminderList.contains(newReminder));
+        assert (reminderList.contains(newReminder));
     }
 
     public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) {
         Reminder newReminder = new Reminder(name, dateTime);
         reminderList.add(newReminder);
-        assert(reminderList.contains(newReminder));
+        assert (reminderList.contains(newReminder));
     }
 
     public synchronized int getCount() {
@@ -50,7 +51,7 @@ public class ReminderList {
         ArrayList<Reminder> reminders = new ArrayList<>();
         // sort indexes in reverse order to prevent index mashups
         List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
-        for (Integer index: sortedIndexes) {
+        for (Integer index : sortedIndexes) {
             reminders.add(reminderList.get(index));
             reminderList.remove(index.intValue());
         }
@@ -61,8 +62,73 @@ public class ReminderList {
         MessageHandler.sendDeleteReminderMessage(reminders, reminderList.size());
     }
 
+    public synchronized void turnOnReminders(LinkedHashSet<Integer> indexes) {
+        ArrayList<Reminder> isTurnOnReminders = new ArrayList<>();
+        ArrayList<Reminder> alreadyTurnOnReminders = new ArrayList<>();
+        // sort indexes in reverse order to prevent index mashups
+        List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
+        for (Integer index : sortedIndexes) {
+            Reminder reminder = reminderList.get(index);
+            if (!reminder.getOnReminder()) { //Has not been turned on
+                reminder.setOnReminder(true);
+                isTurnOnReminders.add(reminder);
+            } else { //already turned on
+                alreadyTurnOnReminders.add(reminder);
+            }
+            assert (reminder.getOnReminder());
+            logger.log(Level.INFO, "Turned on: " + reminder.toString());
+        }
+        if (!isTurnOnReminders.isEmpty()) {
+            MessageHandler.sendIsTurnOnReminderMessage(isTurnOnReminders);
+        }
+        if (!alreadyTurnOnReminders.isEmpty()) {
+            MessageHandler.sendAlreadyTurnOnReminderMessage(alreadyTurnOnReminders);
+        }
+    }
+
+    public synchronized void turnOffReminders(LinkedHashSet<Integer> indexes) {
+        ArrayList<Reminder> isTurnOffReminders = new ArrayList<>();
+        ArrayList<Reminder> alreadyTurnOffReminders = new ArrayList<>();
+        // sort indexes in reverse order to prevent index mashups
+        List<Integer> sortedIndexes = indexes.stream().sorted(Comparator.reverseOrder()).toList();
+        for (Integer index : sortedIndexes) {
+            Reminder reminder = reminderList.get(index);
+            if (reminder.getOnReminder()) { //Has not been turned off
+                reminder.setOnReminder(false);
+                isTurnOffReminders.add(reminder);
+            } else { //already turned on
+                alreadyTurnOffReminders.add(reminder);
+            }
+            assert (!reminder.getOnReminder());
+            logger.log(Level.INFO, "Turned off: " + reminder.toString());
+        }
+        if (!isTurnOffReminders.isEmpty()) {
+            MessageHandler.sendIsTurnOffReminderMessage(isTurnOffReminders);
+        }
+        if (!alreadyTurnOffReminders.isEmpty()) {
+            MessageHandler.sendAlreadyTurnOffReminderMessage(alreadyTurnOffReminders);
+        }
+    }
+
+    public synchronized void handleSnooze(int index, Duration snoozeDuration) {
+        Reminder reminder = reminderList.get(index-1);
+        if (reminder.isRecurring()) { //Reminder is recurring, and cannot be snoozed
+            MessageHandler.sendRecUnableToSnoozeError(reminder);
+            return;
+        }
+        try {
+            reminder.snooze(snoozeDuration);
+            MessageHandler.sendSnoozeMessage(reminder);
+        } catch (StudyMateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public synchronized List<Reminder> getReminders() {
         return reminderList;
     }
 
+    public synchronized int getReminderIndex(Reminder r) {
+        return reminderList.indexOf(r);
+    }
 }

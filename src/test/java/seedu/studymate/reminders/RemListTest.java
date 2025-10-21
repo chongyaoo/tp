@@ -3,6 +3,7 @@ package seedu.studymate.reminders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -73,11 +74,11 @@ public class RemListTest {
         assertFalse(rem.getOnReminder());
 
         // Set as reminded
-        rem.setReminded(true);
+        rem.setOnReminder(true);
         assertEquals(true, rem.getOnReminder());
 
         // Set back to not reminded
-        rem.setReminded(false);
+        rem.setOnReminder(false);
         assertFalse(rem.getOnReminder());
     }
 
@@ -96,11 +97,11 @@ public class RemListTest {
         assertFalse(rem.getOnReminder());
 
         // Set as reminded
-        rem.setReminded(true);
+        rem.setOnReminder(true);
         assertEquals(true, rem.getOnReminder());
 
         // Set back to not reminded
-        rem.setReminded(false);
+        rem.setOnReminder(false);
         assertFalse(rem.getOnReminder());
     }
 
@@ -196,5 +197,114 @@ public class RemListTest {
         assertEquals(2, reminderList.getCount());
         assertEquals("Daily exercise", reminderList.getReminder(0).getName()); // Shifted from index 1
         assertEquals("Daily meditation", reminderList.getReminder(1).getName()); // Shifted from index 3
+    }
+
+    //--TestCases for checking isDue()--
+
+    // Helper function to populate a list to test
+    private void populateListOneTimeDue() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        reminderList.addReminderOneTime("running", remDateTime);
+
+        dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        date = dateTime.toLocalDate();
+        time = dateTime.toLocalTime();
+        remDateTime = new DateTimeArg(date, time);
+        reminderList.addReminderOneTime("running 15km", remDateTime);
+    }
+
+    private void populateListOneTimeNotDue() {
+        LocalDateTime dateTime = LocalDateTime.of(2026, 9, 9, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        reminderList.addReminderOneTime("running", remDateTime);
+
+        dateTime = LocalDateTime.of(2026, 10, 10, 18, 0);
+        date = dateTime.toLocalDate();
+        time = dateTime.toLocalTime();
+        remDateTime = new DateTimeArg(date, time);
+        reminderList.addReminderOneTime("running 15km", remDateTime);
+    }
+
+
+    @Test
+    void reminderOneTimeIsDue_whenPastDateTime() {
+        populateListOneTimeDue();
+        for (Reminder i : reminderList.getReminders()) {
+            assertTrue(i.isDue());
+        }
+    }
+
+    @Test
+    void reminderOneTimeIsFired() {
+        populateListOneTimeDue();
+        for (Reminder i : reminderList.getReminders()) {
+            assertTrue(i.isDue()); //both should be due
+            i.isFired(); // mark as fired
+            assertFalse(i.isDue(), "After firing, reminder must not be due");
+        }
+    }
+
+    @Test
+    void reminderOneTimeIsNotDue() {
+        populateListOneTimeNotDue();
+        for (Reminder i : reminderList.getReminders()) {
+            assertFalse(i.isDue());
+        }
+    }
+
+    private void populateListRecDue() {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+        DateTimeArg remDateTime = new DateTimeArg(date, time);
+        Duration duration = Duration.ofDays(1);
+        reminderList.addReminderRec("running", remDateTime, duration);
+
+        dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        date = dateTime.toLocalDate();
+        time = dateTime.toLocalTime();
+        remDateTime = new DateTimeArg(date, time);
+        duration = Duration.ofHours(2);
+        reminderList.addReminderRec("running 15km", remDateTime, duration);
+    }
+
+    @Test
+    void reminderRecIsDue_whenPastDateTime() {
+        populateListRecDue();
+        for (Reminder i : reminderList.getReminders()) {
+            assertTrue(i.isDue());
+        }
+    }
+
+    @Test
+    void recurringReminder_resetsAfterFired() {
+        LocalDateTime startTime = LocalDateTime.now().minusDays(2); // schedule is already overdue
+        DateTimeArg remDateTime = new DateTimeArg(startTime.toLocalDate(), startTime.toLocalTime());
+        Duration interval = Duration.ofDays(1);
+
+        reminderList.addReminderRec("Daily reminder to take a shit", remDateTime, interval);
+
+        Reminder recReminder = reminderList.getReminder(0);
+        assertTrue(recReminder.isDue()); // first time due
+
+        recReminder.isFired(); // simulate firing, moves remindAt forward
+        LocalDateTime newTarget = LocalDateTime.of(
+                recReminder.remindAt.getDate(),
+                recReminder.remindAt.getTime());
+
+        // Expected next time is "now plus 1 day"
+        LocalDateTime expected = LocalDateTime.now().plusDays(1);
+
+        assertEquals(expected.toLocalDate(), newTarget.toLocalDate(),
+                "Next scheduled date should be exactly tomorrow");
+        assertEquals(expected.toLocalTime().getHour(), newTarget.getHour(),
+                "Next scheduled hour should match the original time");
+
+        assertFalse(recReminder.isDue());
     }
 }

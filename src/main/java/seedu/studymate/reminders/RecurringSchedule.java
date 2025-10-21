@@ -12,10 +12,12 @@ import java.time.ZoneId;
 public class RecurringSchedule implements Schedule {
     private final DateTimeArg remindAt;
     private final Duration interval;
+    private Boolean onReminder;
 
     public RecurringSchedule(DateTimeArg remindAt, Duration interval) {
         this.remindAt = remindAt;
         this.interval = interval;
+        this.onReminder = true;
     }
 
     public Duration interval() {
@@ -23,6 +25,15 @@ public class RecurringSchedule implements Schedule {
     }
 
     @Override
+
+    public void setOnReminder(boolean onReminder) {
+        this.onReminder = onReminder;
+    }
+
+    public boolean getOnReminder() {
+        return onReminder;
+    }
+
     public boolean isRecurring() {
         return true;
     }
@@ -37,7 +48,7 @@ public class RecurringSchedule implements Schedule {
                 remindAt.getDate(),
                 remindAt.getTime()
         );
-        return !now.isBefore(target);
+        return !now.isBefore(target) && onReminder;
     }
 
     public void setNextSchedule() {
@@ -61,5 +72,4 @@ public class RecurringSchedule implements Schedule {
     public void isFired() {
         setNextSchedule();
     }
-
 }

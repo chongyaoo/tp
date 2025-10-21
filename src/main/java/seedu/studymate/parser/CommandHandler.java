@@ -51,6 +51,9 @@ public class CommandHandler {
         case REM_ADD_ONETIME -> handleRemAddOneTime(reminderList, cmd);
         case REM_LS -> handleRemList(reminderList);
         case REM_RM -> handleRemRm(reminderList, cmd);
+        case REM_ON -> handleRemOn(reminderList, cmd);
+        case REM_OFF -> handleRemOff(reminderList, cmd);
+        case REM_SNOOZE -> handleRemSnooze(reminderList, cmd);
 
         // Timer Commands
         case START -> handleTimerStart(taskList, cmd);
@@ -163,6 +166,20 @@ public class CommandHandler {
     private static void handleRemRm(ReminderList reminderList, Command cmd) throws StudyMateException {
         IndexValidator.validateIndexes(cmd.indexes, reminderList.getCount());
         reminderList.delete(cmd.indexes);
+    }
+
+    private static void handleRemOn(ReminderList reminderList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndexes(cmd.indexes, reminderList.getCount());
+        reminderList.turnOnReminders(cmd.indexes);
+    }
+
+    private static void handleRemOff(ReminderList reminderList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndexes(cmd.indexes, reminderList.getCount());
+        reminderList.turnOffReminders(cmd.indexes);
+    }
+
+    private static void handleRemSnooze(ReminderList reminderList, Command cmd) throws StudyMateException {
+        reminderList.handleSnooze(cmd.index, cmd.snoozeDuration);
     }
 
     private static void handleTimerStart(TaskList taskList, Command cmd) throws StudyMateException {
