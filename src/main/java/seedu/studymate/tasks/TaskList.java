@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageHandler;
+import seedu.studymate.exceptions.StudyMateException;
 
 /**
  * Represents a list of tasks
@@ -228,7 +229,7 @@ public class TaskList {
      * @param newDeadline The new deadline for the task
      * @throws seedu.studymate.exceptions.StudyMateException If the task is not a Deadline
      */
-    public void editDeadline(int index, DateTimeArg newDeadline) throws seedu.studymate.exceptions.StudyMateException {
+    public void editDeadline(int index, DateTimeArg newDeadline) throws StudyMateException {
         Task task = taskList.get(index);
         if (!(task instanceof Deadline)) {
             throw new seedu.studymate.exceptions.StudyMateException("Task is not a deadline!");
@@ -245,7 +246,7 @@ public class TaskList {
      * @param newFrom The new from date for the event
      * @throws seedu.studymate.exceptions.StudyMateException If the task is not an Event
      */
-    public void editFrom(int index, DateTimeArg newFrom) throws seedu.studymate.exceptions.StudyMateException {
+    public void editFrom(int index, DateTimeArg newFrom) throws StudyMateException {
         Task task = taskList.get(index);
         if (!(task instanceof Event)) {
             throw new seedu.studymate.exceptions.StudyMateException("Task is not an event!");
@@ -262,7 +263,7 @@ public class TaskList {
      * @param newTo The new to date for the event
      * @throws seedu.studymate.exceptions.StudyMateException If the task is not an Event
      */
-    public void editTo(int index, DateTimeArg newTo) throws seedu.studymate.exceptions.StudyMateException {
+    public void editTo(int index, DateTimeArg newTo) throws StudyMateException {
         Task task = taskList.get(index);
         if (!(task instanceof Event)) {
             throw new seedu.studymate.exceptions.StudyMateException("Task is not an event!");
