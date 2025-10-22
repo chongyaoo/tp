@@ -1,11 +1,13 @@
 package seedu.studymate.ui;
 
 import seedu.studymate.parser.DateTimeArg;
+import seedu.studymate.reminders.IndexedReminder;
 import seedu.studymate.reminders.Reminder;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -273,12 +275,62 @@ public class MessageHandler {
         System.out.println(LINE);
     }
 
-    public static void sendRemindersDone(List<Reminder> reminders) {
+    public static void sendReminder(List<IndexedReminder> reminders) {
         System.out.println(LINE);
-        System.out.println("The following reminders are done!");
+        System.out.println("IMPORTANT: StudyMate reminds you of the following!");
+        for (IndexedReminder reminder : reminders) {
+            System.out.println(reminder.getIndex() + ". " + reminder.getReminder());
+        }
+        System.out.println(LINE);
+    }
+
+    public static void sendIsTurnOnReminderMessage(List<Reminder> reminders) {
+        System.out.println(LINE);
+        System.out.println("The following reminders have been turned on:");
         for (Reminder reminder : reminders) {
             System.out.println(reminder);
         }
+        System.out.println(LINE);
+    }
+
+    public static void sendAlreadyTurnOnReminderMessage(List<Reminder> reminders) {
+        System.out.println(LINE);
+        System.out.println("The following reminders have already been turned on:");
+        for (Reminder reminder : reminders) {
+            System.out.println(reminder);
+        }
+        System.out.println(LINE);
+    }
+
+    public static void sendIsTurnOffReminderMessage(List<Reminder> reminders) {
+        System.out.println(LINE);
+        System.out.println("The following reminders have been turned off:");
+        for (Reminder reminder : reminders) {
+            System.out.println(reminder);
+        }
+        System.out.println(LINE);
+    }
+
+    public static void sendAlreadyTurnOffReminderMessage(List<Reminder> reminders) {
+        System.out.println(LINE);
+        System.out.println("The following reminders have already been turned off:");
+        for (Reminder reminder : reminders) {
+            System.out.println(reminder);
+        }
+        System.out.println(LINE);
+    }
+
+    public static void sendRecUnableToSnoozeError(Reminder reminder) {
+        System.out.println(LINE);
+        System.out.println("The reminder is a recurring reminder, and cannot be snoozed: ");
+        System.out.println(reminder);
+        System.out.println(LINE);
+    }
+
+    public static void sendSnoozeMessage(Reminder reminder) {
+        System.out.println(LINE);
+        System.out.println("The following reminder has successfully been snoozed: ");
+        System.out.println(reminder);
         System.out.println(LINE);
     }
 

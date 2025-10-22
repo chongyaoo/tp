@@ -206,7 +206,7 @@ public class Storage {
             }
 
             if (isReminderDone) {
-                reminderList.getReminder(reminderList.getCount() - 1).setReminded(true);
+                reminderList.getReminder(reminderList.getCount() - 1).setOnReminder(true);
             }
             break;
 

@@ -277,13 +277,53 @@ public class Parser {
         return switch (parts[0]) {
         case "rm" -> parseRemRm(parts);
         case "ls" -> parseRemLs(rest);
+        case "on" -> parseRemOn(parts);
+        case "off" -> parseRemOff(parts);
+        case "snooze" -> parseRemSnooze(parts);
         default -> parseRemAdd(arguments[1]);
         };
+    }
+
+    private Command parseRemOn(String[] arguments) throws StudyMateException {
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.REM_ON, indexes);
+    }
+
+    private Command parseRemOff(String[] arguments) throws StudyMateException {
+        LinkedHashSet<Integer> indexes = parseIndexes(arguments);
+        return new Command(CommandType.REM_OFF, indexes);
     }
 
     private Command parseRemRm(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.REM_RM, indexes);
+    }
+
+    private Command parseRemSnooze(String[] arguments) throws StudyMateException {
+        if (arguments.length == 1) {
+            throw new StudyMateException("Input index of the Reminder to snooze, followed by the duration!");
+        }
+        String[] parts = arguments[1].trim().split("\\s+");
+        if (parts.length == 1) {
+            try {
+                Integer.parseInt(parts[0]);
+                throw new StudyMateException("Please specify a duration! Usage: rem snooze <index> <duration>");
+            } catch (NumberFormatException e) {
+                throw new StudyMateException("Please specify which reminder to snooze! Usage: rem <index> snooze <duration>");
+            }
+        }
+        else if (parts.length > 2) {
+            throw new StudyMateException("Too many arguments! Usage: rem <index> snooze <duration>");
+        }
+        else {
+            try {
+                int snoozeIndex = Integer.parseInt(parts[0]);
+                Duration snoozeDuration = parseInterval(parts[1]); //will automatically throw StudyMateException
+                return new Command(CommandType.REM_SNOOZE, snoozeIndex, snoozeDuration);
+            } catch (NumberFormatException e) {
+                throw new StudyMateException("Please specify which reminder to snooze with an integer! Usage: rem <index> snooze <duration>");
+            }
+        }
     }
 
     private Command parseRemLs(String rest) throws StudyMateException {
@@ -293,11 +333,11 @@ public class Parser {
         return new Command(CommandType.REM_LS);
     }
 
-    private Command parseRemAdd(String task) throws StudyMateException {
-        if (task == null || task.isBlank()) {
+    private Command parseRemAdd(String rem) throws StudyMateException {
+        if (rem == null || rem.isBlank()) {
             throw new StudyMateException("Input an event and a DATE/TIME for the reminder!");
         }
-        String[] arguments = task.trim().split("\\s+");
+        String[] arguments = rem.trim().split("\\s+");
 
         int atIndex = 0;
         for (int i = 0; i < arguments.length; i++) {
@@ -378,8 +418,6 @@ public class Parser {
         char unit = input.charAt(input.length() - 1);
 
         switch (unit) {
-        case 's':
-            return Duration.ofSeconds(value);
         case 'm':
             return Duration.ofMinutes(value);
         case 'h':

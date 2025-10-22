@@ -45,7 +45,7 @@ public class SchedulerTest {
 
     @Test
     void tick_noReminders_returnsEmptyList() {
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertTrue(dueReminders.isEmpty());
     }
@@ -57,7 +57,7 @@ public class SchedulerTest {
         DateTimeArg futureDateTime = new DateTimeArg(future.toLocalDate(), future.toLocalTime());
         reminderList.addReminderOneTime("Future task", futureDateTime);
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertTrue(dueReminders.isEmpty());
         assertEquals(1, reminderList.getCount(), "Reminder should still be in list");
@@ -70,10 +70,10 @@ public class SchedulerTest {
         DateTimeArg pastDateTime = new DateTimeArg(past.toLocalDate(), past.toLocalTime());
         reminderList.addReminderOneTime("Past task", pastDateTime);
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertEquals(1, dueReminders.size());
-        assertEquals("Past task", dueReminders.get(0).getName());
+        assertEquals("Past task", dueReminders.get(0).getReminder().getName());
     }
 
     @Test
@@ -83,10 +83,10 @@ public class SchedulerTest {
         DateTimeArg nowDateTime = new DateTimeArg(now.toLocalDate(), now.toLocalTime());
         reminderList.addReminderOneTime("Current task", nowDateTime);
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertEquals(1, dueReminders.size());
-        assertEquals("Current task", dueReminders.get(0).getName());
+        assertEquals("Current task", dueReminders.get(0).getReminder().getName());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class SchedulerTest {
         reminderList.addReminderOneTime("Task 2", dt2);
         reminderList.addReminderOneTime("Task 3", dt3);
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertEquals(3, dueReminders.size());
     }
@@ -124,10 +124,10 @@ public class SchedulerTest {
         reminderList.addReminderOneTime("Not due 1", futureDt1);
         reminderList.addReminderOneTime("Not due 2", futureDt2);
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         assertEquals(1, dueReminders.size());
-        assertEquals("Due now", dueReminders.get(0).getName());
+        assertEquals("Due now", dueReminders.get(0).getReminder().getName());
         assertEquals(3, reminderList.getCount(), "All reminders should still be in list");
     }
 
@@ -139,18 +139,18 @@ public class SchedulerTest {
         reminderList.addReminderOneTime("Task", pastDateTime);
 
         // First tick should return the reminder
-        List<Reminder> firstCall = scheduler.tick();
+        List<IndexedReminder> firstCall = scheduler.tick();
         assertEquals(1, firstCall.size());
 
         // Second tick should not return it again (it's been fired)
-        List<Reminder> secondCall = scheduler.tick();
+        List<IndexedReminder> secondCall = scheduler.tick();
         assertTrue(secondCall.isEmpty(), "Reminder should not be returned again after being fired");
     }
 
     @Test
     void tick_newReminderAddedAfterCreation_isDetected() {
         // Create scheduler with empty list
-        List<Reminder> firstTick = scheduler.tick();
+        List<IndexedReminder> firstTick = scheduler.tick();
         assertTrue(firstTick.isEmpty());
 
         // Add a due reminder to the shared reminderList
@@ -159,9 +159,9 @@ public class SchedulerTest {
         reminderList.addReminderOneTime("New task", pastDateTime);
 
         // Tick again - should detect the new reminder
-        List<Reminder> secondTick = scheduler.tick();
+        List<IndexedReminder> secondTick = scheduler.tick();
         assertEquals(1, secondTick.size());
-        assertEquals("New task", secondTick.get(0).getName());
+        assertEquals("New task", secondTick.get(0).getReminder().getName());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class SchedulerTest {
         DateTimeArg pastDateTime = new DateTimeArg(past.toLocalDate(), past.toLocalTime());
         reminderList.addReminderOneTime("Task", pastDateTime);
 
-        List<Reminder> dueReminders = defaultScheduler.tick();
+        List<IndexedReminder> dueReminders = defaultScheduler.tick();
         assertEquals(1, dueReminders.size());
     }
 
@@ -208,7 +208,7 @@ public class SchedulerTest {
         scheduler.start();
         scheduler.shutdown();
 
-        // Should be able to shutdown again without issues
+        // Should be able to shut down again without issues
         assertDoesNotThrow(() -> scheduler.shutdown());
     }
 
@@ -222,12 +222,12 @@ public class SchedulerTest {
         reminderList.addReminderRec("Recurring task", pastDateTime, interval);
 
         // First tick should return the reminder
-        List<Reminder> firstCall = scheduler.tick();
+        List<IndexedReminder> firstCall = scheduler.tick();
         assertEquals(1, firstCall.size());
-        assertEquals("Recurring task", firstCall.get(0).getName());
+        assertEquals("Recurring task", firstCall.get(0).getReminder().getName());
 
         // Second tick should NOT return it (rescheduled to 1 hour from now)
-        List<Reminder> secondCall = scheduler.tick();
+        List<IndexedReminder> secondCall = scheduler.tick();
         assertTrue(secondCall.isEmpty(), "Recurring reminder should be rescheduled after firing");
 
         // Reminder should still be in the list
@@ -246,13 +246,13 @@ public class SchedulerTest {
         DateTimeArg pastDateTime2 = new DateTimeArg(past2.toLocalDate(), past2.toLocalTime());
         reminderList.addReminderRec("Recurring task", pastDateTime2, java.time.Duration.ofDays(1));
 
-        List<Reminder> dueReminders = scheduler.tick();
+        List<IndexedReminder> dueReminders = scheduler.tick();
 
         // Both should be returned
         assertEquals(2, dueReminders.size());
 
         // Call tick again - only one-time shouldn't appear, recurring is rescheduled
-        List<Reminder> secondTick = scheduler.tick();
+        List<IndexedReminder> secondTick = scheduler.tick();
         assertTrue(secondTick.isEmpty(), "Both reminders should not fire again immediately");
     }
 

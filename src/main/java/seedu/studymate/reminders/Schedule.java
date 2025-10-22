@@ -1,5 +1,6 @@
 package seedu.studymate.reminders;
 
+import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 
 import java.time.Duration;
@@ -10,8 +11,6 @@ public interface Schedule {
     default Duration interval() {
         return null;
     }
-
-    default void snooze(Duration d) {}
 
     default boolean isRecurring() {
         return false;
@@ -25,4 +24,9 @@ public interface Schedule {
 
     default void setRemindAt(DateTimeArg remindAt) {}
 
+    default void setOnReminder(boolean onReminder) {}
+
+    default boolean getOnReminder() {return false;}
+
+    default void snooze(Duration duration) throws StudyMateException {};
 }
