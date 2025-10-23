@@ -355,10 +355,37 @@ to help students manage workload during busy weeks and exams.
 
 ## User Stories
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+| Version | As a ...                          | I want to ...                                                                         | So that I can ...                                               |
+|---------|-----------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| v1.0    | student                           | add a simple to-do task with a description                                            | track basic tasks without deadlines                             |
+| v1.0    | student                           | add a deadline task with a description and due date                                   | manage time-sensitive assignments                               |
+| v1.0    | student                           | list all my tasks                                                                     | view my current workload at a glance                            |
+| v1.0    | student                           | mark a task as done                                                                   | indicate completion and track progress                          |
+| v1.0    | student                           | unmark a task as not done                                                             | correct mistakes or reopen tasks                                |
+| v1.0    | student                           | delete a task                                                                         | remove tasks I no longer need                                   |
+| v1.0    | student                           | find tasks by keyword                                                                 | quickly locate specific tasks in a long list                    |
+| v1.0    | student                           | receive error messages for invalid task inputs                                        | avoid mistakes and understand what went wrong                   |
+| v1.0    | student                           | have my tasks automatically saved and loaded                                          | persist data across sessions                                    |
+| v1.0    | student                           | use case-insensitive commands                                                         | type commands comfortably without worrying about capitalization |
+| v1.0    | student with poor time management | start a timer with a custom duration (in minutes)                                     | focus on tasks for a set period                                 |
+| v1.0    | student with poor time management | start a timer linked to a specific task (by index or name)                            | associate focus time with particular assignments                |
+| v1.0    | student with poor time management | pause and resume the timer                                                            | handle interruptions without losing progress                    |
+| v1.0    | student with poor time management | reset the timer                                                                       | stop and restart if needed                                      |
+| v1.0    | student with poor time management | view timer statistics                                                                 | track my productivity and time spent                            |
+| v2.0    | user                              | see usage instructions                                                                | refer to them when I forget how to use the application          |
+| v2.0    | student                           | edit a task's description                                                             | update task details without recreating it                       |
+| v2.0    | student                           | edit a deadline task's due date                                                       | adjust deadlines as plans change                                |
+| v2.0    | student                           | perform batch operations on tasks (e.g., mark multiple by indices)                    | efficiently manage multiple tasks at once                       |
+| v2.0    | busy student                      | add one-time reminders with a message, date, and time                                 | set alerts for important events like meetings                   |
+| v2.0    | busy student                      | add recurring reminders with a message, date/time, and interval (e.g., daily, weekly) | automate reminders for routine tasks like study sessions        |
+| v2.0    | busy student                      | list all my reminders                                                                 | review upcoming notifications                                   |
+| v2.0    | busy student                      | delete reminders by index                                                             | remove outdated or unnecessary alerts                           |
+| v2.0    | busy student                      | perform batch operations on reminders (e.g., delete multiple by indices)              | efficiently manage multiple reminders at once                   |
+| v2.0    | busy student                      | receive error messages for invalid reminder inputs                                    | avoid mistakes and understand what went wrong                   |
+| v2.0    | student                           | use flexible index formats (e.g., ranges like 1...3)                                  | perform operations on groups of tasks or reminders easily       |
+| v2.0    | student                           | handle whitespace normalisation in commands                                           | type commands without worrying about extra spaces               |
+| v2.0    | student                           | manage overlapping or invalid index ranges                                            | avoid errors in batch operations                                |
+| v2.0    | student                           | use date-time parsing for deadlines and reminders                                     | input dates and times reliably                                  |
 
 ## Non-Functional Requirements
 

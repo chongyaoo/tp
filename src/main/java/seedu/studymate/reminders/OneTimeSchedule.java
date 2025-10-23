@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
-import seedu.studymate.ui.MessageHandler;
-
 public final class OneTimeSchedule implements Schedule {
     private final DateTimeArg remindAt;
     private boolean isFired;
@@ -51,12 +49,13 @@ public final class OneTimeSchedule implements Schedule {
         this.isFired = true;
     }
 
-    public void snooze(Duration duration) throws StudyMateException{
+    public void snooze(Duration duration) throws StudyMateException {
         LocalDateTime newDateTime = remindAt.getDateTime().plus(duration);
         LocalDateTime now = LocalDateTime.now();
         if (newDateTime.isBefore(now) || newDateTime.isEqual(now)) {
             // New time is in the past or now
-            throw new StudyMateException("Snooze duration too short! New reminder time (" + newDateTime + ") is not in the future.");
+            throw new StudyMateException("Snooze duration too short! " +
+                    "New reminder time (" + newDateTime + ") is not in the future.");
         }
         // New time is in the future - proceed
         remindAt.setLocalDateTime(newDateTime);

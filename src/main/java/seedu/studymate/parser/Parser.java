@@ -259,7 +259,7 @@ public class Parser {
                     throw new NumberFormatException();
                 }
             }
-            assert(!indexes.isEmpty());
+            assert (!indexes.isEmpty());
             logger.log(Level.INFO, "ArrayList indexes : " + indexes);
             return indexes;
         } catch (NumberFormatException e) {
@@ -309,19 +309,19 @@ public class Parser {
                 Integer.parseInt(parts[0]);
                 throw new StudyMateException("Please specify a duration! Usage: rem snooze <index> <duration>");
             } catch (NumberFormatException e) {
-                throw new StudyMateException("Please specify which reminder to snooze! Usage: rem <index> snooze <duration>");
+                throw new StudyMateException("Please specify which reminder to snooze! " +
+                        "Usage: rem <index> snooze <duration>");
             }
-        }
-        else if (parts.length > 2) {
+        } else if (parts.length > 2) {
             throw new StudyMateException("Too many arguments! Usage: rem <index> snooze <duration>");
-        }
-        else {
+        } else {
             try {
                 int snoozeIndex = Integer.parseInt(parts[0]);
                 Duration snoozeDuration = parseInterval(parts[1]); //will automatically throw StudyMateException
                 return new Command(CommandType.REM_SNOOZE, snoozeIndex, snoozeDuration);
             } catch (NumberFormatException e) {
-                throw new StudyMateException("Please specify which reminder to snooze with an integer! Usage: rem <index> snooze <duration>");
+                throw new StudyMateException("Please specify which reminder to snooze with an integer! " +
+                        "Usage: rem <index> snooze <duration>");
             }
         }
     }

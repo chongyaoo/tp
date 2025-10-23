@@ -7,7 +7,6 @@ import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.tasks.Task;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -242,8 +241,8 @@ public class MessageHandler {
     /**
      * Prints a confirmation message after a recurring Reminder has been added
      *
-     * @param reminder  The task that was added
-     * @param count The current number of reminders in the list
+     * @param reminder The task that was added
+     * @param count    The current number of reminders in the list
      */
     public static void sendAddReminderRecMessage(Reminder reminder, int count) {
         System.out.println(LINE);
@@ -260,8 +259,8 @@ public class MessageHandler {
     /**
      * Prints a confirmation message after a recurring Reminder has been added
      *
-     * @param reminder  The task that was added
-     * @param count The current number of reminders in the list
+     * @param reminder The task that was added
+     * @param count    The current number of reminders in the list
      */
     public static void sendAddReminderOneTimeMessage(Reminder reminder, int count) {
         System.out.println(LINE);

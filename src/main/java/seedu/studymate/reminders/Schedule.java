@@ -20,13 +20,21 @@ public interface Schedule {
         return false;
     }
 
-    default void isFired() {}
+    default void isFired() {
+    }
 
-    default void setRemindAt(DateTimeArg remindAt) {}
+    default void setRemindAt(DateTimeArg remindAt) {
+    }
 
-    default void setOnReminder(boolean onReminder) {}
+    default void setOnReminder(boolean onReminder) {
+    }
 
-    default boolean getOnReminder() {return false;}
+    default boolean getOnReminder() {
+        return false;
+    }
 
-    default void snooze(Duration duration) throws StudyMateException {};
+    default void snooze(Duration duration) throws StudyMateException {
+    }
+
+    ;
 }
