@@ -81,7 +81,8 @@ public class Reminder {
      */
     public String toSaveString() {
         if (schedule.isRecurring()) {
-            return DataFormatting.recurringReminderSaveString(schedule.getOnReminder(), name, remindAt, schedule.interval());
+            return DataFormatting.recurringReminderSaveString(schedule.getOnReminder(),
+                    name, remindAt, schedule.interval());
         }
         return DataFormatting.oneTimeReminderSaveString(schedule.getOnReminder(), name, remindAt);
     }
