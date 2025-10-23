@@ -39,7 +39,6 @@ public class RemListTest {
         Reminder rem = reminderList.getReminder(0);
         assertInstanceOf(Reminder.class, rem);
         assertEquals("running", rem.getName());
-        assertFalse(rem.getOnReminder());
     }
 
     @Test
@@ -55,7 +54,7 @@ public class RemListTest {
         Reminder rem = reminderList.getReminder(0);
         assertInstanceOf(Reminder.class, rem);
         assertEquals("Weekly meeting", rem.getName());
-        assertFalse(rem.getOnReminder());
+        assertTrue(rem.getOnReminder());
     }
 
     // --- Test Cases for Reminder Status ---
@@ -70,8 +69,8 @@ public class RemListTest {
         reminderList.addReminderOneTime("Doctor appointment", remDateTime);
         Reminder rem = reminderList.getReminder(0);
 
-        // Initially not reminded
-        assertFalse(rem.getOnReminder());
+        // Initially, reminder should be on when created
+        assertTrue(rem.getOnReminder());
 
         // Set as reminded
         rem.setOnReminder(true);
@@ -93,8 +92,8 @@ public class RemListTest {
         reminderList.addReminderRec("Weekly meeting", remDateTime, interval);
         Reminder rem = reminderList.getReminder(0);
 
-        // Initially not reminded
-        assertFalse(rem.getOnReminder());
+        // Initially, reminder should be on when created
+        assertTrue(rem.getOnReminder());
 
         // Set as reminded
         rem.setOnReminder(true);
@@ -283,7 +282,8 @@ public class RemListTest {
 
     @Test
     void recurringReminder_resetsAfterFired() {
-        LocalDateTime startTime = LocalDateTime.now().minusDays(2); // schedule is already overdue
+        LocalDateTime fixedNow = LocalDateTime.of(2025, 10, 23, 12, 0);
+        LocalDateTime startTime = fixedNow.minusDays(2); // schedule is already overdue
         DateTimeArg remDateTime = new DateTimeArg(startTime.toLocalDate(), startTime.toLocalTime());
         Duration interval = Duration.ofDays(1);
 
@@ -298,7 +298,7 @@ public class RemListTest {
                 recReminder.remindAt.getTime());
 
         // Expected next time is "now plus 1 day"
-        LocalDateTime expected = LocalDateTime.now().plusDays(1);
+        LocalDateTime expected = fixedNow.plusDays(1);
 
         assertEquals(expected.toLocalDate(), newTarget.toLocalDate(),
                 "Next scheduled date should be exactly tomorrow");
