@@ -275,12 +275,12 @@ public class Parser {
         String rest = parts.length > 1 ? parts[1].trim() : "";
         logger.log(Level.INFO, "rem command recorded : " + parts[0]);
         return switch (parts[0]) {
-            case "rm" -> parseRemRm(parts);
-            case "ls" -> parseRemLs(rest);
-            case "on" -> parseRemOn(parts);
-            case "off" -> parseRemOff(parts);
-            case "snooze" -> parseRemSnooze(parts);
-            default -> parseRemAdd(arguments[1]);
+        case "rm" -> parseRemRm(parts);
+        case "ls" -> parseRemLs(rest);
+        case "on" -> parseRemOn(parts);
+        case "off" -> parseRemOff(parts);
+        case "snooze" -> parseRemSnooze(parts);
+        default -> parseRemAdd(arguments[1]);
         };
     }
 
