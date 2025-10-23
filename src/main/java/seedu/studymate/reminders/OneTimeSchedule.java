@@ -40,7 +40,6 @@ public final class OneTimeSchedule implements Schedule {
                 remindAt.getDate(),
                 remindAt.getTime()
         );
-        System.out.println("This is due: " + (!now.isBefore(target) && !isFired && onReminder));
         return !now.isBefore(target) && !isFired && onReminder;
     }
 

@@ -32,6 +32,30 @@ public class CommandHandlerTest {
         CommandHandler.cleanup();
     }
 
+    // Event Validation Test
+    @Test
+    void testHandleEvent_endTimeBeforeStartTime_throwsException() {
+        // Create an event where end time (datetime1) is before start time (datetime0)
+        DateTimeArg startTime = new DateTimeArg(
+                java.time.LocalDate.of(2025, 10, 25),
+                java.time.LocalTime.of(14, 0)
+        );
+        DateTimeArg endTime = new DateTimeArg(
+                java.time.LocalDate.of(2025, 10, 25),
+                java.time.LocalTime.of(12, 0) // 12:00 is before 14:00
+        );
+
+        Command cmd = new Command(CommandType.EVENT, "Team Meeting");
+        cmd.datetime0 = startTime;
+        cmd.datetime1 = endTime;
+
+        // Should throw exception with message "End time cannot be earlier than start time"
+        StudyMateException exception = assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+
+        assertEquals("End time cannot be earlier than start time", exception.getMessage());
+    }
+
     // Timer Start Command Tests
     @Test
     void testHandleTimerStart_defaultTimer() {
