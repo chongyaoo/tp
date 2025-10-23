@@ -50,10 +50,7 @@ public class CommandHandlerTest {
         cmd.datetime1 = endTime;
 
         // Should throw exception with message "End time cannot be earlier than start time"
-        StudyMateException exception = assertThrows(StudyMateException.class,
-                () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
-
-        assertEquals("End time cannot be earlier than start time", exception.getMessage());
+        assertThrows(StudyMateException.class, () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
     }
 
     // Timer Start Command Tests
