@@ -52,18 +52,38 @@ public class DateTimeArg implements Comparable<DateTimeArg> {
 
     @Override
     public int compareTo(DateTimeArg other) {
+        // Handle null dates
+        if (this.date == null && other.date == null) {
+            return compareTime(other);
+        }
+        if (this.date == null) {
+            return -1; // null dates come first
+        }
+        if (other.date == null) {
+            return 1; // null dates come first
+        }
+
         int dateComparison = this.date.compareTo(other.date);
         if (dateComparison != 0) {
             return dateComparison;
         }
 
-        // Dates are equal, compare times if both exist
-        if (this.time != null && other.time != null) {
-            return this.time.compareTo(other.time);
+        return compareTime(other);
+    }
+
+    private int compareTime(DateTimeArg other) {
+        if (this.time == null && other.time == null) {
+            return 0;
         }
 
-        // If one has time and the other doesn't, treat them as equal
-        return 0;
+        if (this.time == null) {
+            return -1; // null time come first
+        }
+        if (other.time == null) {
+            return 1; // null time come first
+        }
+
+        return this.time.compareTo(other.time);
     }
 }
 
