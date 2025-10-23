@@ -56,6 +56,7 @@ When the Parser component is called upon to parse a command, the following steps
    * `parseEdit()` - for edit commands
    * `parseMark()`, `parseUnmark()`, `parseDelete()` - for index-based operations
    * `parseRem()` - for reminder-related commands
+     * `parseRemOn()`, `parseRemOff()`, `parseRemRm()`, `parseLs()`, `parseAdd()`, `parseSnooze()` for each specific operation
    * `parseTimerStart()` - for timer start commands
 
 4. Each parsing method:
@@ -143,6 +144,8 @@ The Parser component supports the following command formats:
 * `rem MESSAGE @ DATE TIME -r INTERVAL` - Creates a recurring reminder (INTERVAL format: number + unit [s/m/h/d/w])
 * `rem ls` - Lists all reminders
 * `rem rm INDEX[,INDEX...]` - Deletes reminders
+* `rem snooze INDEX INTERVAL` - Snoozes a one-time reminder by the length of the interval (INTERVAL format: number + unit [s/m/h/d/w])
+* `rem on/off INDEX` - Turns the one-time/recurring reminder on/off
 
 **Timer Operations:**
 * `start [INDEX|NAME] [@MINUTES]` - Starts a timer with optional task index/label and duration
@@ -311,6 +314,13 @@ The CommandHandler executes commands in the following categories:
    - Remove reminders from ReminderList
    - Display confirmation
 
+4. **Snooze Commands** (`rem snooze INDEX INTERVAL`):
+   - Snoozes a One-Time reminder by the interval duration
+   - Turns the One-Time reminder back on, if the new remindAt timing valid (in the future)
+
+5. **Turn On/Off Commands** (`rem on/off INDEX`)
+   - Turns a One-Time/Recurring reminder On/Off
+
 **Timer Commands:**
 1. **Start Command** (`START`):
    - Check if another timer is active
@@ -330,15 +340,18 @@ The CommandHandler executes commands in the following categories:
 
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 
-
 ## Product scope
 ### Target user profile
 
-{Describe the target user profile}
+NUS students who rely on laptops to manage lectures, labs, CCAs, and project deadlines, prefer typing to clicking, 
+and need a quick, distraction-free way to record tasks, run short focus timers, set reminders, and track simple 
+habits offline.
 
 ### Value proposition
 
-{Describe the value proposition: what problem does it solve?}
+A keyboard-first planner: add tasks, start focus timers, set reminders, and log habits in seconds from the command line. 
+Built for fast typing and offline use, it displays clear summaries of tasks, due dates, time spent, and habit streaks 
+to help students manage workload during busy weeks and exams.
 
 ## User Stories
 

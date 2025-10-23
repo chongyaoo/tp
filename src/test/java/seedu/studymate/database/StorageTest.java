@@ -141,13 +141,14 @@ class StorageTest {
     @Test
     public void test_oneTimeReminder_save() throws Exception {
         reminders.addReminderOneTime("Doctor appointment",
-                new DateTimeArg(LocalDate.parse("2025-10-25")));
+                new DateTimeArg(LocalDate.parse("2025-11-25")));
 
         storage.save(tasks.getTasks(), reminders.getReminders());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
-        assertTrue(content.contains("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM +
-                "2025-10-25"));
+        //Should be On when reminder is created
+        assertTrue(content.contains("R" + DELIM + "0" + DELIM + "1" + DELIM + "Doctor appointment" + DELIM +
+                "2025-11-25"));
     }
 
     /**
@@ -162,7 +163,7 @@ class StorageTest {
 
         assertEquals(1, reminders.getCount());
         assertEquals("Doctor appointment", reminders.getReminder(0).getName());
-        assertFalse(reminders.getReminder(0).getOnReminder());
+        assertTrue(reminders.getReminder(0).getOnReminder());
     }
 
     /**
@@ -171,13 +172,14 @@ class StorageTest {
     @Test
     public void test_recurringReminder_save() throws Exception {
         reminders.addReminderRec("Weekly meeting",
-                new DateTimeArg(LocalDate.parse("2025-10-25")),
+                new DateTimeArg(LocalDate.parse("2025-11-25")),
                 Duration.ofDays(7));
 
         storage.save(tasks.getTasks(), reminders.getReminders());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
-        assertTrue(content.contains("R" + DELIM + "1" + DELIM + "0" + DELIM + "Weekly meeting" + DELIM + "2025-10-25" +
+        //Should be On when reminder is created
+        assertTrue(content.contains("R" + DELIM + "1" + DELIM + "1" + DELIM + "Weekly meeting" + DELIM + "2025-11-25" +
                 DELIM + "PT168H"));
     }
 
@@ -194,6 +196,6 @@ class StorageTest {
 
         assertEquals(1, reminders.getCount());
         assertEquals("Weekly meeting", reminders.getReminder(0).getName());
-        assertFalse(reminders.getReminder(0).getOnReminder());
+        assertTrue(reminders.getReminder(0).getOnReminder());
     }
 }
