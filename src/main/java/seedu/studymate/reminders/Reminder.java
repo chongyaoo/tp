@@ -32,6 +32,13 @@ public class Reminder {
         this.remindAt = dateTime;
     }
 
+    // Package-private constructor for testing with custom Schedule
+    Reminder(String name, DateTimeArg dateTime, Schedule schedule) {
+        this.name = name;
+        this.remindAt = dateTime;
+        this.schedule = schedule;
+    }
+
     /**
      * Returns the name of the task
      *
@@ -94,4 +101,3 @@ public class Reminder {
         return MessageFormatting.oneTimeReminderString(schedule.getOnReminder(), name, remindAt);
     }
 }
-

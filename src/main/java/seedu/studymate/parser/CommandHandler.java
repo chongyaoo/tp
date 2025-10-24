@@ -98,7 +98,11 @@ public class CommandHandler {
         MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
-    private static void handleEvent(TaskList taskList, Command cmd) {
+    private static void handleEvent(TaskList taskList, Command cmd) throws StudyMateException {
+        // ensures end time (cmd.datetime1) is not before start time (cmd.datetime0) of an event
+        if (cmd.datetime1.compareTo(cmd.datetime0) < 0) {
+            throw new StudyMateException("End time cannot be earlier than start time");
+        }
         taskList.addEvent(cmd.desc, cmd.datetime0, cmd.datetime1);
         int listCount = taskList.getCount();
         Task newTask = taskList.getTask(listCount - 1);
@@ -178,7 +182,7 @@ public class CommandHandler {
         reminderList.turnOffReminders(cmd.indexes);
     }
 
-    private static void handleRemSnooze(ReminderList reminderList, Command cmd) throws StudyMateException {
+    private static void handleRemSnooze(ReminderList reminderList, Command cmd) {
         reminderList.handleSnooze(cmd.index, cmd.snoozeDuration);
     }
 

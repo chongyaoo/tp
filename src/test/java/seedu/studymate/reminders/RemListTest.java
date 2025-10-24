@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
@@ -282,29 +284,39 @@ public class RemListTest {
 
     @Test
     void recurringReminder_resetsAfterFired() {
+        // Set a fixed "now" time for the test
         LocalDateTime fixedNow = LocalDateTime.of(2025, 10, 23, 12, 0);
-        LocalDateTime startTime = fixedNow.minusDays(2); // schedule is already overdue
+        Clock fixedClock = Clock.fixed(
+                fixedNow.atZone(ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault()
+        );
+
+        // Create a reminder that started 2 days ago (overdue)
+        LocalDateTime startTime = fixedNow.minusDays(2); // 2025-10-21 12:00
         DateTimeArg remDateTime = new DateTimeArg(startTime.toLocalDate(), startTime.toLocalTime());
         Duration interval = Duration.ofDays(1);
 
-        reminderList.addReminderRec("Daily reminder to take a shit", remDateTime, interval);
+        // Create recurring schedule with fixed clock and inject it into Reminder
+        RecurringSchedule recSchedule = new RecurringSchedule(remDateTime, interval, fixedClock);
+        Reminder recReminder = new Reminder("Daily reminder to take a shit", remDateTime, recSchedule);
 
-        Reminder recReminder = reminderList.getReminder(0);
-        assertTrue(recReminder.isDue()); // first time due
+        // Verify the reminder is due (it's overdue by 2 days)
+        assertTrue(recReminder.isDue(), "Reminder should be due since it's 2 days overdue");
 
-        recReminder.isFired(); // simulate firing, moves remindAt forward
-        LocalDateTime newTarget = LocalDateTime.of(
+        // Fire the reminder - this should reschedule it
+        recReminder.isFired();
+
+        // After firing, the next schedule should be 1 day from "now" (2025-10-24 12:00)
+        LocalDateTime actualNextSchedule = LocalDateTime.of(
                 recReminder.remindAt.getDate(),
-                recReminder.remindAt.getTime());
+                recReminder.remindAt.getTime()
+        );
+        LocalDateTime expectedNextSchedule = fixedNow.plusDays(1); // 2025-10-24 12:00
 
-        // Expected next time is "now plus 1 day"
-        LocalDateTime expected = fixedNow.plusDays(1);
+        assertEquals(expectedNextSchedule, actualNextSchedule,
+                "Next scheduled date/time should be exactly tomorrow from fixed 'now'");
 
-        assertEquals(expected.toLocalDate(), newTarget.toLocalDate(),
-                "Next scheduled date should be exactly tomorrow");
-        assertEquals(expected.toLocalTime().getHour(), newTarget.getHour(),
-                "Next scheduled hour should match the original time");
-
-        assertFalse(recReminder.isDue());
+        // The reminder should NOT be due anymore (next occurrence is tomorrow)
+        assertFalse(recReminder.isDue(), "Reminder should not be due after rescheduling to tomorrow");
     }
 }
