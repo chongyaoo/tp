@@ -83,11 +83,12 @@ public class CommandHandler {
             activeTimer = null;
         }
 
-        if (scheduler != null && !scheduler.isShutdown()) {
-            if (!scheduler.isShutdown()) {
-                scheduler.shutdownNow();
+        ScheduledExecutorService currentScheduler = scheduler;
+        if (currentScheduler != null) {
+            scheduler = null;  //
+            if (!currentScheduler.isShutdown()) {
+                currentScheduler.shutdownNow();
             }
-            scheduler = null;
         }
     }
 
@@ -257,10 +258,11 @@ public class CommandHandler {
             throw new StudyMateException("No timer is currently active");
         }
 
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
+        ScheduledExecutorService currentScheduler = scheduler;
+        if (currentScheduler != null) {
+            scheduler = null;  // Clear reference first
+            currentScheduler.shutdownNow();
             logger.log(Level.INFO, "Scheduler shut down with reset command");
-            scheduler = null;
         }
 
         assert(scheduler == null);
