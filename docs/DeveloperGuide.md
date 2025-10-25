@@ -16,14 +16,13 @@ The Parser component is responsible for interpreting user input and converting i
 
 The Parser component consists of several key classes that work together to handle command parsing and validation:
 
-![Class Diagram of Parser Component](images/ParserClassDiagram.png)
+![Class Diagram of Parser Component](images/Parser.png)
 
 * `Parser` - The main parser class that interprets raw user input and creates `Command` objects
 * `Command` - Encapsulates the parsed command with its type and relevant parameters
 * `CommandType` - An enumeration that defines all supported command types in the application
-* `CommandHandler` - Executes the parsed commands by coordinating with the Model (TaskList, ReminderList) and UI components
-* `IndexValidator` - Validates index inputs to ensure they are within valid ranges
 * `DateTimeArg` - Encapsulates date/time arguments for deadline, event, and reminder commands with both date and optional time components
+* `StudyMateException` - Exception type thrown when parsing errors occur
 
 The Parser component works with the following workflow:
 
@@ -31,23 +30,35 @@ The Parser component works with the following workflow:
 2. **Command Parsing**: The `Parser` analyzes the input and identifies the command type
 3. **Parameter Extraction**: Relevant parameters (descriptions, indices, dates, times, etc.) are extracted and validated
 4. **Command Object Creation**: A `Command` object is instantiated with the appropriate `CommandType` and parameters
-5. **Command Execution**: The `CommandHandler` receives the `Command` object and executes the corresponding logic
+5. **Error Handling**: If parsing fails, a `StudyMateException` is thrown with a descriptive error message
+
+#### Parser Component Interactions
+
+The diagram below shows how the Parser component interacts with other components in the system:
+
+![Parser Interactions Diagram](images/ParserInteraction.png)
+
+The Parser creates Command objects that are consumed by CommandHandler. It uses DateTimeArg for temporal data and throws StudyMateException for errors.
 
 #### How the Parser Component Works
 
-The sequence diagram below illustrates the interactions within the Parser component, taking `parse("deadline Submit report /by 2025-10-25")` as an example:
+The sequence diagram below illustrates the interactions within the Parser component, taking `parse("todo read book")` as an example:
 
-![Sequence Diagram for Parsing Deadline Command](images/ParserSequenceDiagram.png)
+![Sequence Diagram for Parsing Todo Command](images/ParserToDo.png)
 
-**Note**: The lifeline for `Parser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
+**Example: Parsing "todo read book"**
 
 When the Parser component is called upon to parse a command, the following steps occur:
 
-1. The `StudyMate` main class receives user input and passes it to the `Parser` object's `parse()` method.
+1. The `StudyMate` main class creates a `Parser` instance and calls its `parse()` method with the user input string (e.g., "todo read book").
 
-2. The `Parser` analyzes the input string to identify the command word (e.g., "deadline", "todo", "mark", "start").
+2. The `Parser` normalizes the input by collapsing multiple whitespaces into single spaces using `replaceAll("\\s+", " ")`.
 
-3. Based on the identified command type, the `Parser` invokes the appropriate private parsing method:
+3. The `Parser` splits the input into command word and arguments using `split(" ", 2)`, resulting in:
+   - `arguments[0]` = "todo"
+   - `arguments[1]` = "read book"
+
+4. Based on the identified command type, the `Parser` invokes the appropriate private parsing method:
    * `parseToDo()` - for todo commands
    * `parseDeadline()` - for deadline commands
    * `parseEvent()` - for event commands
@@ -182,26 +193,59 @@ The CommandHandler component is responsible for executing parsed commands by coo
 
 The CommandHandler component acts as the controller in the application architecture:
 
-![Class Diagram of CommandHandler Component](images/CommandHandlerClassDiagram.png)
+![Class Diagram of CommandHandler Component](images/CommandHandler.png)
 
 * `CommandHandler` - Static class that executes commands and manages application state
+* `Command` - Encapsulates the parsed command with its type and relevant parameters
+* `CommandType` - Enumeration defining all supported command types
+* `TaskList` - Model component managing the list of tasks
+* `ReminderList` - Model component managing the list of reminders
 * `Timer` - Manages timer state and countdown functionality
-* `ScheduledExecutorService` - Java concurrent utility for scheduling timer monitoring
+* `TimerState` - Enumeration defining timer states (IDLE, RUNNING, PAUSED)
+* `Task` - Abstract base class for all task types
+* `Reminder` - Represents a reminder with schedule information
 * `MessageHandler` - UI component for displaying results to the user
+* `IndexValidator` - Utility class for validating index inputs
+* `StudyMateException` - Exception type thrown for command execution errors
+
+#### CommandHandler Component Interactions
+
+The diagram below shows how the CommandHandler component interacts with other components in the system:
+
+![CommandHandler Interactions Diagram](images/CommandHandlerInteractions.png)
+
+The CommandHandler receives Command objects from the Parser, coordinates with Model components (TaskList, ReminderList, Timer), validates operations using IndexValidator, and communicates results through MessageHandler.
 
 #### How the CommandHandler Component Works
 
-The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, markCommand)` as an example:
+The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, todoCommand)` as an example where the command is for "todo read book":
 
-![Sequence Diagram for Command Execution](images/CommandHandlerSequenceDiagram.png)
+![Sequence Diagram for Command Execution](images/CommandHandlerToDo.png)
+
+**Example: Executing "todo read book" command**
+
+**Example: Executing "todo read book" command**
 
 When the CommandHandler component is called upon to execute a command, the following steps occur:
 
-1. `StudyMate` calls `CommandHandler.executeCommand()` with the TaskList, ReminderList, and parsed Command object.
+1. `StudyMate` calls `CommandHandler.executeCommand()` with the TaskList, ReminderList, and parsed Command object (containing type=TODO, desc="read book").
 
-2. CommandHandler uses a switch statement on `cmd.type` to determine which handler method to invoke.
+2. CommandHandler uses a switch statement on `cmd.type` to determine which handler method to invoke. Since the command type is TODO, it routes to `handleToDo()`.
 
-3. The appropriate handler method is called (e.g., `handleMark()` for MARK commands, `handleRemAddRec()` for recurring reminders).
+3. The `handleToDo()` method is invoked with the TaskList and Command object.
+
+4. **For the todo command execution:**
+   * `handleToDo()` calls `taskList.addToDo(cmd.desc)` to add the new task
+   * TaskList creates a new ToDo task object and adds it to its internal list
+   * `handleToDo()` calls `taskList.getCount()` to retrieve the total number of tasks
+   * `handleToDo()` calls `taskList.getTask(listCount - 1)` to retrieve the newly added task
+   * `handleToDo()` calls `MessageHandler.sendAddTaskMessage(newTask, listCount)` to display the confirmation message
+
+5. Control returns to StudyMate through the call stack.
+
+**General Command Execution Pattern:**
+
+For all commands, the CommandHandler follows a similar pattern:
 
 4. **For index-based operations:**
    * `IndexValidator.validateIndexes()` is called to ensure all indices are within valid ranges

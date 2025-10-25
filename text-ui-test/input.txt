@@ -2,6 +2,7 @@ todo Read chapter 1
 todo Complete assignment
 deadline Submit report /by 2025-10-15
 deadline Prepare presentation /by 2025-10-20
+event Team meeting /from 2025-10-25 /to 2025-10-25
 list
 mark 1
 mark 2,3
@@ -43,4 +44,9 @@ deadline Sample /by
 deadline Sample /by invalid-date
 mark
 delete invalid
+todo Test persistence
+deadline Test deadline /by 2025-12-01
+event Test event /from 2025-12-05 /to 2025-12-06
+rem Test one-time @ 2025-12-10 10:00
+rem Test recurring @ 2025-12-15 15:00 -r 3d
 bye

@@ -16,9 +16,23 @@ java -jar %jarloc% < ..\..\text-ui-test\input.txt > ..\..\text-ui-test\ACTUAL.TX
 
 cd ..\..\text-ui-test
 
-FC ACTUAL.TXT EXPECTED.TXT >NUL && ECHO Test passed! || (
-    Echo Test failed!
+FC ACTUAL.TXT EXPECTED.TXT >NUL && ECHO Test 1 passed! || (
+    Echo Test 1 failed!
     FC ACTUAL.TXT EXPECTED.TXT
+    exit /b 1
 )
+
+cd ..\build\libs
+java -jar %jarloc% < ..\..\text-ui-test\input2.txt > ..\..\text-ui-test\ACTUAL2.TXT
+
+cd ..\..\text-ui-test
+
+FC ACTUAL2.TXT EXPECTED2.TXT >NUL && ECHO Test 2 passed! || (
+    Echo Test 2 failed!
+    FC ACTUAL2.TXT EXPECTED2.TXT
+    exit /b 1
+)
+
+echo All tests passed!
 
 if exist "..\data\tasks.txt" del "..\data\tasks.txt"
