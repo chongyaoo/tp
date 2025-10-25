@@ -25,11 +25,17 @@ Got it. I've added this task:
 Now you have 4 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
+Got it. I've added this task:
+[E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
+Now you have 5 tasks in the task list.
+____________________________________________________________
+____________________________________________________________
 Here are the tasks in your task list:
 1. [T][ ] Read chapter 1
 2. [T][ ] Complete assignment
 3. [D][ ] Submit report (by: 2025-10-15)
 4. [D][ ] Prepare presentation (by: 2025-10-20)
+5. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
 ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
@@ -56,41 +62,46 @@ Here are the tasks in your task list:
 2. [T][X] Complete assignment
 3. [D][X] Submit report (by: 2025-10-15)
 4. [D][X] Prepare presentation (by: 2025-10-20)
+5. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these tasks:
 [D][X] Submit report (by: 2025-10-15)
 [T][X] Complete assignment
-Now you have 2 tasks in the task list.
+Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][X] Read chapter 1
 2. [D][X] Prepare presentation (by: 2025-10-20)
+3. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this One-Time reminder:
-[RO][ ] Project sync (2025-11-01T14:30)
+[RO][O] Project sync (2025-11-01 14:30)
 Now you have 1 reminder in the reminder list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this recurring reminder:
-[R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
+[RR][O] Weekly check-in (interval: 168H)
+Next reminder: 2025-11-03 09:00
 Now you have 2 reminders in the reminder list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your Reminders:
-1. [RO][ ] Project sync (2025-11-01T14:30)
-2. [R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
+1. [RO][O] Project sync (2025-11-01 14:30)
+2. [RR][O] Weekly check-in (interval: 168H)
+Next reminder: 2025-11-03 09:00
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these reminders:
-[R][ ] Weekly check-in (2025-11-03T09:00, interval: PT168H)
+[RR][O] Weekly check-in (interval: 168H)
+Next reminder: 2025-11-03 09:00
 Now you have 1 reminder in the Reminders list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your Reminders:
-1. [RO][ ] Project sync (2025-11-01T14:30)
+1. [RO][O] Project sync (2025-11-01 14:30)
 ____________________________________________________________
 ____________________________________________________________
 The rm command must be followed by a task number.
@@ -189,6 +200,32 @@ The mark command must be followed by a task number.
 ____________________________________________________________
 ____________________________________________________________
 The delete command must be followed by a valid input
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+[T][ ] Test persistence
+Now you have 4 tasks in the task list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+[D][ ] Test deadline (by: 2025-12-01)
+Now you have 5 tasks in the task list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+[E][ ] Test event (from: 2025-12-05, to: 2025-12-06)
+Now you have 6 tasks in the task list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this One-Time reminder:
+[RO][O] Test one-time (2025-12-10 10:00)
+Now you have 2 reminders in the reminder list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this recurring reminder:
+[RR][O] Test recurring (interval: 72H)
+Next reminder: 2025-12-15 15:00
+Now you have 3 reminders in the reminder list.
 ____________________________________________________________
 ____________________________________________________________
 Bye. Hope to see you again soon!
