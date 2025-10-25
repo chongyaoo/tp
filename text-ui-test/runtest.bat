@@ -24,6 +24,8 @@ FC ACTUAL.TXT EXPECTED.TXT >NUL && ECHO Test 1 passed! || (
     exit /b 1
 )
 
+set TEST_TIME=2025-10-26T00:00:00
+
 cd ..\build\libs
 java -jar %jarloc% < ..\..\text-ui-test\input2.txt > ..\..\text-ui-test\ACTUAL2.TXT
 

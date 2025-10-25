@@ -516,13 +516,11 @@ public class Parser {
     }
 
     private Command parseHabitAdd(String habit) throws StudyMateException {
-        if (habit.isBlank()) {
-            throw new StudyMateException("Input a habit!");
-        }
         String[] arguments = habit.trim().split("\\s+");
-
         int tIndex = Arrays.asList(arguments).indexOf("-t");
-        if (tIndex == arguments.length - 1 || tIndex == -1 || tIndex == 0) {
+        if (habit.isBlank() || tIndex == 0) {
+            throw new StudyMateException("Input a habit!");
+        } else if (tIndex == arguments.length - 1 || tIndex == -1) {
             throw new StudyMateException("Input a recurring duration after the -t flag!");
         }
         Duration interval = parseInterval(arguments[tIndex + 1]);

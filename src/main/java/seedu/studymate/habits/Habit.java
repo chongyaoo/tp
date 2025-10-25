@@ -25,12 +25,7 @@ public class Habit {
         this.deadline = new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime());
         this.interval = interval;
         this.clock = clock;
-        streak = 0;
-    }
-
-    // Constructor for loading habits from file
-    public Habit(String name, DateTimeArg deadline, Duration interval, int streak) {
-        this(name, deadline, interval, streak, Clock.systemDefaultZone());
+        streak = 1;
     }
 
     public Habit(String name, DateTimeArg deadline, Duration interval, int streak, Clock clock) {

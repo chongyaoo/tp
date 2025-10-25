@@ -453,18 +453,20 @@ public class MessageHandler {
         switch (result) {
         case ON_TIME:
             System.out.println("Great! You've incremented your streak for: " + habit.toString());
+            System.out.println(LINE);
             break;
         case TOO_EARLY:
             System.out.println("Too early! You can only increment the streak after the deadline.");
             System.out.println("Habit: " + habit);
+            System.out.println(LINE);
             break;
         case TOO_LATE:
             System.out.println("Missed the deadline! Your streak has been reset to 1.");
             System.out.println("Habit: " + habit);
+            System.out.println(LINE);
             break;
         default:
             throw new StudyMateException("Something went wrong with streaking");
         }
-        System.out.println(LINE);
     }
 }

@@ -49,7 +49,20 @@ deadline Test deadline /by 2025-12-01 10:00
 event Test event /from 2025-12-05 09:00 /to 2025-12-06 17:00
 rem Test one-time @ 2025-12-10 10:00
 rem Test recurring @ 2025-12-15 15:00 -r 3d
+habit
+habit -t 1d
+habit Exercise -t
+habit Exercise
+habit Invalid interval -t abc
+habit Morning routine -t 2h
+habit rm
+habit rm invalid
+habit streak
+habit streak invalid
 habit Exercise -t 1d
 habit Reading -t 12h
+habit ls
+habit streak 1
+habit rm 2
 habit ls
 bye

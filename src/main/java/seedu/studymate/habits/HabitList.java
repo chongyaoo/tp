@@ -88,7 +88,7 @@ public class HabitList {
      * @param streak The existing streak count
      */
     public void addHabit(String name, DateTimeArg deadline, Duration interval, int streak) {
-        Habit newHabit = new Habit(name, deadline, interval, streak);
+        Habit newHabit = new Habit(name, deadline, interval, streak, clock);
         habits.add(newHabit);
         assert (habits.contains(newHabit));
         logger.log(Level.INFO, "Loaded Habit: " + newHabit);

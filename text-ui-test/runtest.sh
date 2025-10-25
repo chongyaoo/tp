@@ -23,6 +23,8 @@ else
     exit 1
 fi
 
+export TEST_TIME=2025-10-26T00:00:00
+
 java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input2.txt > ACTUAL2.TXT
 
 cp EXPECTED2.TXT EXPECTED2-UNIX.TXT
