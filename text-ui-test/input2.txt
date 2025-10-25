@@ -1,3 +1,8 @@
 list
 rem ls
+habit ls
+habit streak 2
+habit ls
+habit streak 1
+habit ls
 bye

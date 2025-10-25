@@ -1,5 +1,7 @@
 package seedu.studymate.database;
 
+import seedu.studymate.habits.Habit;
+import seedu.studymate.habits.HabitList;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.reminders.Reminder;
 import seedu.studymate.reminders.ReminderList;
@@ -34,7 +36,7 @@ public class Storage {
      * Loads tasks from the save file into a TaskList.
      * If file not found, creates a new empty one.
      */
-    public void load(TaskList taskList, ReminderList reminderList) throws StudyMateException {
+    public void load(TaskList taskList, ReminderList reminderList, HabitList habitList) throws StudyMateException {
         File file = new File(filePath);
 
         if (!file.exists()) {
@@ -51,7 +53,7 @@ public class Storage {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                parseAndAddLine(line, taskList, reminderList);
+                parseAndAddLine(line, taskList, reminderList, habitList);
             }
         } catch (IOException e) {
             throw new StudyMateException("Error reading save file: " + e.getMessage());
@@ -65,7 +67,7 @@ public class Storage {
      * @param reminders The list of reminders to save.
      * @throws StudyMateException If an error occurs while writing to the file.
      */
-    public void save(List<Task> tasks, List<Reminder> reminders) throws StudyMateException {
+    public void save(List<Task> tasks, List<Reminder> reminders, List<Habit> habits) throws StudyMateException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             for (Task task : tasks) {
                 bw.write(task.toSaveString());
@@ -73,6 +75,10 @@ public class Storage {
             }
             for (Reminder reminder : reminders) {
                 bw.write(reminder.toSaveString());
+                bw.newLine();
+            }
+            for (Habit habit : habits) {
+                bw.write(habit.toSaveString());
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -89,7 +95,8 @@ public class Storage {
      * @param reminderList The ReminderList to add parsed reminders to.
      * @throws StudyMateException If the line format is invalid.
      */
-    private void parseAndAddLine(String line, TaskList taskList, ReminderList reminderList) throws StudyMateException {
+    private void parseAndAddLine(String line, TaskList taskList, ReminderList reminderList, HabitList habitList)
+            throws StudyMateException {
         String[] parts = line.split(Character.toString(delim));
 
         /* Skip all the lines that have less than 3 parts. */
@@ -210,6 +217,32 @@ public class Storage {
             }
             break;
 
+        case "H":
+            if (parts.length < 5) {
+                return;
+            }
+            String habitName = parts[1];
+            String[] rawHabitDateTime = parts[2].split("T");
+            DateTimeArg habitDeadline;
+
+            try {
+                if (rawHabitDateTime.length == 2 && !rawHabitDateTime[1].trim().isEmpty()) {
+                    habitDeadline = new DateTimeArg(LocalDate.parse(rawHabitDateTime[0].trim()),
+                            LocalTime.parse(rawHabitDateTime[1].trim()));
+                } else if (!rawHabitDateTime[0].trim().isEmpty()) {
+                    habitDeadline = new DateTimeArg(LocalDate.parse(rawHabitDateTime[0].trim()));
+                } else {
+                    throw new StudyMateException("Error parsing habit deadline!");
+                }
+            } catch (Exception e) {
+                throw new StudyMateException("Error parsing habit date/time: " + e.getMessage());
+            }
+
+            Duration habitInterval = Duration.parse(parts[3]);
+            int habitStreak = Integer.parseInt(parts[4]);
+
+            habitList.addHabit(habitName, habitDeadline, habitInterval, habitStreak);
+            break;
 
         default:
         // ignore invalid lines

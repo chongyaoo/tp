@@ -3,6 +3,7 @@ package seedu.studymate.database;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import seedu.studymate.habits.HabitList;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
@@ -26,6 +27,7 @@ class StorageTest {
     private Storage storage;
     private TaskList tasks;
     private ReminderList reminders;
+    private HabitList habits;
 
     /**
           * Creates a temporary test file to test the storage class
@@ -37,6 +39,7 @@ class StorageTest {
         storage = new Storage(TEST_FILE_PATH);
         tasks = new TaskList();
         reminders = new ReminderList();
+        habits = new HabitList();
     }
 
     /**
@@ -55,7 +58,7 @@ class StorageTest {
         tasks.addToDo("Read book");
         tasks.getTask(0).setDone(true);
 
-        storage.save(tasks.getTasks(), reminders.getReminders());
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
         assertTrue(content.contains("T" + DELIM + "1" + DELIM + "Read book"));
@@ -68,7 +71,7 @@ class StorageTest {
     public void test_todo_load() throws Exception {
         Files.write(Paths.get(TEST_FILE_PATH), List.of("T" + DELIM + "1" + DELIM + "Read book"),
                 StandardOpenOption.CREATE);
-        storage.load(tasks, reminders);
+        storage.load(tasks, reminders, habits);
 
         assertEquals(1, tasks.getCount());
         assertEquals("Read book", tasks.getTask(0).getName());
@@ -83,7 +86,7 @@ class StorageTest {
         TaskList tasks = new TaskList();
         tasks.addDeadline("Submit report", new DateTimeArg(LocalDate.parse("2025-10-15")));
 
-        storage.save(tasks.getTasks(), reminders.getReminders());
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
         assertTrue(content.contains("D" + DELIM + "0" + DELIM + "Submit report" + DELIM + "2025-10-15"));
@@ -97,7 +100,7 @@ class StorageTest {
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of("D" + DELIM + "0" + DELIM + "Submit report" + DELIM + "2025-10-15"),
                 StandardOpenOption.CREATE);
-        storage.load(tasks, reminders);
+        storage.load(tasks, reminders, habits);
 
         assertEquals(1, tasks.getCount());
         assertEquals("Submit report", tasks.getTask(0).getName());
@@ -113,7 +116,7 @@ class StorageTest {
                 new DateTimeArg(LocalDate.parse("2025-10-20")),
                 new DateTimeArg(LocalDate.parse("2025-10-22")));
 
-        storage.save(tasks.getTasks(), reminders.getReminders());
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
         assertTrue(content.contains("E" + DELIM + "0" + DELIM + "Team meeting" + DELIM + "2025-10-20" + DELIM +
@@ -128,7 +131,7 @@ class StorageTest {
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of("E" + DELIM + "0" + DELIM + "Team meeting" + DELIM + "2025-10-20" + DELIM + "2025-10-22"),
                 StandardOpenOption.CREATE);
-        storage.load(tasks, reminders);
+        storage.load(tasks, reminders, habits);
 
         assertEquals(1, tasks.getCount());
         assertEquals("Team meeting", tasks.getTask(0).getName());
@@ -143,7 +146,7 @@ class StorageTest {
         reminders.addReminderOneTime("Doctor appointment",
                 new DateTimeArg(LocalDate.parse("2025-11-25")));
 
-        storage.save(tasks.getTasks(), reminders.getReminders());
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
         //Should be On when reminder is created
@@ -159,7 +162,7 @@ class StorageTest {
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM + "2025-10-25"),
                 StandardOpenOption.CREATE);
-        storage.load(tasks, reminders);
+        storage.load(tasks, reminders, habits);
 
         assertEquals(1, reminders.getCount());
         assertEquals("Doctor appointment", reminders.getReminder(0).getName());
@@ -175,7 +178,7 @@ class StorageTest {
                 new DateTimeArg(LocalDate.parse("2025-11-25")),
                 Duration.ofDays(7));
 
-        storage.save(tasks.getTasks(), reminders.getReminders());
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
         String content = Files.readString(Paths.get(TEST_FILE_PATH));
 
         //Should be On when reminder is created
@@ -192,7 +195,7 @@ class StorageTest {
                 List.of("R" + DELIM + "1" + DELIM + "0" + DELIM + "Weekly meeting" + DELIM + "2025-10-25" + DELIM +
                         "P7D"),
                 StandardOpenOption.CREATE);
-        storage.load(tasks, reminders);
+        storage.load(tasks, reminders, habits);
 
         assertEquals(1, reminders.getCount());
         assertEquals("Weekly meeting", reminders.getReminder(0).getName());

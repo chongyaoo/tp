@@ -25,5 +25,9 @@ public enum CommandType {
     RESUME,
     RESET,
     STAT,
+    HABIT_ADD,
+    HABIT_STREAK,
+    HABIT_LIST,
+    HABIT_DELETE,
     BYE
 }

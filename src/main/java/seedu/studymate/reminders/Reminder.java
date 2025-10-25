@@ -5,6 +5,7 @@ import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.ui.MessageFormatting;
 
+import java.time.Clock;
 import java.time.Duration;
 
 /**
@@ -19,15 +20,17 @@ public class Reminder {
      * Constructs a Reminder with default status !isReminded
      *
      * @param name The name of the task
+     * @param dateTime The date and time for the reminder
+     * @param clock The clock to use for time operations
      **/
-    public Reminder(String name, DateTimeArg dateTime) { //One-Time Schedule
-        this.schedule = new OneTimeSchedule(dateTime);
+    public Reminder(String name, DateTimeArg dateTime, Clock clock) { //One-Time Schedule
+        this.schedule = new OneTimeSchedule(dateTime, clock);
         this.name = name;
         this.remindAt = dateTime;
     }
 
-    public Reminder(String name, DateTimeArg dateTime, Duration interval) { //Recurring Schedule
-        this.schedule = new RecurringSchedule(dateTime, interval);
+    public Reminder(String name, DateTimeArg dateTime, Duration interval, Clock clock) { //Recurring Schedule
+        this.schedule = new RecurringSchedule(dateTime, interval, clock);
         this.name = name;
         this.remindAt = dateTime;
     }

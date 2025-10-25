@@ -8,6 +8,8 @@ cd ..
 
 cd text-ui-test
 
+export TEST_TIME=2025-10-25T12:00:00
+
 java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input.txt > ACTUAL.TXT
 
 cp EXPECTED.TXT EXPECTED-UNIX.TXT
@@ -20,6 +22,8 @@ else
     echo "Test 1 failed!"
     exit 1
 fi
+
+export TEST_TIME=2025-10-26T00:00:00
 
 java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input2.txt > ACTUAL2.TXT
 
@@ -36,7 +40,7 @@ fi
 
 echo "All tests passed!"
 
-rm -f ../data/tasks.txt
+rm -f ../data/StudyMate.txt
 
 exit 0
 

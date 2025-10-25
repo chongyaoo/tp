@@ -76,6 +76,8 @@ public class Parser {
             return new Command(CommandType.RESET);
         case "stat":
             return new Command(CommandType.STAT);
+        case "habit":
+            return parseHabit(arguments);
         default:
             throw new StudyMateException("Unknown command");
         }
@@ -108,12 +110,12 @@ public class Parser {
         }
 
         try {
-            DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(deadline));
+            DateTimeArg dateTimeArg = parseDateTimeString(deadline);
             logger.log(Level.INFO, "Deadline description: " + desc);
             logger.log(Level.INFO, "Deadline's deadline: " + dateTimeArg);
             return new Command(CommandType.DEADLINE, desc, dateTimeArg);
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad deadline syntax! The syntax is yyyy-mm-dd!");
+            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!");
         }
     }
 
@@ -143,22 +145,22 @@ public class Parser {
         }
 
         String[] secondSplit = firstSplit[1].split(Pattern.quote(DELIMITER_TO), 2);
-        String fromDate = secondSplit[0].trim();
-        String toDate = secondSplit.length > 1 ? secondSplit[1].trim() : "";
+        String fromDateTime = secondSplit[0].trim();
+        String toDateTime = secondSplit.length > 1 ? secondSplit[1].trim() : "";
 
-        if (desc.isEmpty() || fromDate.isEmpty() || toDate.isEmpty()) {
+        if (desc.isEmpty() || fromDateTime.isEmpty() || toDateTime.isEmpty()) {
             throw new StudyMateException("The description, from date and to date of an event cannot be empty!");
         }
 
         try {
-            DateTimeArg fromDateTimeArg = new DateTimeArg(LocalDate.parse(fromDate));
-            DateTimeArg toDateTimeArg = new DateTimeArg(LocalDate.parse(toDate));
+            DateTimeArg fromDateTimeArg = parseDateTimeString(fromDateTime);
+            DateTimeArg toDateTimeArg = parseDateTimeString(toDateTime);
             logger.log(Level.INFO, "Event description: " + desc);
             logger.log(Level.INFO, "Event's from date: " + fromDateTimeArg);
             logger.log(Level.INFO, "Event's to date: " + toDateTimeArg);
             return new Command(CommandType.EVENT, desc, fromDateTimeArg, toDateTimeArg);
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad date syntax! The syntax is yyyy-mm-dd!");
+            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm");
         }
     }
 
@@ -202,15 +204,15 @@ public class Parser {
                 return new Command(CommandType.EDIT_DESC, index, editArgs[2]);
             }
             case DEADLINE_FLAG -> {
-                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                DateTimeArg dateTimeArg = parseDateTimeString(editArgs[2]);
                 return new Command(CommandType.EDIT_DEADLINE, index, dateTimeArg);
             }
             case FROM_FLAG -> {
-                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                DateTimeArg dateTimeArg = parseDateTimeString(editArgs[2]);
                 return new Command(CommandType.EDIT_FROM, index, dateTimeArg);
             }
             case TO_FLAG -> {
-                DateTimeArg dateTimeArg = new DateTimeArg(LocalDate.parse(editArgs[2]));
+                DateTimeArg dateTimeArg = parseDateTimeString(editArgs[2]);
                 return new Command(CommandType.EDIT_TO, index, dateTimeArg);
             }
             default -> throw new StudyMateException(
@@ -221,8 +223,7 @@ public class Parser {
             throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
                     "Note that -flag can be n for name, d for deadline, f for from, t for to");
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
-                    "Note that -flag can be n for name, d for deadline, f for from, t for to");
+            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!");
         }
     }
 
@@ -497,5 +498,51 @@ public class Parser {
         logger.log(Level.INFO, "Timer label : " + label);
         logger.log(Level.INFO, "Target of timer : " + index);
         return new Command(CommandType.START, index, label, minutes);
+    }
+
+    private Command parseHabit(String[] arguments) throws StudyMateException { //including rem
+        if (arguments.length < 2) {
+            throw new StudyMateException("The habit command must be followed by a subcommand.");
+        }
+        String[] parts = arguments[1].trim().split("\\s+", 2);
+        String rest = parts.length > 1 ? parts[1].trim() : "";
+        logger.log(Level.INFO, "Habit command recorded : " + parts[0]);
+        return switch (parts[0]) {
+        case "rm" -> parseHabitRm(rest);
+        case "ls" -> new Command(CommandType.HABIT_LIST);
+        case "streak" -> parseHabitStreak(rest);
+        default -> parseHabitAdd(arguments[1]);
+        };
+    }
+
+    private Command parseHabitAdd(String habit) throws StudyMateException {
+        String[] arguments = habit.trim().split("\\s+");
+        int tIndex = Arrays.asList(arguments).indexOf("-t");
+        if (habit.isBlank() || tIndex == 0) {
+            throw new StudyMateException("Input a habit!");
+        } else if (tIndex == arguments.length - 1 || tIndex == -1) {
+            throw new StudyMateException("Input a recurring duration after the -t flag!");
+        }
+        Duration interval = parseInterval(arguments[tIndex + 1]);
+        String habitName = String.join(" ", java.util.Arrays.copyOfRange(arguments, 0, tIndex));
+        return new Command(CommandType.HABIT_ADD, habitName, interval);
+    }
+
+    private Command parseHabitStreak(String arguments) throws StudyMateException {
+        try {
+            int index = Integer.parseInt(arguments) - 1;
+            return new Command(CommandType.HABIT_STREAK, index);
+        } catch (NumberFormatException e) {
+            throw new StudyMateException("Please input a valid index!");
+        }
+    }
+
+    private Command parseHabitRm(String arguments) throws StudyMateException {
+        try {
+            int index = Integer.parseInt(arguments) - 1;
+            return new Command(CommandType.HABIT_DELETE, index);
+        } catch (NumberFormatException e) {
+            throw new StudyMateException("Please input a valid index!");
+        }
     }
 }

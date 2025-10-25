@@ -27,10 +27,11 @@ public class MessageFormatting {
      * @return The formatted string for display
      */
     public static String deadlineString(Boolean isDone, String name, DateTimeArg deadline) {
+        String dateTimeString = deadline.toString().replace("T", " ");
         if (isDone) {
-            return "[D][X] " + name + " (by: " + deadline + ")";
+            return "[D][X] " + name + " (by: " + dateTimeString + ")";
         }
-        return "[D][ ] " + name + " (by: " + deadline + ")";
+        return "[D][ ] " + name + " (by: " + dateTimeString + ")";
     }
 
     /**
@@ -40,10 +41,12 @@ public class MessageFormatting {
      * @return The formatted string for display
      */
     public static String eventString(Boolean isDone, String name, DateTimeArg from, DateTimeArg to) {
+        String fromString = from.toString().replace("T", " ");
+        String toEventString = to.toString().replace("T", " ");
         if (isDone) {
-            return "[E][X] " + name + " (from: " + from + ", to: " + to + ")";
+            return "[E][X] " + name + " (from: " + fromString + ", to: " + toEventString + ")";
         }
-        return "[E][ ] " + name + " (from: " + from + ", to: " + to + ")";
+        return "[E][ ] " + name + " (from: " + fromString + ", to: " + toEventString + ")";
     }
 
     public static String oneTimeReminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
@@ -67,5 +70,18 @@ public class MessageFormatting {
         returnString = "[RR][ ] " + name + " (interval: " + reminderIntervalString + ")\n" +
                 "Next reminder: " + dateTimeString;
         return returnString;
+    }
+
+    /**
+     * Returns a formatted string representation of a habit
+     *
+     * @param name The name of the habit
+     * @param deadline The deadline for the habit
+     * @param streak The current streak count
+     * @return The formatted string for display
+     */
+    public static String habitString(String name, DateTimeArg deadline, int streak) {
+        String deadlineString = deadline.toString().replace("T", " ");
+        return "[H] " + name + " (deadline: " + deadlineString + ", streak: " + streak + ")";
     }
 }

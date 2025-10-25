@@ -21,10 +21,8 @@ public class Command {
     // Timer
     public Integer duration;
 
-    // Rem trigger interval
-    public Duration remindInterval;
+    public Duration interval;
 
-    // Rem snooze interval
     public Duration snoozeDuration;
 
     public Command(CommandType type) {
@@ -34,6 +32,11 @@ public class Command {
     public Command(CommandType type, String desc) {
         this.type = type;
         this.desc = desc;
+    }
+
+    public Command(CommandType type, int index) {
+        this.type = type;
+        this.index = index;
     }
 
     public Command(CommandType type, int index, String desc) {
@@ -109,11 +112,16 @@ public class Command {
     }
 
     // recurring reminder
-    public Command(CommandType type, String name, DateTimeArg remindAt, Duration remindInterval) {
+    public Command(CommandType type, String name, DateTimeArg remindAt, Duration interval) {
         this.type = type;
         this.message = name;
         this.datetime0 = remindAt;
-        this.remindInterval = remindInterval;
+        this.interval = interval;
     }
 
+    public Command(CommandType type, String name, Duration interval) {
+        this.type = type;
+        this.desc = name;
+        this.interval = interval;
+    }
 }

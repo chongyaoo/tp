@@ -1,5 +1,6 @@
 package seedu.studymate.reminders;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,22 +20,28 @@ import seedu.studymate.ui.MessageHandler;
 public class ReminderList {
     private static final Logger logger = Logger.getLogger("TaskList Logger");
     private final ArrayList<Reminder> reminderList;
+    private final Clock clock;
 
     /**
      * Constructs an empty TaskList
      */
-    public ReminderList() {
+    public ReminderList(Clock clock) {
         reminderList = new ArrayList<>();
+        this.clock = clock;
+    }
+
+    public ReminderList() {
+        this(Clock.systemDefaultZone());
     }
 
     public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
-        Reminder newReminder = new Reminder(name, dateTime, interval);
+        Reminder newReminder = new Reminder(name, dateTime, interval, clock);
         reminderList.add(newReminder);
         assert (reminderList.contains(newReminder));
     }
 
     public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) {
-        Reminder newReminder = new Reminder(name, dateTime);
+        Reminder newReminder = new Reminder(name, dateTime, clock);
         reminderList.add(newReminder);
         assert (reminderList.contains(newReminder));
     }
@@ -76,7 +83,7 @@ public class ReminderList {
                 alreadyTurnOnReminders.add(reminder);
             }
             assert (reminder.getOnReminder());
-            logger.log(Level.INFO, "Turned on: " + reminder.toString());
+            logger.log(Level.INFO, "Turned on: " + reminder);
         }
         if (!isTurnOnReminders.isEmpty()) {
             MessageHandler.sendIsTurnOnReminderMessage(isTurnOnReminders);
@@ -100,7 +107,7 @@ public class ReminderList {
                 alreadyTurnOffReminders.add(reminder);
             }
             assert (!reminder.getOnReminder());
-            logger.log(Level.INFO, "Turned off: " + reminder.toString());
+            logger.log(Level.INFO, "Turned off: " + reminder);
         }
         if (!isTurnOffReminders.isEmpty()) {
             MessageHandler.sendIsTurnOffReminderMessage(isTurnOffReminders);

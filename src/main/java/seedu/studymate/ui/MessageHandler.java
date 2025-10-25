@@ -1,5 +1,9 @@
 package seedu.studymate.ui;
 
+import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.habits.Habit;
+import seedu.studymate.habits.HabitList;
+import seedu.studymate.habits.StreakResult;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.reminders.IndexedReminder;
 import seedu.studymate.reminders.Reminder;
@@ -380,5 +384,89 @@ public class MessageHandler {
         int minutes = (int) (totalSeconds / 60);
         int seconds = (int) (totalSeconds % 60);
         return String.format("%d:%02d", minutes, seconds);
+    }
+
+    /**
+     * Prints the habit list
+     *
+     * @param habitList The HabitList object to be printed
+     */
+    public static void sendHabitList(HabitList habitList) {
+        if (habitList.getCount() == 0) {
+            sendMessage("Habit list is empty!");
+            return;
+        }
+        System.out.println(LINE);
+        System.out.println("Here are the habits in your habit list:");
+        int index = 1;
+        for (Habit habit : habitList.getAllHabits()) {
+            System.out.println(index + ". " + habit);
+            index += 1;
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a confirmation message after a habit has been added
+     *
+     * @param habit The habit that was added
+     * @param count The current number of habits in the list
+     */
+    public static void sendAddHabitMessage(Habit habit, int count) {
+        System.out.println(LINE);
+        System.out.println("Got it. I've added this habit:");
+        System.out.println(habit);
+        if (count == 1) {
+            System.out.println("Now you have 1 habit in the habit list.");
+        } else {
+            System.out.println("Now you have " + count + " habits in the habit list.");
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a confirmation message after a habit has been deleted
+     *
+     * @param habit The habit that was deleted
+     * @param count The current number of habits in the list
+     */
+    public static void sendDeleteHabitMessage(Habit habit, int count) {
+        System.out.println(LINE);
+        System.out.println("Got it. I've deleted this habit:");
+        System.out.println(habit);
+        if (count == 1) {
+            System.out.println("Now you have 1 habit in the habit list.");
+        } else {
+            System.out.println("Now you have " + count + " habits in the habit list.");
+        }
+        System.out.println(LINE);
+    }
+
+    /**
+     * Prints a message based on the result of incrementing a habit's streak
+     *
+     * @param habit The habit whose streak was incremented
+     * @param result The result of the increment operation
+     */
+    public static void sendIncStreakMessage(Habit habit, StreakResult result) throws StudyMateException {
+        System.out.println(LINE);
+        switch (result) {
+        case ON_TIME:
+            System.out.println("Great! You've incremented your streak for: " + habit.toString());
+            System.out.println(LINE);
+            break;
+        case TOO_EARLY:
+            System.out.println("Too early! You can only increment the streak after the deadline.");
+            System.out.println("Habit: " + habit);
+            System.out.println(LINE);
+            break;
+        case TOO_LATE:
+            System.out.println("Missed the deadline! Your streak has been reset to 1.");
+            System.out.println("Habit: " + habit);
+            System.out.println(LINE);
+            break;
+        default:
+            throw new StudyMateException("Something went wrong with streaking");
+        }
     }
 }
