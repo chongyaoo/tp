@@ -76,5 +76,14 @@ Reviewed and provided feedback for 17 pull requests:
 * **Code Coverage Enhancement**: Added JaCoCo test coverage reporting with:
   - Total project code coverage metrics
   - Per-class code coverage breakdown
-  - Configured to show reports in the build process for continuous monitoring of test quality
 
+* **Integration Testing**: Implemented comprehensive integration tests for the Scheduler component:
+  - Created tests using actual ScheduledExecutorService with short 3-second intervals to verify real-world timer behavior
+  - Validated reminder firing mechanisms with both one-time and recurring reminders
+  - Ensured proper cleanup and shutdown behavior of scheduled tasks
+  - Tested concurrent operations and thread safety of the scheduler
+
+* **End-to-End Testing**: Enhanced the end-to-end test suite:
+  - Improved test coverage for complete user workflows from command input to output
+  - Added validation for multi-step operations (e.g., adding tasks, marking them, listing sorted results)
+  - Enhanced test data in `input.txt` and corresponding expected outputs in `EXPECTED.TXT`
