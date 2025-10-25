@@ -5,6 +5,12 @@ ____________________________________________________________
 Loaded 0 task(s) from file.
 ____________________________________________________________
 ____________________________________________________________
+Loaded 0 reminder(s) from file.
+____________________________________________________________
+____________________________________________________________
+Loaded 0 habit(s) from file.
+____________________________________________________________
+____________________________________________________________
 Got it. I've added this task:
 [T][ ] Read chapter 1
 Now you have 1 task in the task list.
@@ -16,26 +22,26 @@ Now you have 2 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Submit report (by: 2025-10-15)
+[D][ ] Submit report (by: 2025-10-15 23:59)
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Prepare presentation (by: 2025-10-20)
+[D][ ] Prepare presentation (by: 2025-10-20 17:00)
 Now you have 4 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
+[E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
 Now you have 5 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][ ] Read chapter 1
 2. [T][ ] Complete assignment
-3. [D][ ] Submit report (by: 2025-10-15)
-4. [D][ ] Prepare presentation (by: 2025-10-20)
-5. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
+3. [D][ ] Submit report (by: 2025-10-15 23:59)
+4. [D][ ] Prepare presentation (by: 2025-10-20 17:00)
+5. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
@@ -44,7 +50,7 @@ ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15)
+[D][X] Submit report (by: 2025-10-15 23:59)
 ____________________________________________________________
 ____________________________________________________________
 OK, I've marked these tasks as not done yet:
@@ -53,28 +59,28 @@ ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15)
-[D][X] Prepare presentation (by: 2025-10-20)
+[D][X] Submit report (by: 2025-10-15 23:59)
+[D][X] Prepare presentation (by: 2025-10-20 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][X] Read chapter 1
 2. [T][X] Complete assignment
-3. [D][X] Submit report (by: 2025-10-15)
-4. [D][X] Prepare presentation (by: 2025-10-20)
-5. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
+3. [D][X] Submit report (by: 2025-10-15 23:59)
+4. [D][X] Prepare presentation (by: 2025-10-20 17:00)
+5. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these tasks:
-[D][X] Submit report (by: 2025-10-15)
+[D][X] Submit report (by: 2025-10-15 23:59)
 [T][X] Complete assignment
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][X] Read chapter 1
-2. [D][X] Prepare presentation (by: 2025-10-20)
-3. [E][ ] Team meeting (from: 2025-10-25, to: 2025-10-25)
+2. [D][X] Prepare presentation (by: 2025-10-20 17:00)
+3. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this One-Time reminder:
@@ -193,7 +199,7 @@ ____________________________________________________________
 The description and deadline of a deadline cannot be empty!
 ____________________________________________________________
 ____________________________________________________________
-Bad deadline syntax! The syntax is yyyy-mm-dd!
+Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!
 ____________________________________________________________
 ____________________________________________________________
 The mark command must be followed by a task number.
@@ -208,12 +214,12 @@ Now you have 4 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Test deadline (by: 2025-12-01)
+[D][ ] Test deadline (by: 2025-12-01 10:00)
 Now you have 5 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[E][ ] Test event (from: 2025-12-05, to: 2025-12-06)
+[E][ ] Test event (from: 2025-12-05 09:00, to: 2025-12-06 17:00)
 Now you have 6 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
@@ -226,6 +232,21 @@ Got it. I've added this recurring reminder:
 [RR][O] Test recurring (interval: 72H)
 Next reminder: 2025-12-15 15:00
 Now you have 3 reminders in the reminder list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this habit:
+[H] Exercise (deadline: 2025-10-26 12:00, streak: 0)
+Now you have 1 habit in the habit list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this habit:
+[H] Reading (deadline: 2025-10-26 00:00, streak: 0)
+Now you have 2 habits in the habit list.
+____________________________________________________________
+____________________________________________________________
+Here are the habits in your habit list:
+1. [H] Exercise (deadline: 2025-10-26 12:00, streak: 0)
+2. [H] Reading (deadline: 2025-10-26 00:00, streak: 0)
 ____________________________________________________________
 ____________________________________________________________
 Bye. Hope to see you again soon!

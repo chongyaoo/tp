@@ -3,6 +3,7 @@ package seedu.studymate.parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.habits.HabitList;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 
@@ -15,12 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class CommandHandlerTest {
     private TaskList taskList;
     private ReminderList reminderList;
+    private HabitList habitList;
     private Parser parser;
 
     @BeforeEach
     void setup() {
         taskList = new TaskList();
         reminderList = new ReminderList();
+        habitList = new HabitList();
         parser = new Parser();
 
         // Add some test tasks
@@ -50,7 +53,8 @@ public class CommandHandlerTest {
         cmd.datetime1 = endTime;
 
         // Should throw exception with message "End time cannot be earlier than start time"
-        assertThrows(StudyMateException.class, () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     // Timer Start Command Tests
@@ -58,21 +62,21 @@ public class CommandHandlerTest {
     void testHandleTimerStart_defaultTimer() {
         Command cmd = new Command(CommandType.START, null,  "Focus session", 25);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
     void testHandleTimerStart_withTaskIndex() {
         Command cmd = new Command(CommandType.START, 0, 30);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
     void testHandleTimerStart_withCustomLabel(){
         Command cmd = new Command(CommandType.START, "Study Math", 45);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -83,7 +87,7 @@ public class CommandHandlerTest {
         cmd.duration = 25;
 
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -94,20 +98,20 @@ public class CommandHandlerTest {
         cmd.duration = 25;
 
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
     void testHandleTimerStart_whenTimerAlreadyActive() throws StudyMateException {
         // Start first timer
         Command cmd1 = new Command(CommandType.START, "First Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, cmd1);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, cmd1);
 
         // Try to start second timer
         Command cmd2 = new Command(CommandType.START, "Second Timer", 30);
 
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, cmd2));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd2));
     }
 
     @Test
@@ -119,7 +123,7 @@ public class CommandHandlerTest {
         cmd.duration = 25;
 
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(emptyTaskList, reminderList, cmd));
+            () -> CommandHandler.executeCommand(emptyTaskList, reminderList, habitList, cmd));
     }
 
     // Timer Control Command Tests
@@ -127,75 +131,75 @@ public class CommandHandlerTest {
     void testHandleTimerPause_whenRunning() throws StudyMateException {
         // Start a timer first
         Command startCmd = new Command(CommandType.START, "Test Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         // Pause the timer
         Command pauseCmd = new Command(CommandType.PAUSE);
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, pauseCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, pauseCmd));
     }
 
     @Test
     void testHandleTimerPause_whenNoTimer() {
         Command pauseCmd = new Command(CommandType.PAUSE);
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, pauseCmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, pauseCmd));
     }
 
     @Test
     void testHandleTimerResume_whenPaused() throws StudyMateException {
         // Start and pause a timer
         Command startCmd = new Command(CommandType.START, "Test Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         Command pauseCmd = new Command(CommandType.PAUSE);
-        CommandHandler.executeCommand(taskList, reminderList, pauseCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, pauseCmd);
 
         // Resume the timer
         Command resumeCmd = new Command(CommandType.RESUME);
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, resumeCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, resumeCmd));
     }
 
     @Test
     void testHandleTimerResume_whenNoTimer() {
         Command resumeCmd = new Command(CommandType.RESUME);
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, resumeCmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, resumeCmd));
     }
 
     @Test
     void testHandleTimerReset_whenTimerExists() throws StudyMateException {
         // Start a timer first
         Command startCmd = new Command(CommandType.START, "Test Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         // Reset the timer
         Command resetCmd = new Command(CommandType.RESET);
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, resetCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, resetCmd));
     }
 
     @Test
     void testHandleTimerReset_whenNoTimer() {
         Command resetCmd = new Command(CommandType.RESET);
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, resetCmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, resetCmd));
     }
 
     @Test
     void testHandleTimerStat_whenTimerExists() throws StudyMateException {
         // Start a timer first
         Command startCmd = new Command(CommandType.START, "Test Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         // Get timer stats
         Command statCmd = new Command(CommandType.STAT);
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, statCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, statCmd));
     }
 
     @Test
     void testHandleTimerStat_whenNoTimer() {
         Command statCmd = new Command(CommandType.STAT);
         assertThrows(StudyMateException.class,
-            () -> CommandHandler.executeCommand(taskList, reminderList, statCmd));
+            () -> CommandHandler.executeCommand(taskList, reminderList, habitList, statCmd));
     }
 
     // Integration Tests with Parser
@@ -206,7 +210,7 @@ public class CommandHandlerTest {
         assertEquals("Focus session", cmd.desc);
         assertEquals(Integer.valueOf(25), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -215,7 +219,7 @@ public class CommandHandlerTest {
         assertEquals(CommandType.START, cmd.type);
         assertEquals(Integer.valueOf(45), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -225,7 +229,7 @@ public class CommandHandlerTest {
         assertEquals("Study Physics", cmd.desc);
         assertEquals(Integer.valueOf(25), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -235,7 +239,7 @@ public class CommandHandlerTest {
         assertEquals("Study Chemistry", cmd.desc);
         assertEquals(Integer.valueOf(60), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -245,7 +249,7 @@ public class CommandHandlerTest {
         assertEquals(Integer.valueOf(0), cmd.indexes.iterator().next()); // 1-based to 0-based
         assertEquals(Integer.valueOf(25), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
@@ -255,7 +259,7 @@ public class CommandHandlerTest {
         assertEquals(Integer.valueOf(1), cmd.indexes.iterator().next()); // 1-based to 0-based
         assertEquals(Integer.valueOf(90), cmd.duration);
 
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     // Error Handling Tests
@@ -271,19 +275,19 @@ public class CommandHandlerTest {
     void testTimerSequence_startPauseResumeReset() throws StudyMateException {
         // Start timer
         Command startCmd = parser.parse("start Test Session @30");
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         // Pause timer
         Command pauseCmd = parser.parse("pause");
-        CommandHandler.executeCommand(taskList, reminderList, pauseCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, pauseCmd);
 
         // Resume timer
         Command resumeCmd = parser.parse("resume");
-        CommandHandler.executeCommand(taskList, reminderList, resumeCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, resumeCmd);
 
         // Reset timer
         Command resetCmd = parser.parse("reset");
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, resetCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, resetCmd));
     }
 
     @Test
@@ -295,21 +299,21 @@ public class CommandHandlerTest {
         assertEquals(Integer.valueOf(25), cmd.duration);
 
         // Should execute without error
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
     void testCleanup_clearsActiveTimer() throws StudyMateException {
         // Start a timer
         Command startCmd = new Command(CommandType.START, "Test Timer", 25);
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         // Cleanup should clear the active timer
         CommandHandler.cleanup();
 
         // Starting another timer should now work
         Command newStartCmd = new Command(CommandType.START, "New Timer", 30);
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, newStartCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, newStartCmd));
     }
 
     // Edge Cases
@@ -317,33 +321,33 @@ public class CommandHandlerTest {
     void testTimerWithBoundaryValues() throws StudyMateException {
         // Test with minimum valid duration (1 minute)
         Command cmd1 = parser.parse("start @1");
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd1));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd1));
 
         CommandHandler.cleanup();
 
         // Test with large duration
         Command cmd2 = parser.parse("start @999");
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd2));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd2));
     }
 
     @Test
     void testTimerWithMaxTaskIndex() throws StudyMateException {
         // Test with the last valid task index
         Command cmd = parser.parse("start 3"); // Should be index 2 (0-based)
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, cmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
 
     @Test
     void testTimerCommandsAfterReset() throws StudyMateException {
         // Start and reset timer
         Command startCmd = parser.parse("start");
-        CommandHandler.executeCommand(taskList, reminderList, startCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, startCmd);
 
         Command resetCmd = parser.parse("reset");
-        CommandHandler.executeCommand(taskList, reminderList, resetCmd);
+        CommandHandler.executeCommand(taskList, reminderList, habitList, resetCmd);
 
         // Should be able to start a new timer after reset
         Command newStartCmd = parser.parse("start New Session @45");
-        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, newStartCmd));
+        assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, newStartCmd));
     }
 }

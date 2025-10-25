@@ -12,6 +12,8 @@ for /f "tokens=*" %%a in (
     set jarloc=%%a
 )
 
+set TEST_TIME=2025-10-25T12:00:00
+
 java -jar %jarloc% < ..\..\text-ui-test\input.txt > ..\..\text-ui-test\ACTUAL.TXT
 
 cd ..\..\text-ui-test
@@ -35,4 +37,4 @@ FC ACTUAL2.TXT EXPECTED2.TXT >NUL && ECHO Test 2 passed! || (
 
 echo All tests passed!
 
-if exist "..\data\tasks.txt" del "..\data\tasks.txt"
+if exist "..\data\StudyMate.txt" del "..\data\StudyMate.txt"

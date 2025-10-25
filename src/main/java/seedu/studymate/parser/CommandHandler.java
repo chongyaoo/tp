@@ -1,6 +1,7 @@
 package seedu.studymate.parser;
 
 import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.habits.HabitList;
 import seedu.studymate.reminders.Reminder;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.Task;
@@ -28,7 +29,7 @@ public class CommandHandler {
      *
      * @param cmd Command class holding the command to be executed and the description
      */
-    public static void executeCommand(TaskList taskList, ReminderList reminderList, Command cmd)
+    public static void executeCommand(TaskList taskList, ReminderList reminderList, HabitList habitList, Command cmd)
             throws StudyMateException {
         switch (cmd.type) {
 
@@ -61,6 +62,12 @@ public class CommandHandler {
         case RESUME -> handleTimerResume();
         case RESET -> handleTimerReset();
         case STAT -> handleTimerStat();
+
+        // Habit Commands
+        case HABIT_ADD -> handleHabitAdd(habitList, cmd);
+        case HABIT_STREAK -> handleHabitStreak(habitList, cmd);
+        case HABIT_LIST -> handleHabitList(habitList);
+        case HABIT_DELETE -> handleHabitDelete(habitList, cmd);
 
         // Exception Handling
         default -> throw new StudyMateException("Invalid Command");
@@ -150,7 +157,7 @@ public class CommandHandler {
     }
 
     private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
-        reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.remindInterval);
+        reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.interval);
         int reminderCount = reminderList.getCount();
         Reminder newReminder = reminderList.getReminder(reminderCount - 1);
         MessageHandler.sendAddReminderRecMessage(newReminder, reminderCount);
@@ -313,5 +320,23 @@ public class CommandHandler {
         // Schedule check every second
         scheduler.scheduleAtFixedRate(timerCheckTask, 0, 1, TimeUnit.SECONDS);
         logger.log(Level.INFO, "Scheduler initialised and checking every second");
+    }
+
+    private static void handleHabitAdd(HabitList habitList, Command cmd) {
+        habitList.addHabit(cmd.desc, cmd.interval);
+    }
+
+    private static void handleHabitDelete(HabitList habitList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndex(cmd.index, habitList.getCount());
+        habitList.deleteHabit(cmd.index);
+    }
+
+    private static void handleHabitList(HabitList habitList) {
+        MessageHandler.sendHabitList(habitList);
+    }
+
+    private static void handleHabitStreak(HabitList habitList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndex(cmd.index, habitList.getCount());
+        habitList.incStreak(cmd.index);
     }
 }

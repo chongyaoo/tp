@@ -2,6 +2,7 @@ package seedu.studymate;
 
 import seedu.studymate.database.Storage;
 import seedu.studymate.exceptions.StudyMateException;
+import seedu.studymate.habits.HabitList;
 import seedu.studymate.parser.Command;
 import seedu.studymate.parser.CommandHandler;
 import seedu.studymate.parser.CommandType;
@@ -10,18 +11,39 @@ import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.reminders.Scheduler;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class StudyMate {
     /**
      * Main entry-point for the StudyMate application.
      */
-    private static final String FILE_PATH = "data/tasks.txt";
+    private static final String FILE_PATH = "data/StudyMate.txt";
     private static final TaskList taskList = new TaskList();
-    private static final ReminderList reminderList = new ReminderList();
+    private static ReminderList reminderList;
+    private static HabitList habitList;
 
     public static void main(String[] args) {
         sendWelcomeMessage();
+
+        String testTime = System.getenv("TEST_TIME");
+        if (testTime != null) {
+            try {
+                LocalDateTime fixedTime = LocalDateTime.parse(testTime);
+                Clock clock = Clock.fixed(fixedTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+                reminderList = new ReminderList(clock);
+                habitList = new HabitList(clock);
+            } catch (DateTimeParseException e) {
+                System.err.println("Invalid TEST_TIME format: " + testTime);
+            }
+        } else {
+            reminderList = new ReminderList();
+            habitList = new HabitList();
+        }
 
         Storage storage = new Storage(FILE_PATH);
         Scanner sc = new Scanner(System.in);
@@ -30,10 +52,12 @@ public class StudyMate {
 
         // Load existing tasks from file.
         try {
-            storage.load(taskList, reminderList);
+            storage.load(taskList, reminderList, habitList);
             MessageHandler.sendMessage("Loaded " + taskList.getCount() + " task(s) from file.");
+            MessageHandler.sendMessage("Loaded " + reminderList.getCount() + " reminder(s) from file.");
+            MessageHandler.sendMessage("Loaded " + habitList.getCount() + " habit(s) from file.");
         } catch (StudyMateException e) {
-            MessageHandler.sendMessage("Error loading tasks: " + e.getMessage());
+            MessageHandler.sendMessage("Error loading!");
         }
         scheduler.start();
         while (true) {
@@ -44,9 +68,9 @@ public class StudyMate {
                     CommandHandler.cleanup();
                     break;
                 }
-                CommandHandler.executeCommand(taskList, reminderList, cmd);
+                CommandHandler.executeCommand(taskList, reminderList, habitList, cmd);
 
-                storage.save(taskList.getTasks(), reminderList.getReminders());
+                storage.save(taskList.getTasks(), reminderList.getReminders(), habitList.getAllHabits());
             } catch (StudyMateException e) {
                 MessageHandler.sendMessage(e.getMessage());
             }

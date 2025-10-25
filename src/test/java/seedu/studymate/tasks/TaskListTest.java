@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 
 public class TaskListTest {
@@ -61,20 +62,20 @@ public class TaskListTest {
     // Test Adding Event Task
     @Test
     void testAddEvent() {
-        LocalDate fromDate = LocalDate.of(2025, 10, 20);
-        LocalDate toDate = LocalDate.of(2025, 10, 22);
-        DateTimeArg fromDateTime = new DateTimeArg(fromDate);
-        DateTimeArg toDateTime = new DateTimeArg(toDate);
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 10, 20, 9, 0);
+        LocalDateTime toDateTime = LocalDateTime.of(2025, 10, 22, 17, 0);
+        DateTimeArg fromDateTimeArg = new DateTimeArg(fromDateTime.toLocalDate(), fromDateTime.toLocalTime());
+        DateTimeArg toDateTimeArg = new DateTimeArg(toDateTime.toLocalDate(), toDateTime.toLocalTime());
 
-        taskList.addEvent("Team meeting", fromDateTime, toDateTime);
+        taskList.addEvent("Team meeting", fromDateTimeArg, toDateTimeArg);
         assertEquals(1, taskList.getCount());
         Task task = taskList.getTask(0);
         assertInstanceOf(Event.class, task);
         assertEquals("Team meeting", task.getName());
         assertFalse(task.getDone());
         Event eventTask = (Event) task;
-        assertEquals(fromDateTime, eventTask.getFrom());
-        assertEquals(toDateTime, eventTask.getTo());
+        assertEquals(fromDateTimeArg, eventTask.getFrom());
+        assertEquals(toDateTimeArg, eventTask.getTo());
     }
 
     // --- Test Cases for Mark/Unmark ---
@@ -202,13 +203,14 @@ public class TaskListTest {
     private void populateListForFind() {
         taskList.addToDo("read book");
         taskList.addToDo("submit assignment");
-        LocalDate deadline = LocalDate.of(2025, 10, 25);
-        DateTimeArg deadlineArg = new DateTimeArg(deadline);
+        LocalDateTime deadlineDateTime = LocalDateTime.of(2025, 10, 25, 23, 59);
+        DateTimeArg deadlineArg = new DateTimeArg(deadlineDateTime.toLocalDate(), deadlineDateTime.toLocalTime());
         taskList.addDeadline("book report", deadlineArg);
         taskList.addToDo("buy groceries");
-        LocalDate fromDate = LocalDate.of(2025, 11, 1);
-        LocalDate toDate = LocalDate.of(2025, 11, 3);
-        taskList.addEvent("reading club", new DateTimeArg(fromDate), new DateTimeArg(toDate));
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 11, 1, 14, 0);
+        LocalDateTime toDateTime = LocalDateTime.of(2025, 11, 3, 16, 0);
+        taskList.addEvent("reading club", new DateTimeArg(fromDateTime.toLocalDate(), fromDateTime.toLocalTime()),
+                          new DateTimeArg(toDateTime.toLocalDate(), toDateTime.toLocalTime()));
     }
 
     // Test finding tasks with single matching result
@@ -346,19 +348,21 @@ public class TaskListTest {
         // Add tasks in non-chronological order
         taskList.addToDo("buy groceries"); // Should be excluded from sorted list
 
-        LocalDate deadline1 = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("submit report", new DateTimeArg(deadline1));
+        LocalDateTime deadline1 = LocalDateTime.of(2025, 11, 15, 17, 0);
+        taskList.addDeadline("submit report", new DateTimeArg(deadline1.toLocalDate(), deadline1.toLocalTime()));
 
-        LocalDate fromDate1 = LocalDate.of(2025, 10, 25);
-        LocalDate toDate1 = LocalDate.of(2025, 10, 27);
-        taskList.addEvent("team meeting", new DateTimeArg(fromDate1), new DateTimeArg(toDate1));
+        LocalDateTime fromDate1 = LocalDateTime.of(2025, 10, 25, 9, 0);
+        LocalDateTime toDate1 = LocalDateTime.of(2025, 10, 27, 17, 0);
+        taskList.addEvent("team meeting", new DateTimeArg(fromDate1.toLocalDate(), fromDate1.toLocalTime()),
+                          new DateTimeArg(toDate1.toLocalDate(), toDate1.toLocalTime()));
 
-        LocalDate deadline2 = LocalDate.of(2025, 10, 30);
-        taskList.addDeadline("assignment deadline", new DateTimeArg(deadline2));
+        LocalDateTime deadline2 = LocalDateTime.of(2025, 10, 30, 23, 59);
+        taskList.addDeadline("assignment deadline", new DateTimeArg(deadline2.toLocalDate(), deadline2.toLocalTime()));
 
-        LocalDate fromDate2 = LocalDate.of(2025, 12, 1);
-        LocalDate toDate2 = LocalDate.of(2025, 12, 5);
-        taskList.addEvent("conference", new DateTimeArg(fromDate2), new DateTimeArg(toDate2));
+        LocalDateTime fromDate2 = LocalDateTime.of(2025, 12, 1, 8, 0);
+        LocalDateTime toDate2 = LocalDateTime.of(2025, 12, 5, 18, 0);
+        taskList.addEvent("conference", new DateTimeArg(fromDate2.toLocalDate(), fromDate2.toLocalTime()),
+                          new DateTimeArg(toDate2.toLocalDate(), toDate2.toLocalTime()));
 
         taskList.addToDo("read book"); // Should be excluded from sorted list
     }
@@ -395,13 +399,13 @@ public class TaskListTest {
     // Test getSorted with only deadlines
     @Test
     void testGetSortedOnlyDeadlines() {
-        LocalDate deadline1 = LocalDate.of(2025, 12, 31);
-        LocalDate deadline2 = LocalDate.of(2025, 11, 1);
-        LocalDate deadline3 = LocalDate.of(2025, 11, 15);
+        LocalDateTime deadline1 = LocalDateTime.of(2025, 12, 31, 23, 59);
+        LocalDateTime deadline2 = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime deadline3 = LocalDateTime.of(2025, 11, 15, 17, 0);
 
-        taskList.addDeadline("task C", new DateTimeArg(deadline1));
-        taskList.addDeadline("task A", new DateTimeArg(deadline2));
-        taskList.addDeadline("task B", new DateTimeArg(deadline3));
+        taskList.addDeadline("task C", new DateTimeArg(deadline1.toLocalDate(), deadline1.toLocalTime()));
+        taskList.addDeadline("task A", new DateTimeArg(deadline2.toLocalDate(), deadline2.toLocalTime()));
+        taskList.addDeadline("task B", new DateTimeArg(deadline3.toLocalDate(), deadline3.toLocalTime()));
 
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -414,16 +418,19 @@ public class TaskListTest {
     // Test getSorted with only events
     @Test
     void testGetSortedOnlyEvents() {
-        LocalDate from1 = LocalDate.of(2025, 12, 1);
-        LocalDate to1 = LocalDate.of(2025, 12, 3);
-        LocalDate from2 = LocalDate.of(2025, 10, 20);
-        LocalDate to2 = LocalDate.of(2025, 10, 22);
-        LocalDate from3 = LocalDate.of(2025, 11, 10);
-        LocalDate to3 = LocalDate.of(2025, 11, 12);
+        LocalDateTime from1 = LocalDateTime.of(2025, 12, 1, 9, 0);
+        LocalDateTime to1 = LocalDateTime.of(2025, 12, 3, 17, 0);
+        LocalDateTime from2 = LocalDateTime.of(2025, 10, 20, 10, 0);
+        LocalDateTime to2 = LocalDateTime.of(2025, 10, 22, 16, 0);
+        LocalDateTime from3 = LocalDateTime.of(2025, 11, 10, 8, 30);
+        LocalDateTime to3 = LocalDateTime.of(2025, 11, 12, 18, 0);
 
-        taskList.addEvent("event C", new DateTimeArg(from1), new DateTimeArg(to1));
-        taskList.addEvent("event A", new DateTimeArg(from2), new DateTimeArg(to2));
-        taskList.addEvent("event B", new DateTimeArg(from3), new DateTimeArg(to3));
+        taskList.addEvent("event C", new DateTimeArg(from1.toLocalDate(), from1.toLocalTime()),
+                          new DateTimeArg(to1.toLocalDate(), to1.toLocalTime()));
+        taskList.addEvent("event A", new DateTimeArg(from2.toLocalDate(), from2.toLocalTime()),
+                          new DateTimeArg(to2.toLocalDate(), to2.toLocalTime()));
+        taskList.addEvent("event B", new DateTimeArg(from3.toLocalDate(), from3.toLocalTime()),
+                          new DateTimeArg(to3.toLocalDate(), to3.toLocalTime()));
 
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -436,14 +443,15 @@ public class TaskListTest {
     // Test getSorted with mixed deadlines and events
     @Test
     void testGetSortedMixedTasks() {
-        LocalDate deadline1 = LocalDate.of(2025, 11, 5);
-        LocalDate from1 = LocalDate.of(2025, 11, 1);
-        LocalDate to1 = LocalDate.of(2025, 11, 3);
-        LocalDate deadline2 = LocalDate.of(2025, 11, 10);
+        LocalDateTime deadline1 = LocalDateTime.of(2025, 11, 5, 10, 0);
+        LocalDateTime from1 = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime to1 = LocalDateTime.of(2025, 11, 3, 17, 0);
+        LocalDateTime deadline2 = LocalDateTime.of(2025, 11, 10, 15, 30);
 
-        taskList.addDeadline("deadline 1", new DateTimeArg(deadline1));
-        taskList.addEvent("event 1", new DateTimeArg(from1), new DateTimeArg(to1));
-        taskList.addDeadline("deadline 2", new DateTimeArg(deadline2));
+        taskList.addDeadline("deadline 1", new DateTimeArg(deadline1.toLocalDate(), deadline1.toLocalTime()));
+        taskList.addEvent("event 1", new DateTimeArg(from1.toLocalDate(), from1.toLocalTime()),
+                          new DateTimeArg(to1.toLocalDate(), to1.toLocalTime()));
+        taskList.addDeadline("deadline 2", new DateTimeArg(deadline2.toLocalDate(), deadline2.toLocalTime()));
 
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -474,11 +482,12 @@ public class TaskListTest {
     // Test getSorted with same dates
     @Test
     void testGetSortedSameDates() {
-        LocalDate sameDate = LocalDate.of(2025, 11, 1);
+        LocalDateTime sameDateTime = LocalDateTime.of(2025, 11, 1, 10, 0);
 
-        taskList.addDeadline("deadline A", new DateTimeArg(sameDate));
-        taskList.addDeadline("deadline B", new DateTimeArg(sameDate));
-        taskList.addEvent("event A", new DateTimeArg(sameDate), new DateTimeArg(sameDate));
+        taskList.addDeadline("deadline A", new DateTimeArg(sameDateTime.toLocalDate(), sameDateTime.toLocalTime()));
+        taskList.addDeadline("deadline B", new DateTimeArg(sameDateTime.toLocalDate(), sameDateTime.toLocalTime()));
+        taskList.addEvent("event A", new DateTimeArg(sameDateTime.toLocalDate(), sameDateTime.toLocalTime()),
+                          new DateTimeArg(sameDateTime.toLocalDate(), sameDateTime.toLocalTime()));
 
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -519,42 +528,43 @@ public class TaskListTest {
     // Test editing description of a Deadline task
     @Test
     void testEditDescriptionOfDeadline() {
-        LocalDate deadline = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("original deadline", new DateTimeArg(deadline));
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
+        taskList.addDeadline("original deadline", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
         taskList.editDesc(0, "updated deadline");
 
         assertEquals("updated deadline", taskList.getTask(0).getName());
         assertInstanceOf(Deadline.class, taskList.getTask(0));
         // Deadline date should remain unchanged
-        assertEquals(deadline, ((Deadline) taskList.getTask(0)).getDeadline().getDate());
+        assertEquals(deadline.toLocalDate(), ((Deadline) taskList.getTask(0)).getDeadline().getDate());
     }
 
     // Test editing description of an Event task
     @Test
     void testEditDescriptionOfEvent() {
-        LocalDate from = LocalDate.of(2025, 11, 1);
-        LocalDate to = LocalDate.of(2025, 11, 3);
-        taskList.addEvent("original event", new DateTimeArg(from), new DateTimeArg(to));
+        LocalDateTime from = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime to = LocalDateTime.of(2025, 11, 3, 17, 0);
+        taskList.addEvent("original event", new DateTimeArg(from.toLocalDate(), from.toLocalTime()),
+                          new DateTimeArg(to.toLocalDate(), to.toLocalTime()));
         taskList.editDesc(0, "updated event");
 
         assertEquals("updated event", taskList.getTask(0).getName());
         assertInstanceOf(Event.class, taskList.getTask(0));
         // Event dates should remain unchanged
-        assertEquals(from, ((Event) taskList.getTask(0)).getFrom().getDate());
-        assertEquals(to, ((Event) taskList.getTask(0)).getTo().getDate());
+        assertEquals(from.toLocalDate(), ((Event) taskList.getTask(0)).getFrom().getDate());
+        assertEquals(to.toLocalDate(), ((Event) taskList.getTask(0)).getTo().getDate());
     }
 
     // Test editing deadline of a Deadline task
     @Test
     void testEditDeadlineOfDeadlineTask() throws Exception {
-        LocalDate originalDate = LocalDate.of(2025, 11, 15);
-        LocalDate newDate = LocalDate.of(2025, 12, 31);
-        taskList.addDeadline("report", new DateTimeArg(originalDate));
+        LocalDateTime originalDateTime = LocalDateTime.of(2025, 11, 15, 10, 0);
+        LocalDateTime newDateTime = LocalDateTime.of(2025, 12, 31, 23, 59);
+        taskList.addDeadline("report", new DateTimeArg(originalDateTime.toLocalDate(), originalDateTime.toLocalTime()));
 
-        taskList.editDeadline(0, new DateTimeArg(newDate));
+        taskList.editDeadline(0, new DateTimeArg(newDateTime.toLocalDate(), newDateTime.toLocalTime()));
 
         Deadline deadline = (Deadline) taskList.getTask(0);
-        assertEquals(newDate, deadline.getDeadline().getDate());
+        assertEquals(newDateTime.toLocalDate(), deadline.getDeadline().getDate());
         assertEquals("report", deadline.getName()); // Description should remain unchanged
     }
 
@@ -564,7 +574,8 @@ public class TaskListTest {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editDeadline(0, new DateTimeArg(LocalDate.of(2025, 11, 15)));
+            LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 10, 0);
+            taskList.editDeadline(0, new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not a deadline"));
@@ -573,12 +584,14 @@ public class TaskListTest {
     // Test editing deadline of an Event throws exception
     @Test
     void testEditDeadlineOfEventThrowsException() {
-        LocalDate from = LocalDate.of(2025, 11, 1);
-        LocalDate to = LocalDate.of(2025, 11, 3);
-        taskList.addEvent("meeting", new DateTimeArg(from), new DateTimeArg(to));
+        LocalDateTime from = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime to = LocalDateTime.of(2025, 11, 3, 17, 0);
+        taskList.addEvent("meeting", new DateTimeArg(from.toLocalDate(), from.toLocalTime()),
+                          new DateTimeArg(to.toLocalDate(), to.toLocalTime()));
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editDeadline(0, new DateTimeArg(LocalDate.of(2025, 11, 15)));
+            LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 10, 0);
+            taskList.editDeadline(0, new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not a deadline"));
@@ -587,16 +600,17 @@ public class TaskListTest {
     // Test editing from date of an Event task
     @Test
     void testEditFromDateOfEvent() throws Exception {
-        LocalDate originalFrom = LocalDate.of(2025, 11, 1);
-        LocalDate originalTo = LocalDate.of(2025, 11, 3);
-        LocalDate newFrom = LocalDate.of(2025, 11, 5);
-        taskList.addEvent("conference", new DateTimeArg(originalFrom), new DateTimeArg(originalTo));
+        LocalDateTime originalFrom = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime originalTo = LocalDateTime.of(2025, 11, 3, 17, 0);
+        LocalDateTime newFrom = LocalDateTime.of(2025, 11, 5, 10, 0);
+        taskList.addEvent("conference", new DateTimeArg(originalFrom.toLocalDate(), originalFrom.toLocalTime()),
+                          new DateTimeArg(originalTo.toLocalDate(), originalTo.toLocalTime()));
 
-        taskList.editFrom(0, new DateTimeArg(newFrom));
+        taskList.editFrom(0, new DateTimeArg(newFrom.toLocalDate(), newFrom.toLocalTime()));
 
         Event event = (Event) taskList.getTask(0);
-        assertEquals(newFrom, event.getFrom().getDate());
-        assertEquals(originalTo, event.getTo().getDate()); // To date should remain unchanged
+        assertEquals(newFrom.toLocalDate(), event.getFrom().getDate());
+        assertEquals(originalTo.toLocalDate(), event.getTo().getDate()); // To date should remain unchanged
         assertEquals("conference", event.getName());
     }
 
@@ -606,7 +620,8 @@ public class TaskListTest {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editFrom(0, new DateTimeArg(LocalDate.of(2025, 11, 15)));
+            LocalDateTime from = LocalDateTime.of(2025, 11, 15, 10, 0);
+            taskList.editFrom(0, new DateTimeArg(from.toLocalDate(), from.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not an event"));
@@ -615,11 +630,12 @@ public class TaskListTest {
     // Test editing from date of a Deadline throws exception
     @Test
     void testEditFromOfDeadlineThrowsException() {
-        LocalDate deadline = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("report", new DateTimeArg(deadline));
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
+        taskList.addDeadline("report", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editFrom(0, new DateTimeArg(LocalDate.of(2025, 11, 1)));
+            LocalDateTime from = LocalDateTime.of(2025, 11, 1, 9, 0);
+            taskList.editFrom(0, new DateTimeArg(from.toLocalDate(), from.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not an event"));
@@ -627,17 +643,18 @@ public class TaskListTest {
 
     // Test editing to date of an Event task
     @Test
-    void testEditToDateOfEvent() throws Exception {
-        LocalDate originalFrom = LocalDate.of(2025, 11, 1);
-        LocalDate originalTo = LocalDate.of(2025, 11, 3);
-        LocalDate newTo = LocalDate.of(2025, 11, 10);
-        taskList.addEvent("workshop", new DateTimeArg(originalFrom), new DateTimeArg(originalTo));
+    void testEditToDateOfEvent() throws StudyMateException {
+        LocalDateTime originalFrom = LocalDateTime.of(2025, 11, 1, 9, 0);
+        LocalDateTime originalTo = LocalDateTime.of(2025, 11, 3, 17, 0);
+        LocalDateTime newTo = LocalDateTime.of(2025, 11, 10, 18, 0);
+        taskList.addEvent("workshop", new DateTimeArg(originalFrom.toLocalDate(), originalFrom.toLocalTime()),
+                          new DateTimeArg(originalTo.toLocalDate(), originalTo.toLocalTime()));
 
-        taskList.editTo(0, new DateTimeArg(newTo));
+        taskList.editTo(0, new DateTimeArg(newTo.toLocalDate(), newTo.toLocalTime()));
 
         Event event = (Event) taskList.getTask(0);
-        assertEquals(originalFrom, event.getFrom().getDate()); // From date should remain unchanged
-        assertEquals(newTo, event.getTo().getDate());
+        assertEquals(originalFrom.toLocalDate(), event.getFrom().getDate()); // From date should remain unchanged
+        assertEquals(newTo.toLocalDate(), event.getTo().getDate());
         assertEquals("workshop", event.getName());
     }
 
@@ -647,7 +664,8 @@ public class TaskListTest {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editTo(0, new DateTimeArg(LocalDate.of(2025, 11, 15)));
+            LocalDateTime to = LocalDateTime.of(2025, 11, 15, 17, 0);
+            taskList.editTo(0, new DateTimeArg(to.toLocalDate(), to.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not an event"));
@@ -656,11 +674,12 @@ public class TaskListTest {
     // Test editing to date of a Deadline throws exception
     @Test
     void testEditToOfDeadlineThrowsException() {
-        LocalDate deadline = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("assignment", new DateTimeArg(deadline));
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
+        taskList.addDeadline("assignment", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
         Exception exception = assertThrows(Exception.class, () -> {
-            taskList.editTo(0, new DateTimeArg(LocalDate.of(2025, 11, 20)));
+            LocalDateTime to = LocalDateTime.of(2025, 11, 20, 17, 0);
+            taskList.editTo(0, new DateTimeArg(to.toLocalDate(), to.toLocalTime()));
         });
 
         assertTrue(exception.getMessage().contains("not an event"));
@@ -668,36 +687,37 @@ public class TaskListTest {
 
     // Test editing multiple tasks in sequence
     @Test
-    void testEditMultipleTasksInSequence() throws Exception {
+    void testEditMultipleTasksInSequence() throws StudyMateException {
         // Add various tasks
         taskList.addToDo("task 1");
-        LocalDate deadline = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("task 2", new DateTimeArg(deadline));
-        LocalDate from = LocalDate.of(2025, 11, 20);
-        LocalDate to = LocalDate.of(2025, 11, 22);
-        taskList.addEvent("task 3", new DateTimeArg(from), new DateTimeArg(to));
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
+        taskList.addDeadline("task 2", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
+        LocalDateTime from = LocalDateTime.of(2025, 11, 20, 9, 0);
+        LocalDateTime to = LocalDateTime.of(2025, 11, 22, 17, 0);
+        taskList.addEvent("task 3", new DateTimeArg(from.toLocalDate(), from.toLocalTime()),
+                          new DateTimeArg(to.toLocalDate(), to.toLocalTime()));
 
         // Edit all tasks
         taskList.editDesc(0, "updated task 1");
         taskList.editDesc(1, "updated task 2");
-        LocalDate newDeadline = LocalDate.of(2025, 12, 1);
-        taskList.editDeadline(1, new DateTimeArg(newDeadline));
+        LocalDateTime newDeadline = LocalDateTime.of(2025, 12, 1, 10, 0);
+        taskList.editDeadline(1, new DateTimeArg(newDeadline.toLocalDate(), newDeadline.toLocalTime()));
         taskList.editDesc(2, "updated task 3");
-        LocalDate newFrom = LocalDate.of(2025, 11, 25);
-        taskList.editFrom(2, new DateTimeArg(newFrom));
+        LocalDateTime newFrom = LocalDateTime.of(2025, 11, 25, 8, 30);
+        taskList.editFrom(2, new DateTimeArg(newFrom.toLocalDate(), newFrom.toLocalTime()));
 
         // Verify changes
         assertEquals("updated task 1", taskList.getTask(0).getName());
         assertEquals("updated task 2", taskList.getTask(1).getName());
-        assertEquals(newDeadline, ((Deadline) taskList.getTask(1)).getDeadline().getDate());
+        assertEquals(newDeadline.toLocalDate(), ((Deadline) taskList.getTask(1)).getDeadline().getDate());
         assertEquals("updated task 3", taskList.getTask(2).getName());
-        assertEquals(newFrom, ((Event) taskList.getTask(2)).getFrom().getDate());
-        assertEquals(to, ((Event) taskList.getTask(2)).getTo().getDate());
+        assertEquals(newFrom.toLocalDate(), ((Event) taskList.getTask(2)).getFrom().getDate());
+        assertEquals(to.toLocalDate(), ((Event) taskList.getTask(2)).getTo().getDate());
     }
 
     // Test editing preserves task completion status
     @Test
-    void testEditPreservesCompletionStatus() throws Exception {
+    void testEditPreservesCompletionStatus() {
         taskList.addToDo("task");
         LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(0));
         taskList.mark(indexes);
@@ -712,13 +732,13 @@ public class TaskListTest {
 
     // Test editing with same value works
     @Test
-    void testEditWithSameValue() throws Exception {
-        LocalDate deadline = LocalDate.of(2025, 11, 15);
-        taskList.addDeadline("report", new DateTimeArg(deadline));
+    void testEditWithSameValue() throws StudyMateException {
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
+        taskList.addDeadline("report", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
-        taskList.editDeadline(0, new DateTimeArg(deadline));
+        taskList.editDeadline(0, new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
-        assertEquals(deadline, ((Deadline) taskList.getTask(0)).getDeadline().getDate());
+        assertEquals(deadline.toLocalDate(), ((Deadline) taskList.getTask(0)).getDeadline().getDate());
         assertEquals("report", taskList.getTask(0).getName());
     }
 

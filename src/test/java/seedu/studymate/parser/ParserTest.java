@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import seedu.studymate.exceptions.StudyMateException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ParserTest {
 
     @Test
     void testDeadlineCommand() throws StudyMateException {
-        Command cmd = parser.parse("deadline submit assignment /by 2024-12-15");
+        Command cmd = parser.parse("deadline submit assignment /by 2024-12-15 23:59");
         assertEquals(CommandType.DEADLINE, cmd.type);
         assertEquals("submit assignment", cmd.desc);
     }
@@ -149,17 +150,27 @@ public class ParserTest {
         assertThrows(StudyMateException.class, () -> parser.parse("deadline submit assignment /by invalid-date"));
     }
 
+    @Test
+    void testDeadlineWithoutTimeThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("deadline submit assignment /by 2024-12-15"));
+    }
+
+    @Test
+    void testDeadlineWithInvalidTimeFormatThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("deadline submit assignment /by 2024-12-15 25:00"));
+    }
+
     // Event command tests
     @Test
     void testEventCommand() throws StudyMateException {
-        Command cmd = parser.parse("event Team meeting /from 2025-10-20 /to 2025-10-22");
+        Command cmd = parser.parse("event Team meeting /from 2025-10-20 09:00 /to 2025-10-22 17:00");
         assertEquals(CommandType.EVENT, cmd.type);
         assertEquals("Team meeting", cmd.desc);
     }
 
     @Test
     void testEventWithLongDescription() throws StudyMateException {
-        Command cmd = parser.parse("event Project presentation and demo /from 2025-11-01 /to 2025-11-05");
+        Command cmd = parser.parse("event Project presentation and demo /from 2025-11-01 14:00 /to 2025-11-05 16:00");
         assertEquals(CommandType.EVENT, cmd.type);
         assertEquals("Project presentation and demo", cmd.desc);
     }
@@ -171,12 +182,12 @@ public class ParserTest {
 
     @Test
     void testEventWithoutFromDelimiterThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /to 2025-10-22"));
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /to 2025-10-22 17:00"));
     }
 
     @Test
     void testEventWithoutToDelimiterThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20"));
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20 09:00"));
     }
 
     @Test
@@ -187,34 +198,52 @@ public class ParserTest {
     @Test
     void testEventWithReversedDelimitersThrowsException() {
         assertThrows(StudyMateException.class, () ->
-                parser.parse("event Team meeting /to 2025-10-22 /from 2025-10-20"));
+                parser.parse("event Team meeting /to 2025-10-22 17:00 /from 2025-10-20 09:00"));
     }
 
     @Test
     void testEventWithInvalidFromDateThrowsException() {
         assertThrows(StudyMateException.class, () ->
-                parser.parse("event Team meeting /from invalid-date /to 2025-10-22"));
+                parser.parse("event Team meeting /from invalid-date /to 2025-10-22 17:00"));
     }
 
     @Test
     void testEventWithInvalidToDateThrowsException() {
         assertThrows(StudyMateException.class, () ->
-                parser.parse("event Team meeting /from 2025-10-20 /to invalid-date"));
+                parser.parse("event Team meeting /from 2025-10-20 09:00 /to invalid-date"));
     }
 
     @Test
     void testEventWithEmptyFromDateThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from /to 2025-10-22"));
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from /to 2025-10-22 17:00"));
     }
 
     @Test
     void testEventWithEmptyToDateThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20 /to"));
+        assertThrows(StudyMateException.class, () -> parser.parse("event Team meeting /from 2025-10-20 09:00 /to"));
     }
 
     @Test
     void testEventWithEmptyDescriptionThrowsException() {
-        assertThrows(StudyMateException.class, () -> parser.parse("event /from 2025-10-20 /to 2025-10-22"));
+        assertThrows(StudyMateException.class, () -> parser.parse("event /from 2025-10-20 09:00 /to 2025-10-22 17:00"));
+    }
+
+    @Test
+    void testEventWithoutTimeInFromThrowsException() {
+        assertThrows(StudyMateException.class,
+                () -> parser.parse("event Team meeting /from 2025-10-20 /to 2025-10-22 17:00"));
+    }
+
+    @Test
+    void testEventWithoutTimeInToThrowsException() {
+        assertThrows(StudyMateException.class,
+                () -> parser.parse("event Team meeting /from 2025-10-20 09:00 /to 2025-10-22"));
+    }
+
+    @Test
+    void testEventWithInvalidTimeFormatThrowsException() {
+        assertThrows(StudyMateException.class,
+                () -> parser.parse("event Team meeting /from 2025-10-20 25:00 /to 2025-10-22 17:00"));
     }
 
     @Test
@@ -466,26 +495,29 @@ public class ParserTest {
 
     @Test
     void testEditDeadlineCommand() throws StudyMateException {
-        Command cmd = parser.parse("edit 2 -d 2025-12-31");
+        Command cmd = parser.parse("edit 2 -d 2025-12-31 23:59");
         assertEquals(CommandType.EDIT_DEADLINE, cmd.type);
         assertEquals(1, cmd.index); // 1-based to 0-based conversion
         assertEquals(LocalDate.of(2025, 12, 31), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(23, 59), cmd.datetime0.getTime());
     }
 
     @Test
     void testEditFromCommand() throws StudyMateException {
-        Command cmd = parser.parse("edit 3 -f 2025-11-15");
+        Command cmd = parser.parse("edit 3 -f 2025-11-15 10:00");
         assertEquals(CommandType.EDIT_FROM, cmd.type);
         assertEquals(2, cmd.index); // 1-based to 0-based conversion
         assertEquals(LocalDate.of(2025, 11, 15), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(10, 0), cmd.datetime0.getTime());
     }
 
     @Test
     void testEditToCommand() throws StudyMateException {
-        Command cmd = parser.parse("edit 4 -t 2025-11-20");
+        Command cmd = parser.parse("edit 4 -t 2025-11-20 17:30");
         assertEquals(CommandType.EDIT_TO, cmd.type);
         assertEquals(3, cmd.index); // 1-based to 0-based conversion
         assertEquals(LocalDate.of(2025, 11, 20), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(17, 30), cmd.datetime0.getTime());
     }
 
     @Test
@@ -531,8 +563,18 @@ public class ParserTest {
     }
 
     @Test
+    void testEditDeadlineWithoutTimeThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -d 2025-12-31"));
+    }
+
+    @Test
     void testEditFromWithInvalidDateThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -f not-a-date"));
+    }
+
+    @Test
+    void testEditFromWithoutTimeThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -f 2025-11-15"));
     }
 
     @Test
@@ -541,7 +583,151 @@ public class ParserTest {
     }
 
     @Test
+    void testEditToWithoutTimeThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("edit 1 -t 2025-11-20"));
+    }
+
+    @Test
     void testEditEmptyCommandThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("edit"));
+    }
+
+    // Habit command tests
+    @Test
+    void testHabitAddCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit Exercise -t 1d");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Exercise", cmd.desc);
+        assertEquals("PT24H", cmd.interval.toString());
+    }
+
+    @Test
+    void testHabitAddWithMultipleWordsCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit Morning meditation practice -t 12h");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Morning meditation practice", cmd.desc);
+        assertEquals("PT12H", cmd.interval.toString());
+    }
+
+    @Test
+    void testHabitAddWithWeekIntervalCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit Weekly review -t 1w");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Weekly review", cmd.desc);
+        assertEquals("PT168H", cmd.interval.toString()); // 1 week = 168 hours
+    }
+
+    @Test
+    void testHabitAddWithMinuteIntervalCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit Quick stretch -t 30m");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Quick stretch", cmd.desc);
+        assertEquals("PT30M", cmd.interval.toString());
+    }
+
+    @Test
+    void testHabitListCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit ls");
+        assertEquals(CommandType.HABIT_LIST, cmd.type);
+    }
+
+    @Test
+    void testHabitStreakCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit streak 1");
+        assertEquals(CommandType.HABIT_STREAK, cmd.type);
+        assertEquals(0, cmd.index); // 1-based to 0-based conversion
+    }
+
+    @Test
+    void testHabitRmCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit rm 2");
+        assertEquals(CommandType.HABIT_DELETE, cmd.type);
+        assertEquals(1, cmd.index); // 1-based to 0-based conversion
+    }
+
+    @Test
+    void testHabitWithoutSubcommandThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit"));
+    }
+
+    @Test
+    void testHabitAddWithoutIntervalFlagThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit Exercise"));
+    }
+
+    @Test
+    void testHabitAddWithoutIntervalValueThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit Exercise -t"));
+    }
+
+    @Test
+    void testHabitAddWithBlankNameThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit    -t 1d"));
+    }
+
+    @Test
+    void testHabitAddWithInvalidIntervalFormatThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit Exercise -t invalid"));
+    }
+
+    @Test
+    void testHabitAddWithInvalidIntervalUnitThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit Exercise -t 1x"));
+    }
+
+    @Test
+    void testHabitStreakWithoutIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit streak"));
+    }
+
+    @Test
+    void testHabitStreakWithBlankIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit streak "));
+    }
+
+    @Test
+    void testHabitStreakWithInvalidIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit streak abc"));
+    }
+
+    @Test
+    void testHabitRmWithoutIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit rm"));
+    }
+
+    @Test
+    void testHabitRmWithBlankIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit rm "));
+    }
+
+    @Test
+    void testHabitRmWithInvalidIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit rm xyz"));
+    }
+
+    @Test
+    void testHabitWithInvalidSubcommandThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit invalid"));
+    }
+
+    @Test
+    void testHabitAddWithExtraSpacesCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit   Exercise   -t   1d");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Exercise", cmd.desc);
+    }
+
+    @Test
+    void testHabitStreakWithExtraSpacesCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit   streak   5");
+        assertEquals(CommandType.HABIT_STREAK, cmd.type);
+        assertEquals(4, cmd.index);
+    }
+
+    @Test
+    void testHabitRmWithExtraSpacesCommand() throws StudyMateException {
+        Command cmd = parser.parse("habit   rm   3");
+        assertEquals(CommandType.HABIT_DELETE, cmd.type);
+        assertEquals(2, cmd.index);
     }
 }

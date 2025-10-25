@@ -57,4 +57,17 @@ public class DataFormatting {
                                                      Duration interval) {
         return "R" + DELIM + "1" + DELIM + (isDone ? "1" : "0") + DELIM + name + DELIM + dateTime + DELIM + interval;
     }
+
+    /**
+     * Returns a string representation of a habit suitable for saving to a file
+     *
+     * @param name The name of the habit
+     * @param deadline The deadline for the habit
+     * @param interval The interval between habit deadlines
+     * @param streak The current streak count
+     * @return A formatted string for file storage
+     */
+    public static String habitString(String name, DateTimeArg deadline, Duration interval, int streak) {
+        return "H" + DELIM + name + DELIM + deadline + DELIM + interval + DELIM + streak;
+    }
 }
