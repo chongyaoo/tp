@@ -53,7 +53,12 @@ public class Storage {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                parseAndAddLine(line, taskList, reminderList, habitList);
+                try {
+                    parseAndAddLine(line, taskList, reminderList, habitList);
+                    // skip line if invalid
+                } catch (StudyMateException e) {
+                    System.err.println("Skipping invalid line: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
             throw new StudyMateException("Error reading save file: " + e.getMessage());

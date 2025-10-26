@@ -17,6 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Handles the execution of parsed commands by delegating to appropriate handler methods.
+ * This class manages all command operations including tasks, reminders, timers, and habits.
+ */
 public class CommandHandler {
 
     private static Timer activeTimer = null;
@@ -27,7 +31,11 @@ public class CommandHandler {
     /**
      * Executes the appropriate command based on the parsed input
      *
-     * @param cmd Command class holding the command to be executed and the description
+     * @param taskList The task list to operate on
+     * @param reminderList The reminder list to operate on
+     * @param habitList The habit list to operate on
+     * @param cmd Command object holding the command to be executed and associated data
+     * @throws StudyMateException If the command execution fails
      */
     public static void executeCommand(TaskList taskList, ReminderList reminderList, HabitList habitList, Command cmd)
             throws StudyMateException {
@@ -92,6 +100,12 @@ public class CommandHandler {
         }
     }
 
+    /**
+     * Handles adding a to-do task to the task list.
+     *
+     * @param taskList The task list to add to
+     * @param cmd The command containing the task description
+     */
     private static void handleToDo(TaskList taskList, Command cmd) {
         taskList.addToDo(cmd.desc);
         int listCount = taskList.getCount();
@@ -99,6 +113,12 @@ public class CommandHandler {
         MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
+    /**
+     * Handles adding a deadline task to the task list.
+     *
+     * @param taskList The task list to add to
+     * @param cmd The command containing the task description and deadline
+     */
     private static void handleDeadline(TaskList taskList, Command cmd) {
         taskList.addDeadline(cmd.desc, cmd.datetime0);
         int listCount = taskList.getCount();
@@ -106,6 +126,14 @@ public class CommandHandler {
         MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
+    /**
+     * Handles adding an event task to the task list.
+     * Validates that the end time is not before the start time.
+     *
+     * @param taskList The task list to add to
+     * @param cmd The command containing the event description, from date, and to date
+     * @throws StudyMateException If the end time is before the start time
+     */
     private static void handleEvent(TaskList taskList, Command cmd) throws StudyMateException {
         // ensures end time (cmd.datetime1) is not before start time (cmd.datetime0) of an event
         if (cmd.datetime1.compareTo(cmd.datetime0) < 0) {
@@ -117,6 +145,12 @@ public class CommandHandler {
         MessageHandler.sendAddTaskMessage(newTask, listCount);
     }
 
+    /**
+     * Handles listing tasks, either in normal or sorted order.
+     *
+     * @param taskList The task list to display
+     * @param cmd The command containing the sort flag
+     */
     private static void handleList(TaskList taskList, Command cmd) {
         if (cmd.isSorted) {
             ArrayList<Task> result = taskList.getSorted();
@@ -141,6 +175,13 @@ public class CommandHandler {
         taskList.unmark(cmd.indexes);
     }
 
+    /**
+     * Handles editing a task's properties (description, deadline, from date, or to date).
+     *
+     * @param taskList The task list to modify
+     * @param cmd The command containing the task index and new value
+     * @throws StudyMateException If the index is invalid or operation fails
+     */
     private static void handleEdit(TaskList taskList, Command cmd) throws StudyMateException {
         IndexValidator.validateIndex(cmd.index, taskList.getCount());
         switch (cmd.type) {
@@ -157,6 +198,12 @@ public class CommandHandler {
         taskList.delete(cmd.indexes);
     }
 
+    /**
+     * Handles adding a recurring reminder to the reminder list.
+     *
+     * @param reminderList The reminder list to add to
+     * @param cmd The command containing reminder name, datetime, and interval
+     */
     private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
         reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.interval);
         int reminderCount = reminderList.getCount();
@@ -164,6 +211,12 @@ public class CommandHandler {
         MessageHandler.sendAddReminderRecMessage(newReminder, reminderCount);
     }
 
+    /**
+     * Handles adding a one-time reminder to the reminder list.
+     *
+     * @param reminderList The reminder list to add to
+     * @param cmd The command containing reminder name and datetime
+     */
     private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) {
         reminderList.addReminderOneTime(cmd.desc, cmd.datetime0);
         int reminderCount = reminderList.getCount();
@@ -194,6 +247,14 @@ public class CommandHandler {
         reminderList.handleSnooze(cmd.index, cmd.snoozeDuration);
     }
 
+    /**
+     * Handles starting a new timer.
+     * Validates that no other timer is running and creates a timer with the specified duration.
+     *
+     * @param taskList The task list (used if timer is linked to a task)
+     * @param cmd The command containing timer duration and optional task index or label
+     * @throws StudyMateException If another timer is running or index is invalid
+     */
     private static void handleTimerStart(TaskList taskList, Command cmd) throws StudyMateException {
         if (activeTimer != null && activeTimer.getState() != TimerState.IDLE) {
             throw new StudyMateException("A timer is already running or paused. Please stop it first.");
@@ -223,6 +284,11 @@ public class CommandHandler {
         MessageHandler.sendTimerStartMessage(cmd.duration, activeTimer.getLabel());
     }
 
+    /**
+     * Handles pausing the active timer.
+     *
+     * @throws StudyMateException If no timer is active or timer is already paused
+     */
     private static void handleTimerPause() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
@@ -238,6 +304,11 @@ public class CommandHandler {
         MessageHandler.sendTimerPauseMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
 
+    /**
+     * Handles resuming a paused timer.
+     *
+     * @throws StudyMateException If no timer is active or timer is already running
+     */
     private static void handleTimerResume() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
@@ -253,6 +324,11 @@ public class CommandHandler {
         MessageHandler.sendTimerResumeMessage(activeTimer.getRemainingTime(), activeTimer.getLabel());
     }
 
+    /**
+     * Handles resetting and stopping the active timer.
+     *
+     * @throws StudyMateException If no timer is active
+     */
     private static void handleTimerReset() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
@@ -272,6 +348,11 @@ public class CommandHandler {
         MessageHandler.sendTimerResetMessage();
     }
 
+    /**
+     * Handles displaying the current timer status.
+     *
+     * @throws StudyMateException If no timer is active
+     */
     private static void handleTimerStat() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
@@ -280,6 +361,10 @@ public class CommandHandler {
         MessageHandler.sendTimerStatMessage(activeTimer.toString()); //
     }
 
+    /**
+     * Starts periodic monitoring of the active timer.
+     * Checks every second if the timer has completed and handles cleanup.
+     */
     private static void startTimerMonitoring() {
         assert(scheduler == null);
         // Initialise a scheduler to check if timer is done

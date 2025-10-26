@@ -1,5 +1,10 @@
 package seedu.studymate.parser;
 
+/**
+ * Represents all possible command types in the StudyMate application.
+ * This enum is used to categorize parsed user commands for task management,
+ * reminders, timers, habits, and other operations.
+ */
 public enum CommandType {
     TODO,
     DEADLINE,

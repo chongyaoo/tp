@@ -3,6 +3,7 @@ package seedu.studymate.database;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import seedu.studymate.habits.Habit;
 import seedu.studymate.habits.HabitList;
 import seedu.studymate.parser.DateTimeArg;
 import seedu.studymate.reminders.ReminderList;
@@ -200,5 +201,64 @@ class StorageTest {
         assertEquals(1, reminders.getCount());
         assertEquals("Weekly meeting", reminders.getReminder(0).getName());
         assertTrue(reminders.getReminder(0).getOnReminder());
+    }
+
+    /**
+     * Tests that a habit is saved correctly
+     */
+    @Test
+    public void test_habit_save() throws Exception {
+        habits.addHabit("Morning routine",
+                new DateTimeArg(LocalDate.parse("2025-10-27")),
+                Duration.ofDays(1),
+                5);
+
+        storage.save(tasks.getTasks(), reminders.getReminders(), habits.getHabits());
+        String content = Files.readString(Paths.get(TEST_FILE_PATH));
+
+        assertTrue(content.contains("H" + DELIM + "Morning routine" + DELIM + "2025-10-27" + DELIM + "PT24H" +
+                DELIM + "5"));
+    }
+
+    /**
+     * Tests that a saved habit is read correctly
+     */
+    @Test
+    public void test_habit_load() throws Exception {
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of("H" + DELIM + "Morning routine" + DELIM + "2025-10-27" + DELIM + "PT24H" + DELIM + "5"),
+                StandardOpenOption.CREATE);
+        storage.load(tasks, reminders, habits);
+
+        assertEquals(1, habits.getCount());
+        Habit habit = habits.getHabit(0);
+        assertTrue(habit.toString().contains("Morning routine"));
+        assertEquals(5, habit.getStreak());
+    }
+
+    /**
+     * Tests that invalid lines are skipped during loading and valid entries are still loaded
+     */
+    @Test
+    public void test_invalidLine_skipped() throws Exception {
+        // Create a file with mixed valid and invalid lines
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of(
+                        "T" + DELIM + "1" + DELIM + "Valid todo",
+                        "INVALID_LINE_WITH_NO_PROPER_FORMAT",
+                        "D" + DELIM + "0" + DELIM + "Valid deadline" + DELIM + "2025-10-30",
+                        "X" + DELIM + "unknown" + DELIM + "type",
+                        "T" + DELIM,  // incomplete task
+                        "E" + DELIM + "0" + DELIM + "Valid event" + DELIM + "2025-11-01" + DELIM + "2025-11-02"
+                ),
+                StandardOpenOption.CREATE);
+
+        storage.load(tasks, reminders, habits);
+
+        // Only the 3 valid entries should be loaded
+        assertEquals(3, tasks.getCount());
+        assertEquals("Valid todo", tasks.getTask(0).getName());
+        assertEquals("Valid deadline", tasks.getTask(1).getName());
+        assertEquals("Valid event", tasks.getTask(2).getName());
     }
 }
