@@ -201,4 +201,30 @@ class StorageTest {
         assertEquals("Weekly meeting", reminders.getReminder(0).getName());
         assertTrue(reminders.getReminder(0).getOnReminder());
     }
+
+    /**
+     * Tests that invalid lines are skipped during loading and valid entries are still loaded
+     */
+    @Test
+    public void test_invalidLine_skipped() throws Exception {
+        // Create a file with mixed valid and invalid lines
+        Files.write(Paths.get(TEST_FILE_PATH),
+                List.of(
+                        "T" + DELIM + "1" + DELIM + "Valid todo",
+                        "INVALID_LINE_WITH_NO_PROPER_FORMAT",
+                        "D" + DELIM + "0" + DELIM + "Valid deadline" + DELIM + "2025-10-30",
+                        "X" + DELIM + "unknown" + DELIM + "type",
+                        "T" + DELIM,  // incomplete task
+                        "E" + DELIM + "0" + DELIM + "Valid event" + DELIM + "2025-11-01" + DELIM + "2025-11-02"
+                ),
+                StandardOpenOption.CREATE);
+
+        storage.load(tasks, reminders, habits);
+
+        // Only the 3 valid entries should be loaded
+        assertEquals(3, tasks.getCount());
+        assertEquals("Valid todo", tasks.getTask(0).getName());
+        assertEquals("Valid deadline", tasks.getTask(1).getName());
+        assertEquals("Valid event", tasks.getTask(2).getName());
+    }
 }
