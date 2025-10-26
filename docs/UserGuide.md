@@ -43,80 +43,254 @@ Now you have X tasks in the list.
 
 ### Adding a deadline: `deadline`
 
-Adds a task with a specific deadline date to your task list.
+Adds a task with a specific deadline date and time to your task list.
 
-**Format:** `deadline DESCRIPTION /by YYYY-MM-DD`
+**Format:** `deadline DESCRIPTION /by YYYY-MM-DD HH:mm`
 
 * The `DESCRIPTION` is the name or details of the deadline task.
-* The `/by` delimiter is required to separate the description from the deadline date.
-* The deadline date must be in `YYYY-MM-DD` format (e.g., 2025-12-31).
+* The `/by` delimiter is required to separate the description from the deadline.
+* The deadline must be in `YYYY-MM-DD HH:mm` format (e.g., 2025-12-31 23:59).
+* Both date and time components are required.
 * Both description and deadline cannot be empty.
 
 **Examples:**
-* `deadline Submit assignment /by 2025-11-15`
-* `deadline Project proposal /by 2025-10-30`
-* `deadline Return library books /by 2025-11-01`
+* `deadline Submit assignment /by 2025-11-15 23:59`
+* `deadline Project proposal /by 2025-10-30 17:00`
+* `deadline Return library books /by 2025-11-01 09:00`
 
 **Expected output:**
 ```
 Got it! I've added this task:
-  [D][ ] Submit assignment (by: Oct 15 2025)
+  [D][ ] Submit assignment (by: 2025-11-15 23:59)
 Now you have X tasks in the list.
 ```
 
 **Notes:**
-* Deadline tasks are marked with `[D]` to indicate they have a due date.
-* The date is stored and displayed in a readable format.
-* Use `list -s` to view tasks sorted by date (earliest deadline first).
+* Deadline tasks are marked with `[D]` to indicate they have a due date and time.
+* The date and time are stored and displayed in YYYY-MM-DD HH:mm format.
+* Use `list -s` to view tasks sorted by date and time (earliest deadline first).
 
 ### Adding an event: `event`
 
-Adds an event with a start date and end date to your task list.
+Adds an event with a start date/time and end date/time to your task list.
 
-**Format:** `event DESCRIPTION /from YYYY-MM-DD /to YYYY-MM-DD`
+**Format:** `event DESCRIPTION /from YYYY-MM-DD HH:mm /to YYYY-MM-DD HH:mm`
 
 * The `DESCRIPTION` is the name or details of the event.
-* The `/from` delimiter specifies the start date of the event.
-* The `/to` delimiter specifies the end date of the event.
+* The `/from` delimiter specifies the start date and time of the event.
+* The `/to` delimiter specifies the end date and time of the event.
 * Both delimiters are required, and `/from` must come before `/to`.
-* All dates must be in `YYYY-MM-DD` format.
-* The description, start date, and end date cannot be empty.
-* The end date must be on or after the start date.
+* All date/time values must be in `YYYY-MM-DD HH:mm` format.
+* The description, start date/time, and end date/time cannot be empty.
+* The end date/time must be on or after the start date/time.
 
 **Examples:**
-* `event Project week /from 2025-11-01 /to 2025-11-07`
-* `event Conference /from 2025-12-10 /to 2025-12-12`
-* `event Study camp /from 2025-11-20 /to 2025-11-22`
+* `event Project week /from 2025-11-01 09:00 /to 2025-11-07 17:00`
+* `event Conference /from 2025-12-10 08:00 /to 2025-12-12 18:00`
+* `event Study camp /from 2025-11-20 14:00 /to 2025-11-22 16:00`
 
 **Expected output:**
 ```
 Got it! I've added this task:
-  [E][ ] Project week (from: Nov 1 2025, to: Nov 7 2025)
+  [E][ ] Project week (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
 Now you have X tasks in the list.
 ```
 
 **Notes:**
 * Event tasks are marked with `[E]` to indicate they span a time period.
-* Both start and end dates are displayed.
-* Use `list -s` to view tasks sorted by date (earliest start date first).
-* The end date cannot be before the start date.
+* Both start and end date/times are displayed in YYYY-MM-DD HH:mm format.
+* Use `list -s` to view tasks sorted by date (earliest start date/time first).
+* The end date/time cannot be before the start date/time.
+
+### Tracking habits: `habit`
+
+Track recurring habits with streak counting to build consistency. Habits help you maintain regular activities by setting deadlines and rewarding on-time completion with streak increments.
+
+#### Adding a habit: `habit DESCRIPTION -t INTERVAL`
+
+Creates a new habit with a specified time interval between completions.
+
+**Format:** `habit DESCRIPTION -t INTERVAL`
+
+* The `DESCRIPTION` is the name of the habit you want to track.
+* The `-t` flag is required to specify the interval.
+* The `INTERVAL` must follow the format: number + unit
+  * `m` for minutes (e.g., `30m`)
+  * `h` for hours (e.g., `2h`)
+  * `d` for days (e.g., `1d`)
+  * `w` for weeks (e.g., `1w`)
+* The habit starts with a streak of 1.
+* The first deadline is automatically set to current time + interval.
+
+**Examples:**
+* `habit Exercise -t 1d` - Daily exercise habit
+* `habit Meditation -t 12h` - Twice-daily meditation
+* `habit Read book -t 1w` - Weekly reading habit
+* `habit Drink water -t 2h` - Hydration reminder every 2 hours
+
+**Expected output:**
+```
+Got it! I've added this habit:
+  [H] Exercise (deadline: 2025-10-27 14:30, streak: 1)
+Now you have X habits in the list.
+```
+
+**Notes:**
+* Habits are marked with `[H]` to indicate habit tracking.
+* The deadline shows when you should next complete the habit.
+* Your streak tracks consecutive successful completions.
+
+#### Listing all habits: `habit ls`
+
+Displays all your tracked habits with their deadlines and current streaks.
+
+**Format:** `habit ls`
+
+**Expected output:**
+```
+Here are your habits:
+1. [H] Exercise (deadline: 2025-10-27 14:30, streak: 5)
+2. [H] Meditation (deadline: 2025-10-26 20:00, streak: 3)
+3. [H] Read book (deadline: 2025-11-02 14:30, streak: 1)
+```
+
+**Notes:**
+* Each habit shows its index number, name, next deadline, and current streak.
+* Use these index numbers for streak increments and deletions.
+
+#### Incrementing a habit streak: `habit streak INDEX`
+
+Attempts to increment the streak for a habit when you complete it.
+
+**Format:** `habit streak INDEX`
+
+* The `INDEX` is the number shown in the habit list.
+* Timing matters! The system checks if you're completing on time:
+  * **Too Early**: You haven't reached the deadline yet
+  * **On Time**: You're between the deadline and the grace period
+  * **Too Late**: You've exceeded the grace period (streak resets to 1)
+
+**Grace Period:**
+The grace period is calculated as: **deadline + (interval ÷ 4) + 1 minute**
+
+For example:
+* Daily habit (24h interval): 6 hour grace period
+* Weekly habit (7d interval): 1.75 day grace period
+* Hourly habit (1h interval): 16 minute grace period
+
+**Examples:**
+* `habit streak 1` - Increment the first habit's streak
+* `habit streak 3` - Increment the third habit's streak
+
+**Expected outputs:**
+
+*When on time:*
+```
+Great! You've incremented your streak.
+Habit: [H] Exercise (deadline: 2025-10-28 14:30, streak: 6)
+```
+
+*When too early:*
+```
+Too early! You can only increment the streak after the deadline.
+Habit: [H] Exercise (deadline: 2025-10-27 14:30, streak: 5)
+```
+
+*When too late:*
+```
+Missed the deadline! Your streak has been reset to 1.
+Habit: [H] Exercise (deadline: 2025-10-28 14:30, streak: 1)
+```
+
+**Notes:**
+* When you successfully increment (on time), the deadline automatically updates to: current time + interval.
+* If you're too late, the streak resets to 1 (not 0), giving you credit for the current completion.
+* The system compares times truncated to the minute level, so completing at any second within the same minute as the deadline counts as on-time.
+
+#### Deleting a habit: `habit rm INDEX`
+
+Removes a habit from your tracking list.
+
+**Format:** `habit rm INDEX`
+
+* The `INDEX` is the number shown in the habit list.
+
+**Examples:**
+* `habit rm 2` - Delete the second habit
+* `habit rm 1` - Delete the first habit
+
+**Expected output:**
+```
+Noted! I've removed this habit:
+  [H] Meditation (deadline: 2025-10-26 20:00, streak: 3)
+Now you have X habits in the list.
+```
+
+**Notes:**
+* Deleting a habit is permanent and cannot be undone.
+* The index numbers will update after deletion.
 
 ## FAQ
 
 **Q**: How do I transfer my data to another computer? 
 
-**A**: Copy the `data/tasks.txt` file from your current StudyMate folder to the same location in the new computer's StudyMate folder.
+**A**: Copy the `data/StudyMate.txt` file from your current StudyMate folder to the same location in the new computer's StudyMate folder. This file contains all your tasks, habits, and reminders.
 
 **Q**: Can I add a todo with special characters?
 
 **A**: Yes, the todo description can contain any characters except it cannot be empty.
 
+**Q**: What happens if I miss my habit deadline?
+
+**A**: If you try to increment your streak after the grace period has passed, your streak will reset to 1 (not 0). You still get credit for the current completion, but you'll need to rebuild your streak from there.
+
+**Q**: How is the grace period calculated for habits?
+
+**A**: The grace period is (interval ÷ 4) + 1 minute. For example, a daily habit (24h) has a 6-hour grace period, while a weekly habit (7d) has a 1.75-day grace period. This gives you reasonable flexibility while still encouraging consistency.
+
+**Q**: Can I change a habit's interval after creating it?
+
+**A**: No, you cannot modify a habit's interval. If you need a different interval, delete the old habit and create a new one. Note that this will reset your streak.
+
+**Q**: Why does the system use minutes instead of seconds for timing?
+
+**A**: The system truncates timing to minutes to be more user-friendly. This means if your deadline is at 14:30:59 and you complete at 14:30:00, it still counts as on-time because both are in the same minute.
+
 ## Command Summary
 
+**Task Management:**
 * Add todo: `todo DESCRIPTION`
-* Add deadline: `deadline DESCRIPTION /by YYYY-MM-DD`
-* Add event: `event DESCRIPTION /from YYYY-MM-DD /to YYYY-MM-DD`
+* Add deadline: `deadline DESCRIPTION /by YYYY-MM-DD HH:mm`
+* Add event: `event DESCRIPTION /from YYYY-MM-DD HH:mm /to YYYY-MM-DD HH:mm`
 * List all tasks: `list`
 * List tasks sorted by date: `list -s`
 * Mark task as done: `mark INDEX`
+* Unmark task: `unmark INDEX`
+* Edit task: `edit INDEX -FLAG VALUE`
 * Delete task: `delete INDEX`
+* Find tasks: `find KEYWORD`
+
+**Habit Tracking:**
+* Add habit: `habit DESCRIPTION -t INTERVAL`
+* List habits: `habit ls`
+* Increment streak: `habit streak INDEX`
+* Delete habit: `habit rm INDEX`
+
+**Reminders:**
+* Add one-time reminder: `rem MESSAGE @ YYYY-MM-DD HH:mm`
+* Add recurring reminder: `rem MESSAGE @ YYYY-MM-DD HH:mm -r INTERVAL`
+* List reminders: `rem ls`
+* Delete reminder: `rem rm INDEX`
+* Turn reminder on: `rem on INDEX`
+* Turn reminder off: `rem off INDEX`
+* Snooze reminder: `rem snooze INDEX INTERVAL`
+
+**Timer:**
+* Start timer: `start [INDEX|NAME] [@MINUTES]`
+* Pause timer: `pause`
+* Resume timer: `resume`
+* Reset timer: `reset`
+* Show timer status: `stat`
+
+**Other:**
+* Exit application: `bye`

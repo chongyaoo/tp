@@ -49,6 +49,14 @@ public class MessageFormatting {
         return "[E][ ] " + name + " (from: " + fromString + ", to: " + toEventString + ")";
     }
 
+    /**
+     * Returns a formatted string representation of a one-time reminder.
+     *
+     * @param onReminder Whether the reminder is turned on
+     * @param name The name of the reminder
+     * @param dateTime The date and time for the reminder
+     * @return The formatted string for display
+     */
     public static String oneTimeReminderString(Boolean onReminder, String name, DateTimeArg dateTime) {
         String dateTimeString = dateTime.toString().replace("T", " ");
         if (onReminder) {
@@ -57,6 +65,15 @@ public class MessageFormatting {
         return "[RO][ ] " + name + " (" + dateTimeString + ")";
     }
 
+    /**
+     * Returns a formatted string representation of a recurring reminder.
+     *
+     * @param onReminder Whether the reminder is turned on
+     * @param name The name of the reminder
+     * @param dateTime The next reminder date and time
+     * @param reminderInterval The interval between reminders
+     * @return The formatted string for display
+     */
     public static String recReminderString(Boolean onReminder, String name, DateTimeArg dateTime,
                                            Duration reminderInterval) {
         String returnString;

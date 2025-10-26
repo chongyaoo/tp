@@ -2,7 +2,7 @@
 
 ## Acknowledgements
 
-{list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
+Thank you teaching team of CS2113!
 
 ## Design & implementation
 
@@ -27,7 +27,7 @@ The Parser component consists of several key classes that work together to handl
 The Parser component works with the following workflow:
 
 1. **User Input Processing**: Raw string input from the user is received
-2. **Command Parsing**: The `Parser` analyzes the input and identifies the command type
+2. **Command Parsing**: The `Parser` analyses the input and identifies the command type
 3. **Parameter Extraction**: Relevant parameters (descriptions, indices, dates, times, etc.) are extracted and validated
 4. **Command Object Creation**: A `Command` object is instantiated with the appropriate `CommandType` and parameters
 5. **Error Handling**: If parsing fails, a `StudyMateException` is thrown with a descriptive error message
@@ -36,7 +36,7 @@ The Parser component works with the following workflow:
 
 The diagram below shows how the Parser component interacts with other components in the system:
 
-![Parser Interactions Diagram](images/ParserInteraction.png)
+![Parser Interactions Diagram](images/ParserInteractions.png)
 
 The Parser creates Command objects that are consumed by CommandHandler. It uses DateTimeArg for temporal data and throws StudyMateException for errors.
 
@@ -52,7 +52,7 @@ When the Parser component is called upon to parse a command, the following steps
 
 1. The `StudyMate` main class creates a `Parser` instance and calls its `parse()` method with the user input string (e.g., "todo read book").
 
-2. The `Parser` normalizes the input by collapsing multiple whitespaces into single spaces using `replaceAll("\\s+", " ")`.
+2. The `Parser` normalises the input by collapsing multiple whitespaces into single spaces using `replaceAll("\\s+", " ")`.
 
 3. The `Parser` splits the input into command word and arguments using `split(" ", 2)`, resulting in:
    - `arguments[0]` = "todo"
@@ -60,56 +60,46 @@ When the Parser component is called upon to parse a command, the following steps
 
 4. Based on the identified command type, the `Parser` invokes the appropriate private parsing method:
    * `parseToDo()` - for todo commands
-   * `parseDeadline()` - for deadline commands
-   * `parseEvent()` - for event commands
+   * `parseDeadline()` - for deadline commands (requires /by delimiter)
+   * `parseEvent()` - for event commands (requires /from and /to delimiters)
    * `parseFind()` - for find commands
-   * `parseList()` - for list commands (with optional sorting flag)
-   * `parseEdit()` - for edit commands
-   * `parseMark()`, `parseUnmark()`, `parseDelete()` - for index-based operations
-   * `parseRem()` - for reminder-related commands
-     * `parseRemOn()`, `parseRemOff()`, `parseRemRm()`, `parseLs()`, `parseAdd()`, `parseSnooze()` for each specific operation
-   * `parseTimerStart()` - for timer start commands
+   * `parseList()` - for list commands (with optional -s sorting flag)
+   * `parseEdit()` - for edit commands (supports -n, -d, -f, -t flags)
+   * `parseMark()`, `parseUnmark()`, `parseDelete()` - for index-based task operations
+   * `parseRem()` - for reminder-related commands, which routes to:
+     * `parseRemOn()`, `parseRemOff()` - turns reminders on/off
+     * `parseRemRm()` - removes reminders
+     * `parseRemLs()` - lists reminders
+     * `parseRemAdd()` - adds one-time or recurring reminders
+     * `parseRemSnooze()` - snoozes a reminder
+   * `parseTimerStart()` - for timer start commands (with optional duration and task index/label)
+   * `parseHabit()` - for habit-related commands, which routes to:
+     * `parseHabitAdd()` - adds a new habit with interval
+     * `parseHabitStreak()` - increments a habit's streak
+     * `parseHabitRm()` - removes a habit
+     * Returns `HABIT_LIST` command for listing habits
 
-4. Each parsing method:
+5. Each parsing method:
    * Validates the command syntax and parameters
-   * Extracts relevant data (descriptions, dates, times, indices, durations)
+   * Extracts relevant data (descriptions, dates, times, indices, durations, intervals)
    * Throws `StudyMateException` if the input format is invalid
    * Creates and returns a `Command` object with the appropriate `CommandType` and parameters
 
-5. The resulting `Command` object is returned to `StudyMate`, which passes it to `CommandHandler.executeCommand()`.
+6. The resulting `Command` object is returned to `StudyMate`, which passes it to `CommandHandler.executeCommand()`.
 
-6. The `CommandHandler` uses a switch statement on the `CommandType` to route the command to the appropriate handler method:
-   * Task commands are handled by methods like `handleToDo()`, `handleDeadline()`, `handleEvent()`, `handleMark()`, `handleEdit()`
-   * Reminder commands are handled by methods like `handleRemAddOneTime()`, `handleRemAddRec()`, `handleRemList()`
-   * Timer commands are handled by methods like `handleTimerStart()`, `handleTimerPause()`
+7. The `CommandHandler` uses a switch statement on the `CommandType` to route the command to the appropriate handler method:
+   * Task commands are handled by methods like `handleToDo()`, `handleDeadline()`, `handleEvent()`, `handleMark()`, `handleEdit()`, `handleDelete()`
+   * Reminder commands are handled by methods like `handleRemAddOneTime()`, `handleRemAddRec()`, `handleRemList()`, `handleRemOn()`, `handleRemOff()`, `handleRemSnooze()`
+   * Timer commands are handled by methods like `handleTimerStart()`, `handleTimerPause()`, `handleTimerResume()`, `handleTimerReset()`, `handleTimerStat()`
+   * Habit commands are handled by methods like `handleHabitAdd()`, `handleHabitList()`, `handleHabitStreak()`, `handleHabitDelete()`
 
-7. Handler methods interact with the Model components (TaskList, ReminderList, Timer) to execute the command logic.
+8. Handler methods interact with the Model components (TaskList, ReminderList, HabitList, Timer) to execute the command logic.
 
-8. The `IndexValidator` is used when commands involve list indices to ensure they are within valid ranges before execution.
+9. The `IndexValidator` is used when commands involve list indices to ensure they are within valid ranges before execution.
 
-9. Results are communicated back to the user through the `MessageHandler` UI component.
+10. Results are communicated back to the user through the `MessageHandler` UI component.
 
 #### Key Design Considerations
-
-**Aspect: Command representation**
-
-* **Current choice**: Use a single `Command` class with multiple constructors to handle different command types
-  * Pros: Simpler to pass around as a single object type; easier serialization; centralized command representation
-  * Cons: The Command class has many fields, most of which are null for any given command; potential for confusion about which fields are relevant for each command type
-
-* **Alternative**: Create separate command classes for each command type (e.g., `DeadlineCommand`, `MarkCommand`, `EditCommand`)
-  * Pros: Each class only contains relevant fields; clearer separation of concerns; type safety
-  * Cons: More classes to maintain; requires more complex type handling in CommandHandler; polymorphism adds complexity
-
-**Aspect: Parsing validation**
-
-* **Current choice**: Perform validation during parsing and throw exceptions immediately
-  * Pros: Fail-fast approach; errors caught before command execution; clearer error messages tied to specific parsing failures
-  * Cons: Parsing logic is tightly coupled with validation logic
-
-* **Alternative**: Parse optimistically and validate during execution
-  * Pros: Cleaner separation between parsing and validation; parser focuses solely on structure
-  * Cons: Invalid commands might not be caught until execution time; harder to provide specific error messages; wasted resources creating Command objects for invalid input
 
 **Aspect: Index handling**
 
@@ -124,12 +114,12 @@ When the Parser component is called upon to parse a command, the following steps
 **Aspect: Time handling in reminders**
 
 * **Current choice**: Require time component for all reminders (format: `yyyy-MM-dd HH:mm`)
-  * Pros: Precise scheduling; consistent behavior with recurring reminders; no ambiguity about when reminders fire
+  * Pros: Precise scheduling; consistent behaviour with recurring reminders; no ambiguity about when reminders fire
   * Cons: Slightly more verbose input; users must specify time even for all-day reminders
 
 * **Alternative**: Make time optional and default to midnight or current time
   * Pros: More convenient for date-only reminders; less typing
-  * Cons: Ambiguity about default time; inconsistent reminder behavior; harder to reason about recurring reminder schedules
+  * Cons: Ambiguity about default time; inconsistent reminder behaviour; harder to reason about recurring reminder schedules
 
 #### Supported Command Formats
 
@@ -137,33 +127,40 @@ The Parser component supports the following command formats:
 
 **Task Management:**
 * `todo DESCRIPTION` - Creates a todo task
-* `deadline DESCRIPTION /by DATE` - Creates a deadline task (DATE format: yyyy-MM-dd)
-* `event DESCRIPTION /from DATE /to DATE` - Creates an event task (DATE format: yyyy-MM-dd)
+* `deadline DESCRIPTION /by DATE TIME` - Creates a deadline task (DATE TIME format: yyyy-MM-dd HH:mm)
+* `event DESCRIPTION /from DATE TIME /to DATE TIME` - Creates an event task (DATE TIME format: yyyy-MM-dd HH:mm)
 * `list` - Lists all tasks
 * `list -s` - Lists all deadlines and events sorted by date (soonest first)
 * `find KEYWORD` - Finds tasks containing the keyword
 * `edit INDEX -n DESCRIPTION` - Edits task description
-* `edit INDEX -d DATE` - Edits deadline date (for deadline tasks only)
-* `edit INDEX -f DATE` - Edits event from date (for event tasks only)
-* `edit INDEX -t DATE` - Edits event to date (for event tasks only)
+* `edit INDEX -d DATE TIME` - Edits deadline date (for deadline tasks only)
+* `edit INDEX -f DATE TIME` - Edits event from date (for event tasks only)
+* `edit INDEX -t DATE TIME` - Edits event to date (for event tasks only)
 * `mark INDEX[,INDEX...]` - Marks tasks as done
 * `unmark INDEX[,INDEX...]` - Marks tasks as not done
 * `delete INDEX[,INDEX...]` - Deletes tasks
 
 **Reminder Management:**
 * `rem MESSAGE @ DATE TIME` - Creates a one-time reminder (DATE TIME format: yyyy-MM-dd HH:mm)
-* `rem MESSAGE @ DATE TIME -r INTERVAL` - Creates a recurring reminder (INTERVAL format: number + unit [s/m/h/d/w])
+* `rem MESSAGE @ DATE TIME -r INTERVAL` - Creates a recurring reminder (INTERVAL format: number + unit [m/h/d/w])
 * `rem ls` - Lists all reminders
 * `rem rm INDEX[,INDEX...]` - Deletes reminders
-* `rem snooze INDEX INTERVAL` - Snoozes a one-time reminder by the length of the interval (INTERVAL format: number + unit [s/m/h/d/w])
-* `rem on/off INDEX` - Turns the one-time/recurring reminder on/off
+* `rem snooze INDEX INTERVAL` - Snoozes a one-time reminder by the interval duration (INTERVAL format: number + unit [m/h/d/w])
+* `rem on INDEX[,INDEX...]` - Turns reminders on
+* `rem off INDEX[,INDEX...]` - Turns reminders off
 
 **Timer Operations:**
-* `start [INDEX|NAME] [@MINUTES]` - Starts a timer with optional task index/label and duration
+* `start [INDEX|NAME] [@MINUTES]` - Starts a timer with optional task index/label and duration (default: 25 minutes)
 * `pause` - Pauses the active timer
 * `resume` - Resumes the paused timer
 * `reset` - Resets and stops the timer
 * `stat` - Shows timer statistics
+
+**Habit Tracking:**
+* `habit DESCRIPTION -t INTERVAL` - Creates a new habit with specified interval (INTERVAL format: number + unit [m/h/d/w])
+* `habit ls` - Lists all habits
+* `habit streak INDEX` - Increments the streak for a habit (validates timing with grace period)
+* `habit rm INDEX` - Deletes a habit
 
 **Index Formats:**
 * Single: `1`
@@ -175,13 +172,13 @@ The Parser component supports the following command formats:
 
 1. **Case Insensitivity**: All command words are case-insensitive (e.g., `TODO`, `todo`, `ToDo` are all valid)
 
-2. **Whitespace Normalization**: Multiple consecutive spaces are collapsed into single spaces
+2. **Whitespace Normalisation**: Multiple consecutive spaces are collapsed into single spaces
 
 3. **Index Range Expansion**: Range notation (e.g., `1...5`) is automatically expanded to individual indices
 
 4. **Date-Time Parsing**: Uses Java's `LocalDate.parse()` and `LocalTime.parse()` for robust date/time validation
 
-5. **Duration Interval Parsing**: Custom `parseInterval()` method supports human-readable formats like `1d`, `2w`, `30m`
+5. **Duration Interval Parsing**: Custom `parseInterval()` method supports human-readable formats like `30m`, `2h`, `1d`, `1w` for minutes, hours, days, and weeks respectively
 
 ### CommandHandler Component
 
@@ -200,10 +197,13 @@ The CommandHandler component acts as the controller in the application architect
 * `CommandType` - Enumeration defining all supported command types
 * `TaskList` - Model component managing the list of tasks
 * `ReminderList` - Model component managing the list of reminders
+* `HabitList` - Model component managing the list of habits
 * `Timer` - Manages timer state and countdown functionality
 * `TimerState` - Enumeration defining timer states (IDLE, RUNNING, PAUSED)
 * `Task` - Abstract base class for all task types
 * `Reminder` - Represents a reminder with schedule information
+* `Habit` - Represents a habit with deadline, interval, and streak tracking
+* `StreakResult` - Enumeration defining streak increment results (TOO_EARLY, ON_TIME, TOO_LATE)
 * `MessageHandler` - UI component for displaying results to the user
 * `IndexValidator` - Utility class for validating index inputs
 * `StudyMateException` - Exception type thrown for command execution errors
@@ -214,21 +214,19 @@ The diagram below shows how the CommandHandler component interacts with other co
 
 ![CommandHandler Interactions Diagram](images/CommandHandlerInteractions.png)
 
-The CommandHandler receives Command objects from the Parser, coordinates with Model components (TaskList, ReminderList, Timer), validates operations using IndexValidator, and communicates results through MessageHandler.
+The CommandHandler receives Command objects from the Parser, coordinates with Model components (TaskList, ReminderList, HabitList, Timer), validates operations using IndexValidator, and communicates results through MessageHandler.
 
 #### How the CommandHandler Component Works
 
-The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, todoCommand)` as an example where the command is for "todo read book":
+The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, habitList, todoCommand)` as an example where the command is for "todo read book":
 
 ![Sequence Diagram for Command Execution](images/CommandHandlerToDo.png)
 
 **Example: Executing "todo read book" command**
 
-**Example: Executing "todo read book" command**
-
 When the CommandHandler component is called upon to execute a command, the following steps occur:
 
-1. `StudyMate` calls `CommandHandler.executeCommand()` with the TaskList, ReminderList, and parsed Command object (containing type=TODO, desc="read book").
+1. `StudyMate` calls `CommandHandler.executeCommand()` with the TaskList, ReminderList, HabitList, and parsed Command object (containing type=TODO, desc="read book").
 
 2. CommandHandler uses a switch statement on `cmd.type` to determine which handler method to invoke. Since the command type is TODO, it routes to `handleToDo()`.
 
@@ -278,42 +276,22 @@ For all commands, the CommandHandler follows a similar pattern:
 **Aspect: Static vs Instance Methods**
 
 * **Current choice**: Use static methods and static state for CommandHandler
-  * Pros: Simple access pattern; no need to pass CommandHandler instance around; centralized state management
+  * Pros: Simple access pattern; no need to pass CommandHandler instance around; centralised state management
   * Cons: Harder to test; global mutable state; potential concurrency issues; single active timer limitation
 
 * **Alternative**: Use instance methods with dependency injection
   * Pros: Better testability; easier to mock; supports multiple independent instances
-  * Cons: More complex initialization; need to pass instance around; more boilerplate code
-
-**Aspect: Timer Monitoring Mechanism**
-
-* **Current choice**: Use `ScheduledExecutorService` with 1-second polling interval
-  * Pros: Simple to implement; reliable; built-in Java concurrency support; automatic thread management
-  * Cons: Polling overhead; 1-second granularity; scheduler must be properly cleaned up
-
-* **Alternative**: Use a separate daemon thread with sleep/wait
-  * Pros: More control over thread behavior; can adjust sleep intervals dynamically
-  * Cons: Manual thread management; more complex; harder to ensure proper cleanup
+  * Cons: More complex initialisation; need to pass instance around; more boilerplate code
 
 **Aspect: Command Routing**
 
 * **Current choice**: Single large switch statement on CommandType
-  * Pros: Simple to understand; centralized routing logic; easy to add new commands
+  * Pros: Simple to understand; centralised routing logic; easy to add new commands
   * Cons: Large method; potential for the class to become bloated as more commands are added
 
 * **Alternative**: Command pattern with polymorphic dispatch
   * Pros: Better separation of concerns; each command encapsulates its own execution logic; follows OOP principles
   * Cons: More classes; more complex structure; harder to trace execution flow
-
-**Aspect: Error Handling**
-
-* **Current choice**: Throw `StudyMateException` for validation errors and state violations
-  * Pros: Centralized error handling; exceptions propagate up to main loop; consistent error reporting
-  * Cons: Exceptions can be expensive; control flow through exceptions is sometimes considered poor practice
-
-* **Alternative**: Return Result objects with success/failure status
-  * Pros: Explicit error handling; no exception overhead; clearer API contracts
-  * Cons: Callers must check return values; more verbose; easy to ignore errors
 
 #### Command Execution Flow
 
@@ -381,6 +359,213 @@ The CommandHandler executes commands in the following categories:
 3. **Status Command** (`STAT`):
    - Validate timer exists
    - Display timer statistics
+
+**Habit Commands:**
+1. **Add Command** (`HABIT_ADD`):
+   - Add new habit to HabitList with name and interval
+   - Initial streak is set to 1
+   - Deadline is calculated as current time + interval
+   - Display confirmation with habit details
+
+2. **View Command** (`HABIT_LIST`):
+   - Display all habits with their deadlines and current streaks
+
+3. **Streak Command** (`HABIT_STREAK`):
+   - Validate habit index
+   - Attempt to increment the habit's streak
+   - Check timing constraints:
+     * TOO_EARLY: Current time is before the deadline (truncated to minute)
+     * ON_TIME: Current time is within valid window (after deadline, within grace period of interval/4 + 1 minute)
+     * TOO_LATE: Current time is beyond grace period (streak resets to 1)
+   - Update habit deadline to current time + interval
+   - Display result message with streak status
+
+4. **Delete Command** (`HABIT_DELETE`):
+   - Validate habit index
+   - Remove habit from HabitList
+   - Display confirmation
+
+### Habits Component
+
+**API**: `Habit.java`, `HabitList.java`
+
+The Habits component is responsible for tracking recurring habits with deadlines, intervals, and streak counting. It enables users to build consistency by incrementing streaks when they complete habits within valid time windows.
+
+#### Structure of the Habits Component
+
+The Habits component consists of the following key classes:
+
+![Class Diagram of Habit](images/Habit.png)
+
+* `HabitList` - Manages the collection of habits and provides operations for adding, deleting, and incrementing streaks
+* `Habit` - Represents a single habit with a name, deadline, interval, streak count, and clock for time operations
+* `StreakResult` - Enumeration defining the result of a streak increment attempt (TOO_EARLY, ON_TIME, TOO_LATE)
+* `DateTimeArg` - Encapsulates date and time for habit deadlines
+* `Clock` - Provides time operations for testing and production use
+* `MessageHandler` - UI component for displaying habit-related messages
+* `StudyMateException` - Exception type thrown for habit operation errors
+
+#### Habits Component Interactions
+
+The diagram below shows how the Habits component interacts with other components in the system:
+
+![Habits Component Interactions](images/HabitInteractions.png)
+
+The HabitList manages Habit objects and coordinates with MessageHandler for user notifications. The Habit class uses Clock for time operations and DateTimeArg for deadline management, returning StreakResult to indicate the outcome of streak increment attempts.
+
+#### How the Habits Component Works
+
+The sequence diagram below illustrates the interactions within the Habits component when incrementing a habit's streak:
+
+![Sequence Diagram for Habit Streak Increment](images/HabitStreakSequence.png)
+
+**Example: Incrementing a habit's streak**
+
+When a user attempts to increment a habit's streak, the following steps occur:
+
+1. `CommandHandler` calls `HabitList.incStreak(index)` with the habit index.
+
+2. `HabitList` retrieves the `Habit` at the specified index.
+
+3. `HabitList` calls `habit.incStreak()` to attempt the increment.
+
+4. **Within the Habit's incStreak() method:**
+   * Gets the current time from the injected `Clock`
+   * Compares current time against the deadline (truncated to minutes)
+   * **If TOO_EARLY**: Current time is before the deadline
+     - Returns `StreakResult.TOO_EARLY` without modifying the habit
+   * **If TOO_LATE**: Current time exceeds deadline + grace period (interval/4 + 1 minute)
+     - Resets streak to 1
+     - Calculates new deadline as current time + interval
+     - Updates the habit's deadline
+     - Returns `StreakResult.TOO_LATE`
+   * **If ON_TIME**: Current time is within the valid window
+     - Increments streak by 1
+     - Calculates new deadline as current time + interval
+     - Updates the habit's deadline
+     - Returns `StreakResult.ON_TIME`
+
+5. The `StreakResult` is returned to `HabitList`.
+
+6. `HabitList` calls `MessageHandler.sendIncStreakMessage(habit, result)` to display the appropriate message.
+
+7. Control returns to `CommandHandler`.
+
+#### Key Design Considerations
+
+**Aspect: Time Precision**
+
+* **Current choice**: Truncate deadline comparison to minutes (ignore seconds)
+  * Pros: User-friendly; allows completion at any second within the same minute; reduces false negatives
+  * Cons: Less precise; possible to complete slightly before/after and still count
+
+* **Alternative**: Compare exact timestamps including seconds
+  * Pros: Maximum precision; deterministic behaviour
+  * Cons: Too strict for user experience; seconds-level precision rarely matters for habits
+
+**Aspect: Clock Injection**
+
+* **Current choice**: Inject `Clock` dependency into Habit and HabitList constructors
+  * Pros: Testable with fixed clocks; supports deterministic testing; follows dependency injection principles
+  * Cons: Additional parameter in constructors; slightly more complex initialization
+
+* **Alternative**: Use `LocalDateTime.now()` directly
+  * Pros: Simpler code; fewer parameters; standard Java approach
+  * Cons: Untestable; time-dependent tests become flaky; cannot simulate different times
+
+#### Habit Operations Flow
+
+**Adding a Habit:**
+1. User provides habit name and interval (e.g., "habit Exercise -t 1d")
+2. Parser creates `HABIT_ADD` command with name and interval
+3. CommandHandler calls `HabitList.addHabit(name, interval)`
+4. HabitList creates new Habit with:
+   - Initial streak = 1
+   - Deadline = current time + interval
+   - Injected clock for time operations
+5. Habit is added to internal list
+6. MessageHandler displays confirmation with habit details
+
+**Listing Habits:**
+1. User types "habit ls"
+2. Parser creates `HABIT_LIST` command
+3. CommandHandler calls `MessageHandler.sendHabitList(habitList)`
+4. MessageHandler iterates through all habits and displays:
+   - Index number (1-based)
+   - Habit name
+   - Current deadline
+   - Current streak count
+
+**Incrementing a Streak:**
+1. User provides habit index (e.g., "habit streak 1")
+2. Parser creates `HABIT_STREAK` command with index
+3. CommandHandler validates index with IndexValidator
+4. CommandHandler calls `HabitList.incStreak(index)`
+5. HabitList retrieves habit and calls `habit.incStreak()`
+6. Habit evaluates timing:
+   - Gets current time from clock
+   - Compares against deadline with grace period
+   - Updates streak and deadline if valid
+   - Returns StreakResult (TOO_EARLY, ON_TIME, or TOO_LATE)
+7. MessageHandler displays result with updated habit information
+
+**Deleting a Habit:**
+1. User provides habit index (e.g., "habit rm 1")
+2. Parser creates `HABIT_DELETE` command with index
+3. CommandHandler validates index with IndexValidator
+4. CommandHandler calls `HabitList.deleteHabit(index)`
+5. HabitList removes habit from internal list
+6. MessageHandler displays confirmation
+
+#### Grace Period Calculation
+
+The grace period is a critical feature that makes habit tracking user-friendly. Here's how it works:
+
+```
+Valid Window = [deadline (truncated to minute), deadline + (interval / 4) + 1 minute]
+```
+
+**Examples:**
+
+For a daily habit (interval = 24 hours):
+- Deadline: 2025-10-26 08:00
+- Grace period: 24h / 4 = 6 hours
+- Valid window: 2025-10-26 08:00 to 2025-10-26 14:01
+
+For a weekly habit (interval = 7 days):
+- Deadline: 2025-10-26 08:00  
+- Grace period: 168h / 4 = 42 hours (1.75 days)
+- Valid window: 2025-10-26 08:00 to 2025-10-27 02:01
+
+For an hourly habit (interval = 1 hour):
+- Deadline: 2025-10-26 08:00
+- Grace period: 1h / 4 = 15 minutes
+- Valid window: 2025-10-26 08:00 to 2025-10-26 08:16
+
+This design ensures that habits with longer intervals have proportionally longer grace periods, maintaining fairness across different habit types.
+
+#### Integration with Storage
+
+Habits are persisted to the data file with the following format:
+
+```
+H<DELIM>name<DELIM>deadline<DELIM>interval<DELIM>streak
+```
+
+Where:
+- `H` indicates a habit entry
+- `name` is the habit description
+- `deadline` is in yyyy-MM-ddTHH:mm format
+- `interval` is a Duration string (e.g., PT24H for 24 hours)
+- `streak` is the current streak count
+
+When loading from file:
+1. Storage parses the habit line and extracts all fields
+2. Storage calls `HabitList.addHabit(name, deadline, interval, streak)`
+3. HabitList creates Habit with existing data (no message displayed)
+4. System clock is injected into the loaded habit
+
+This ensures habits persist across application sessions with their streaks and deadlines intact.
 
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 

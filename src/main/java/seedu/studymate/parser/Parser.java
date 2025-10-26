@@ -14,6 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.logging.Logger;
 
+/**
+ * Parses user input and converts it into Command objects.
+ * This class handles all parsing logic for various command types including tasks,
+ * reminders, timers, and habits.
+ */
 public class Parser {
     private static final String DELIMITER_BY = "/by";
     private static final String DELIMITER_FROM = "/from";
@@ -32,6 +37,13 @@ public class Parser {
 
     private static final Logger logger = Logger.getLogger("Parser Logger");
 
+    /**
+     * Parses a line of user input and returns the corresponding Command object.
+     *
+     * @param line The user input string to parse
+     * @return A Command object representing the parsed input
+     * @throws StudyMateException If the input is invalid or cannot be parsed
+     */
     public Command parse(String line) throws StudyMateException {
         if (line.isEmpty()) {
             throw new StudyMateException("Line cannot be empty");
@@ -83,6 +95,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a to-do command.
+     *
+     * @param desc The description of the to-do task
+     * @return A Command object for creating a to-do
+     * @throws StudyMateException If the description is empty
+     */
     private Command parseToDo(String desc) throws StudyMateException {
         if (desc.isEmpty()) {
             throw new StudyMateException("The description of a todo cannot be empty.");
@@ -91,6 +110,13 @@ public class Parser {
         return new Command(CommandType.TODO, desc);
     }
 
+    /**
+     * Parses a deadline command.
+     *
+     * @param arguments The arguments containing description and deadline
+     * @return A Command object for creating a deadline
+     * @throws StudyMateException If the arguments are invalid or missing required delimiters
+     */
     private Command parseDeadline(String arguments) throws StudyMateException {
         if (arguments.isEmpty()) {
             throw new StudyMateException("The description of the deadline task cannot be empty!");
@@ -119,6 +145,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event command.
+     *
+     * @param arguments The arguments containing description, from datetime, and to datetime
+     * @return A Command object for creating an event
+     * @throws StudyMateException If the arguments are invalid or missing required delimiters
+     */
     private Command parseEvent(String arguments) throws StudyMateException {
         if (arguments.isEmpty()) {
             throw new StudyMateException("The description of the event task cannot be empty!");
@@ -164,6 +197,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a find command.
+     *
+     * @param arguments The substring to search for
+     * @return A Command object for finding tasks
+     * @throws StudyMateException If the substring is empty
+     */
     private Command parseFind(String arguments) throws StudyMateException {
         if (arguments.isEmpty()) {
             throw new StudyMateException("The substring cannot be empty!");
@@ -171,6 +211,13 @@ public class Parser {
         return new Command(arguments, CommandType.FIND);
     }
 
+    /**
+     * Parses a list command.
+     *
+     * @param arguments The flags for the list command (e.g., -s for sorted)
+     * @return A Command object for listing tasks
+     * @throws StudyMateException If invalid flags are provided
+     */
     private Command parseList(String arguments) throws StudyMateException {
         if (arguments.equals(SORTED_FLAG)) {
             return new Command(CommandType.LIST, true);
@@ -181,16 +228,37 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a mark command.
+     *
+     * @param arguments The arguments containing task indexes to mark
+     * @return A Command object for marking tasks
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseMark(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.MARK, indexes);
     }
 
+    /**
+     * Parses an unmark command.
+     *
+     * @param arguments The arguments containing task indexes to unmark
+     * @return A Command object for unmarking tasks
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseUnmark(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.UNMARK, indexes);
     }
 
+    /**
+     * Parses an edit command.
+     *
+     * @param arguments The arguments containing index, flag, and new value
+     * @return A Command object for editing a task
+     * @throws StudyMateException If the syntax is invalid
+     */
     private Command parseEdit(String arguments) throws StudyMateException {
         String[] editArgs = arguments.split(" ", 3);
         if (editArgs.length < 3) {
@@ -227,11 +295,26 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a delete command.
+     *
+     * @param arguments The arguments containing task indexes to delete
+     * @return A Command object for deleting tasks
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseDelete(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.DELETE, indexes);
     }
 
+    /**
+     * Parses indexes from command arguments, supporting single indexes, range, and comma-separated mixes of both
+     * notations (e.g., "6,1...5").
+     *
+     * @param arguments The arguments containing the indexes
+     * @return A LinkedHashSet of parsed indexes (0-based)
+     * @throws StudyMateException If the index format is invalid
+     */
     private LinkedHashSet<Integer> parseIndexes(String[] arguments) throws StudyMateException {
         // Check that the task number is not empty
         if (arguments.length <= 1) {
@@ -268,6 +351,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a reminder command and routes to the appropriate subcommand handler.
+     *
+     * @param arguments The arguments for the reminder command
+     * @return A Command object for the reminder operation
+     * @throws StudyMateException If the arguments are invalid
+     */
     private Command parseRem(String[] arguments) throws StudyMateException { //including rem
         if (arguments.length < 2) {
             throw new StudyMateException("The rem command must be followed by a subcommand.");
@@ -285,21 +375,49 @@ public class Parser {
         };
     }
 
+    /**
+     * Parses a reminder on command.
+     *
+     * @param arguments The arguments containing reminder indexes to turn on
+     * @return A Command object for turning on reminders
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseRemOn(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.REM_ON, indexes);
     }
 
+    /**
+     * Parses a reminder off command.
+     *
+     * @param arguments The arguments containing reminder indexes to turn off
+     * @return A Command object for turning off reminders
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseRemOff(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.REM_OFF, indexes);
     }
 
+    /**
+     * Parses a reminder remove command.
+     *
+     * @param arguments The arguments containing reminder indexes to remove
+     * @return A Command object for removing reminders
+     * @throws StudyMateException If the indexes are invalid
+     */
     private Command parseRemRm(String[] arguments) throws StudyMateException {
         LinkedHashSet<Integer> indexes = parseIndexes(arguments);
         return new Command(CommandType.REM_RM, indexes);
     }
 
+    /**
+     * Parses a reminder snooze command.
+     *
+     * @param arguments The arguments containing reminder index and snooze duration
+     * @return A Command object for snoozing a reminder
+     * @throws StudyMateException If the arguments are invalid
+     */
     private Command parseRemSnooze(String[] arguments) throws StudyMateException {
         if (arguments.length == 1) {
             throw new StudyMateException("Input index of the Reminder to snooze, followed by the duration!");
@@ -327,6 +445,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a reminder list command.
+     *
+     * @param rest The remaining arguments (should be empty)
+     * @return A Command object for listing reminders
+     * @throws StudyMateException If there are extra arguments
+     */
     private Command parseRemLs(String rest) throws StudyMateException {
         if (!Objects.equals(rest, "")) {
             throw new StudyMateException("Too many arguments for ls command!");
@@ -334,6 +459,13 @@ public class Parser {
         return new Command(CommandType.REM_LS);
     }
 
+    /**
+     * Parses a reminder add command, supporting both one-time and recurring reminders.
+     *
+     * @param rem The reminder arguments including name, datetime, and optional recurrence
+     * @return A Command object for adding a reminder
+     * @throws StudyMateException If the arguments are invalid or missing required components
+     */
     private Command parseRemAdd(String rem) throws StudyMateException {
         if (rem == null || rem.isBlank()) {
             throw new StudyMateException("Input an event and a DATE/TIME for the reminder!");
@@ -394,6 +526,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a date-time string in the format "yyyy-mm-dd HH:mm".
+     *
+     * @param dateTimeString The date-time string to parse
+     * @return A DateTimeArg object representing the parsed date and time
+     * @throws DateTimeParseException If the format is invalid
+     */
     private DateTimeArg parseDateTimeString(String dateTimeString) throws DateTimeParseException {
         String[] parts = dateTimeString.trim().split(" ");
 
@@ -407,6 +546,14 @@ public class Parser {
         return new DateTimeArg(date, time);
     }
 
+    /**
+     * Parses an interval string in the format of a number followed by a unit (m/h/d/w).
+     * Supported units: m (minutes), h (hours), d (days), w (weeks).
+     *
+     * @param input The interval string to parse (e.g., "5m", "2h", "1d", "1w")
+     * @return A Duration object representing the parsed interval
+     * @throws StudyMateException If the format is invalid or unit is unknown
+     */
     private Duration parseInterval(String input) throws StudyMateException {
         input = input.trim().toLowerCase(); // normalize input, e.g., "1D" -> "1d"
 
@@ -432,6 +579,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a timer start command with optional task index or label and duration.
+     *
+     * @param arguments The arguments containing optional index/label and duration
+     * @return A Command object for starting a timer
+     * @throws StudyMateException If the format is invalid or values are out of range
+     */
     private Command parseTimerStart(String arguments) throws StudyMateException {
         // Handle default case: 'Start' command with no arguments
         if (arguments.trim().isEmpty()) {
@@ -500,6 +654,13 @@ public class Parser {
         return new Command(CommandType.START, index, label, minutes);
     }
 
+    /**
+     * Parses a habit command and routes to the appropriate subcommand handler.
+     *
+     * @param arguments The arguments for the habit command
+     * @return A Command object for the habit operation
+     * @throws StudyMateException If the arguments are invalid
+     */
     private Command parseHabit(String[] arguments) throws StudyMateException { //including rem
         if (arguments.length < 2) {
             throw new StudyMateException("The habit command must be followed by a subcommand.");
@@ -515,6 +676,13 @@ public class Parser {
         };
     }
 
+    /**
+     * Parses a habit add command with name and interval.
+     *
+     * @param habit The habit arguments containing name and interval
+     * @return A Command object for adding a habit
+     * @throws StudyMateException If the arguments are invalid or missing the interval flag
+     */
     private Command parseHabitAdd(String habit) throws StudyMateException {
         String[] arguments = habit.trim().split("\\s+");
         int tIndex = Arrays.asList(arguments).indexOf("-t");
@@ -528,6 +696,13 @@ public class Parser {
         return new Command(CommandType.HABIT_ADD, habitName, interval);
     }
 
+    /**
+     * Parses a habit streak command.
+     *
+     * @param arguments The habit index to increment streak
+     * @return A Command object for incrementing a habit's streak
+     * @throws StudyMateException If the index is invalid
+     */
     private Command parseHabitStreak(String arguments) throws StudyMateException {
         try {
             int index = Integer.parseInt(arguments) - 1;
@@ -537,6 +712,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a habit remove command.
+     *
+     * @param arguments The habit index to delete
+     * @return A Command object for deleting a habit
+     * @throws StudyMateException If the index is invalid
+     */
     private Command parseHabitRm(String arguments) throws StudyMateException {
         try {
             int index = Integer.parseInt(arguments) - 1;
