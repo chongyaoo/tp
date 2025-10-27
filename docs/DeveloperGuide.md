@@ -413,6 +413,12 @@ The diagram below shows how the Habits component interacts with other components
 
 The HabitList manages Habit objects and coordinates with MessageHandler for user notifications. The Habit class uses Clock for time operations and DateTimeArg for deadline management, returning StreakResult to indicate the outcome of streak increment attempts.
 
+#### HabitList Component Interactions
+
+The diagram below shows the detailed interactions of the HabitList component:
+
+![HabitList Interactions Diagram](images/HabitListInteractions.png)
+
 #### How the Habits Component Works
 
 The sequence diagram below illustrates the interactions within the Habits component when incrementing a habit's streak:
