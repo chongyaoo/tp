@@ -243,7 +243,8 @@ public class CommandHandler {
         reminderList.turnOffReminders(cmd.indexes);
     }
 
-    private static void handleRemSnooze(ReminderList reminderList, Command cmd) {
+    private static void handleRemSnooze(ReminderList reminderList, Command cmd) throws StudyMateException {
+        IndexValidator.validateIndex(cmd.index, reminderList.getCount());
         reminderList.handleSnooze(cmd.index, cmd.snoozeDuration);
     }
 

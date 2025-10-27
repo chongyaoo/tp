@@ -118,7 +118,7 @@ public class ReminderList {
     }
 
     public synchronized void handleSnooze(int index, Duration snoozeDuration) {
-        Reminder reminder = reminderList.get(index-1);
+        Reminder reminder = reminderList.get(index);
         if (reminder.isRecurring()) { //Reminder is recurring, and cannot be snoozed
             MessageHandler.sendRecUnableToSnoozeError(reminder);
             return;
@@ -132,7 +132,7 @@ public class ReminderList {
     }
 
     public synchronized List<Reminder> getReminders() {
-        return reminderList;
+        return new ArrayList<>(reminderList);
     }
 
     public synchronized int getReminderIndex(Reminder r) {

@@ -208,7 +208,7 @@ public class CommandHandlerTest {
         Command cmd = parser.parse("start");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Focus session", cmd.desc);
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -217,7 +217,7 @@ public class CommandHandlerTest {
     void testParseAndExecuteTimerStart_withDuration() throws StudyMateException {
         Command cmd = parser.parse("start @45");
         assertEquals(CommandType.START, cmd.type);
-        assertEquals(Integer.valueOf(45), cmd.duration);
+        assertEquals(Long.valueOf(45), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -227,7 +227,7 @@ public class CommandHandlerTest {
         Command cmd = parser.parse("start Study Physics");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Study Physics", cmd.desc);
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -237,7 +237,7 @@ public class CommandHandlerTest {
         Command cmd = parser.parse("start Study Chemistry @60");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Study Chemistry", cmd.desc);
-        assertEquals(Integer.valueOf(60), cmd.duration);
+        assertEquals(Long.valueOf(60), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -247,7 +247,7 @@ public class CommandHandlerTest {
         Command cmd = parser.parse("start 1");
         assertEquals(CommandType.START, cmd.type);
         assertEquals(Integer.valueOf(0), cmd.indexes.iterator().next()); // 1-based to 0-based
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -257,7 +257,7 @@ public class CommandHandlerTest {
         Command cmd = parser.parse("start 2 @90");
         assertEquals(CommandType.START, cmd.type);
         assertEquals(Integer.valueOf(1), cmd.indexes.iterator().next()); // 1-based to 0-based
-        assertEquals(Integer.valueOf(90), cmd.duration);
+        assertEquals(Long.valueOf(90), cmd.duration);
 
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }
@@ -296,7 +296,7 @@ public class CommandHandlerTest {
 
         // Verify default values
         assertEquals("Focus session", cmd.desc);
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
 
         // Should execute without error
         assertDoesNotThrow(() -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));

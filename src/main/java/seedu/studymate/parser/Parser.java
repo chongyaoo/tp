@@ -325,9 +325,8 @@ public class Parser {
             String[] indexArgs = arguments[1].split(",");
             LinkedHashSet<Integer> indexes = new LinkedHashSet<>();
             for (String arg : indexArgs) {
-                String trimmedArg = arg.trim().replace(" ", ""); // Trim whitespace to handle "1, 2" inputs
-                if (multipleIntegerPattern.matcher(trimmedArg).find()) {
-                    String[] rangeParts = trimmedArg.split("\\.\\.\\.");
+                if (multipleIntegerPattern.matcher(arg).find()) {
+                    String[] rangeParts = arg.split("\\.\\.\\.");
                     int[] startAndEndArgs = Arrays.stream(rangeParts)
                             .mapToInt(s -> Integer.parseInt(s.trim())) // Trim range tokens as well
                             .toArray();
@@ -337,8 +336,8 @@ public class Parser {
                     for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
                         indexes.add(i - 1);
                     }
-                } else if (integerPattern.matcher(trimmedArg).find()) {
-                    indexes.add(Integer.parseInt(trimmedArg) - 1);
+                } else if (integerPattern.matcher(arg).find()) {
+                    indexes.add(Integer.parseInt(arg) - 1);
                 } else {
                     throw new NumberFormatException();
                 }
@@ -435,7 +434,7 @@ public class Parser {
             throw new StudyMateException("Too many arguments! Usage: rem <index> snooze <duration>");
         } else {
             try {
-                int snoozeIndex = Integer.parseInt(parts[0]);
+                int snoozeIndex = Integer.parseInt(parts[0]) - 1;
                 Duration snoozeDuration = parseInterval(parts[1]); //will automatically throw StudyMateException
                 return new Command(CommandType.REM_SNOOZE, snoozeIndex, snoozeDuration);
             } catch (NumberFormatException e) {
@@ -563,19 +562,26 @@ public class Parser {
 
         // Extract value and unit
         long value = Long.parseLong(input.substring(0, input.length() - 1));
+        if (value <= 0) {
+            throw new StudyMateException("Invalid duration provided! It must be greater than 0");
+        }
         char unit = input.charAt(input.length() - 1);
 
-        switch (unit) {
-        case 'm':
-            return Duration.ofMinutes(value);
-        case 'h':
-            return Duration.ofHours(value);
-        case 'd':
-            return Duration.ofDays(value);
-        case 'w':
-            return Duration.ofDays(value * 7);
-        default:
-            throw new StudyMateException("Unknown duration unit: " + unit);
+        try {
+            switch (unit) {
+            case 'm':
+                return Duration.ofMinutes(value);
+            case 'h':
+                return Duration.ofHours(value);
+            case 'd':
+                return Duration.ofDays(value);
+            case 'w':
+                return Duration.ofDays(value * 7);
+            default:
+                throw new StudyMateException("Unknown duration unit: " + unit);
+            }
+        } catch (ArithmeticException e) {
+            throw new StudyMateException("Invalid duration provided");
         }
     }
 
@@ -596,7 +602,7 @@ public class Parser {
         // Setup variables
         Integer index = null;
         String label = null;
-        int minutes = 25; // Default duration is 25 minutes
+        long minutes = 25; // Default duration is 25 minutes
 
         // Match arguments
         Matcher matcher = TIMER_PATTERN.matcher(arguments.trim());
@@ -611,7 +617,7 @@ public class Parser {
         // Extract and validate minutes
         if (minutesStr != null) {
             try {
-                minutes = Integer.parseInt(minutesStr);
+                minutes = Long.parseLong(minutesStr);
                 if (minutes <= 0) {
                     throw new StudyMateException("Minutes for the timer must be a positive integer.");
                 }
