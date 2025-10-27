@@ -256,7 +256,7 @@ public class CommandHandler {
      * @param cmd The command containing timer duration and optional task index or label
      * @throws StudyMateException If another timer is running or index is invalid
      */
-    private static void handleTimerStart(TaskList taskList, Command cmd) throws StudyMateException {
+    private static synchronized void handleTimerStart(TaskList taskList, Command cmd) throws StudyMateException {
         if (activeTimer != null && activeTimer.getState() != TimerState.IDLE) {
             throw new StudyMateException("A timer is already running or paused. Please stop it first.");
         }
@@ -290,7 +290,7 @@ public class CommandHandler {
      *
      * @throws StudyMateException If no timer is active or timer is already paused
      */
-    private static void handleTimerPause() throws StudyMateException {
+    private static synchronized void handleTimerPause() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
@@ -310,7 +310,7 @@ public class CommandHandler {
      *
      * @throws StudyMateException If no timer is active or timer is already running
      */
-    private static void handleTimerResume() throws StudyMateException {
+    private static synchronized void handleTimerResume() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
@@ -330,7 +330,7 @@ public class CommandHandler {
      *
      * @throws StudyMateException If no timer is active
      */
-    private static void handleTimerReset() throws StudyMateException {
+    private static synchronized void handleTimerReset() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
@@ -354,7 +354,7 @@ public class CommandHandler {
      *
      * @throws StudyMateException If no timer is active
      */
-    private static void handleTimerStat() throws StudyMateException {
+    private static synchronized void handleTimerStat() throws StudyMateException {
         if (activeTimer == null) {
             throw new StudyMateException("No timer is currently active");
         }
@@ -372,42 +372,44 @@ public class CommandHandler {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger.log(Level.INFO, "Starting timer monitoring");
 
-        Runnable timerCheckTask = () -> {
-            if (activeTimer == null) {
-                // does scheduler cleanup when timer isn't running
-                if (!scheduler.isShutdown()) {
-                    scheduler.shutdown();
-                    logger.log(Level.INFO, "Scheduler shutdown (Active timer is null)");
-                    scheduler = null;
-                }
-                return;
-            }
-
-            // If PAUSED, the timer will not advance, and the code below will be skipped.
-            if (activeTimer.getState() != TimerState.RUNNING) {
-                return;
-            }
-
-            activeTimer.getRemainingTime();
-
-            // Timer run out
-            if (activeTimer.getState() == TimerState.IDLE) {
-                MessageHandler.sendTimerEndedMessage();
-                logger.log(Level.INFO, "Timer ended");
-
-                // Reset active timer when timer is done
-                if (scheduler != null) {
-                    scheduler.shutdown();
-                    logger.log(Level.INFO, "Scheduler shutdown (Timer ended)");
-                    scheduler = null;
-                }
-                activeTimer = null;
-            }
-        };
+        Runnable timerCheckTask = CommandHandler::checkTimerState;
 
         // Schedule check every second
         scheduler.scheduleAtFixedRate(timerCheckTask, 0, 1, TimeUnit.SECONDS);
         logger.log(Level.INFO, "Scheduler initialised and checking every second");
+    }
+
+    private static synchronized void checkTimerState() {
+        if (activeTimer == null) {
+            // does scheduler cleanup when timer isn't running
+            if (!scheduler.isShutdown()) {
+                scheduler.shutdown();
+                logger.log(Level.INFO, "Scheduler shutdown (Active timer is null)");
+                scheduler = null;
+            }
+            return;
+        }
+
+        // If PAUSED, the timer will not advance, and the code below will be skipped.
+        if (activeTimer.getState() != TimerState.RUNNING) {
+            return;
+        }
+
+        activeTimer.getRemainingTime();
+
+        // Timer run out
+        if (activeTimer.getState() == TimerState.IDLE) {
+            MessageHandler.sendTimerEndedMessage();
+            logger.log(Level.INFO, "Timer ended");
+
+            // Reset active timer when timer is done
+            if (scheduler != null) {
+                scheduler.shutdown();
+                logger.log(Level.INFO, "Scheduler shutdown (Timer ended)");
+                scheduler = null;
+            }
+            activeTimer = null;
+        }
     }
 
     private static void handleHabitAdd(HabitList habitList, Command cmd) {
