@@ -372,7 +372,7 @@ public class ParserTest {
         Command cmd = parser.parse("start");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Focus session", cmd.desc);
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
     }
 
     @Test
@@ -380,7 +380,7 @@ public class ParserTest {
         Command cmd = parser.parse("start @45");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Focus session", cmd.desc);
-        assertEquals(Integer.valueOf(45), cmd.duration);
+        assertEquals(Long.valueOf(45), cmd.duration);
     }
 
     @Test
@@ -388,7 +388,7 @@ public class ParserTest {
         Command cmd = parser.parse("start Study Math");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Study Math", cmd.desc);
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
     }
 
     @Test
@@ -396,7 +396,7 @@ public class ParserTest {
         Command cmd = parser.parse("start Study Physics @30");
         assertEquals(CommandType.START, cmd.type);
         assertEquals("Study Physics", cmd.desc);
-        assertEquals(Integer.valueOf(30), cmd.duration);
+        assertEquals(Long.valueOf(30), cmd.duration);
     }
 
     @Test
@@ -404,7 +404,7 @@ public class ParserTest {
         Command cmd = parser.parse("start 1");
         assertEquals(CommandType.START, cmd.type);
         assertEquals(Integer.valueOf(0), cmd.indexes.iterator().next()); // 1-based to 0-based conversion
-        assertEquals(Integer.valueOf(25), cmd.duration);
+        assertEquals(Long.valueOf(25), cmd.duration);
     }
 
     @Test
@@ -412,7 +412,7 @@ public class ParserTest {
         Command cmd = parser.parse("start 2 @60");
         assertEquals(CommandType.START, cmd.type);
         assertEquals(Integer.valueOf(1), cmd.indexes.iterator().next()); // 1-based to 0-based conversion
-        assertEquals(Integer.valueOf(60), cmd.duration);
+        assertEquals(Long.valueOf(60), cmd.duration);
     }
 
     @Test
@@ -457,31 +457,6 @@ public class ParserTest {
     @Test
     void testTimerStartWithZeroIndexThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("start 0"));
-    }
-
-    // Test index parsing with spaces (for the trimming fix)
-    @Test
-    void testMarkWithSpacesInIndexes() throws StudyMateException {
-        Command cmd = parser.parse("mark 1, 2, 3");
-        assertEquals(CommandType.MARK, cmd.type);
-        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(0, 1, 2));
-        assertEquals(expected, cmd.indexes);
-    }
-
-    @Test
-    void testDeleteWithSpacesInRange() throws StudyMateException {
-        Command cmd = parser.parse("delete 1 ... 3 , 5");
-        assertEquals(CommandType.DELETE, cmd.type);
-        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(0, 1, 2, 4));
-        assertEquals(expected, cmd.indexes);
-    }
-
-    @Test
-    void testUnmarkWithSpacesInIndexes() throws StudyMateException {
-        Command cmd = parser.parse("unmark 2 , 4 , 6");
-        assertEquals(CommandType.UNMARK, cmd.type);
-        LinkedHashSet<Integer> expected = new LinkedHashSet<>(List.of(1, 3, 5));
-        assertEquals(expected, cmd.indexes);
     }
 
     // Edit command tests

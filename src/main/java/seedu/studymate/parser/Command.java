@@ -24,7 +24,7 @@ public class Command {
     public boolean isRecurring;
 
     // Timer
-    public Integer duration;
+    public long duration;
 
     public Duration interval;
 
@@ -156,7 +156,7 @@ public class Command {
      * @param label The timer label
      * @param duration The duration in minutes
      */
-    public Command(CommandType type, Integer index, String label, Integer duration) {
+    public Command(CommandType type, Integer index, String label, long duration) {
         this.type = type;
         if (index != null) {
             this.indexes = new LinkedHashSet<>();

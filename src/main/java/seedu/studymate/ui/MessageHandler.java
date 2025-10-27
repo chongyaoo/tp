@@ -338,7 +338,7 @@ public class MessageHandler {
     }
 
     // TODO
-    public static void sendTimerStartMessage(int duration, String label) {
+    public static void sendTimerStartMessage(long duration, String label) {
         System.out.println(LINE);
         String formattedTime = formatDurationString(duration * 60L); // Convert minutes to seconds
         String output = "# TIMER\n" + "# RUNNING " + formattedTime + " left - " + label;

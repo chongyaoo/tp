@@ -22,28 +22,28 @@ public class IndexValidatorTest {
     public void validateIndex_negativeIndex_throwsException() {
         StudyMateException exception = assertThrows(StudyMateException.class,
                 () -> IndexValidator.validateIndex(-1, 5));
-        assertEquals("Invalid index ranges given!", exception.getMessage());
+        assertEquals("Invalid index given!", exception.getMessage());
     }
 
     @Test
     public void validateIndex_indexEqualToMax_throwsException() {
         StudyMateException exception = assertThrows(StudyMateException.class,
                 () -> IndexValidator.validateIndex(5, 5));
-        assertEquals("Invalid index ranges given!", exception.getMessage());
+        assertEquals("Invalid index given!", exception.getMessage());
     }
 
     @Test
     public void validateIndex_indexGreaterThanMax_throwsException() {
         StudyMateException exception = assertThrows(StudyMateException.class,
                 () -> IndexValidator.validateIndex(6, 5));
-        assertEquals("Invalid index ranges given!", exception.getMessage());
+        assertEquals("Invalid index given!", exception.getMessage());
     }
 
     @Test
     public void validateIndex_maxZero_throwsException() {
         StudyMateException exception = assertThrows(StudyMateException.class,
                 () -> IndexValidator.validateIndex(0, 0));
-        assertEquals("Invalid index ranges given!", exception.getMessage());
+        assertEquals("Invalid index given!", exception.getMessage());
     }
 
     @Test

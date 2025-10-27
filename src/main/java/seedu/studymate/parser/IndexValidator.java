@@ -32,7 +32,7 @@ public class IndexValidator {
      */
     public static void validateIndex(int index, int max) throws StudyMateException {
         if (index < 0 || index >= max) {
-            throw new StudyMateException("Invalid index ranges given!");
+            throw new StudyMateException("Invalid index given!");
         }
     }
 }

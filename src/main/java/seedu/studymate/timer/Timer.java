@@ -45,7 +45,7 @@ public class Timer {
     /**
      * Starts the timer
      */
-    public void start() {
+    public synchronized void start() {
         if (state != TimerState.IDLE) {
             return;
         }
@@ -58,7 +58,7 @@ public class Timer {
     /**
      * Pauses the timer
      */
-    public void pause() {
+    public synchronized void pause() {
         if (state != TimerState.RUNNING) {
             return;
         }
@@ -81,7 +81,7 @@ public class Timer {
     /**
      * Resumes the timer
      */
-    public void resume() {
+    public synchronized void resume() {
         if (state != TimerState.PAUSED) {
             return;
         }
@@ -93,13 +93,13 @@ public class Timer {
     /**
      * Resets the timer
      */
-    public void reset() {
+    public synchronized void reset() {
         state = TimerState.IDLE;
         remainingSec = 0;
         logger.log(Level.INFO, "Timer reset");
     }
 
-    public long getRemainingTime() {
+    public synchronized long getRemainingTime() {
         if (state == TimerState.IDLE || state == TimerState.PAUSED) {
             return remainingSec;
         }
@@ -116,17 +116,17 @@ public class Timer {
         return currentRemaining;
     }
 
-    public TimerState getState() {
+    public synchronized TimerState getState() {
         return state;
     }
 
-    public String getLabel() {
+    public synchronized String getLabel() {
         logger.log(Level.INFO, "Retrieve timer label: " + label);
         return label;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         int[] formattedTime = formatDuration(remainingSec);
         String output = "Timer Status\n"
                 + "  State: " + state.toString() + "\n"
