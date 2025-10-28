@@ -21,7 +21,6 @@ public class Command {
     // for operations done on a range of indices
     public LinkedHashSet<Integer> indexes;
     public int index;
-    public boolean isRecurring;
 
     // Timer
     public long duration;

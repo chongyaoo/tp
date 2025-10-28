@@ -31,7 +31,7 @@ public class TaskListTest {
 
     // Test Adding To Do Task
     @Test
-    void testAddToDo() {
+    void testAddToDo() throws StudyMateException {
         taskList.addToDo("read book");
         assertEquals(1, taskList.getCount());
         Task task = taskList.getTask(0);
@@ -42,7 +42,7 @@ public class TaskListTest {
 
     // Test Adding Deadline Task
     @Test
-    void testAddDeadline() {
+    void testAddDeadline() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -61,7 +61,7 @@ public class TaskListTest {
 
     // Test Adding Event Task
     @Test
-    void testAddEvent() {
+    void testAddEvent() throws StudyMateException {
         LocalDateTime fromDateTime = LocalDateTime.of(2025, 10, 20, 9, 0);
         LocalDateTime toDateTime = LocalDateTime.of(2025, 10, 22, 17, 0);
         DateTimeArg fromDateTimeArg = new DateTimeArg(fromDateTime.toLocalDate(), fromDateTime.toLocalTime());
@@ -81,7 +81,7 @@ public class TaskListTest {
     // --- Test Cases for Mark/Unmark ---
 
     // Helper Function to test marking/unmarking
-    private void populateListForMarking() {
+    private void populateListForMarking() throws StudyMateException {
         taskList.addToDo("Task 1");
         taskList.addToDo("Task 2");
         taskList.addToDo("Task 3");
@@ -89,7 +89,7 @@ public class TaskListTest {
 
     // Test marking 1 task
     @Test
-    void testMark() {
+    void testMark() throws StudyMateException {
         populateListForMarking();
 
         // Mark Task 2
@@ -103,7 +103,7 @@ public class TaskListTest {
 
     // Test marking 2 tasks
     @Test
-    void testMarkMultiple() {
+    void testMarkMultiple() throws StudyMateException {
         populateListForMarking();
 
         // Mark Task 1 and Task 3
@@ -119,7 +119,7 @@ public class TaskListTest {
 
     // Test unmarking 1 task
     @Test
-    void testUnmark() {
+    void testUnmark() throws StudyMateException {
         populateListForMarking();
 
         // Mark all tasks first
@@ -141,7 +141,7 @@ public class TaskListTest {
     // --- Test Cases for Deletion ---
 
     // Helper function to populate a list to test for deletion
-    private void populateListForDeletion() {
+    private void populateListForDeletion() throws StudyMateException {
         taskList.addToDo("Task A"); // 0
         taskList.addToDo("Task B"); // 1
         taskList.addToDo("Task C"); // 2
@@ -150,7 +150,7 @@ public class TaskListTest {
 
     // Test deleting 1 task
     @Test
-    void testDeleteSingleTask() {
+    void testDeleteSingleTask() throws StudyMateException {
         populateListForDeletion();
         assertEquals(4, taskList.getCount());
 
@@ -166,7 +166,7 @@ public class TaskListTest {
 
     // Test deleting 2 tasks
     @Test
-    void testDeleteMultipleTasks() {
+    void testDeleteMultipleTasks() throws StudyMateException {
         populateListForDeletion();
 
         // Delete Task B and Task D
@@ -190,7 +190,7 @@ public class TaskListTest {
 
     // Test getting taskList count
     @Test
-    void testGetTasks() {
+    void testGetTasks() throws StudyMateException {
         populateListForDeletion();
         ArrayList<Task> tasks = taskList.getTasks();
         assertEquals(4, tasks.size());
@@ -200,7 +200,7 @@ public class TaskListTest {
     // --- Test Cases for Find ---
 
     // Helper function to populate a list with various tasks for testing find
-    private void populateListForFind() {
+    private void populateListForFind() throws StudyMateException {
         taskList.addToDo("read book");
         taskList.addToDo("submit assignment");
         LocalDateTime deadlineDateTime = LocalDateTime.of(2025, 10, 25, 23, 59);
@@ -215,7 +215,7 @@ public class TaskListTest {
 
     // Test finding tasks with single matching result
     @Test
-    void testFindSingleMatch() {
+    void testFindSingleMatch() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("groceries");
         assertEquals(1, results.size());
@@ -224,7 +224,7 @@ public class TaskListTest {
 
     // Test finding tasks with multiple matching results
     @Test
-    void testFindMultipleMatches() {
+    void testFindMultipleMatches() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("book");
         assertEquals(2, results.size());
@@ -235,7 +235,7 @@ public class TaskListTest {
 
     // Test finding tasks with no matching results
     @Test
-    void testFindNoMatches() {
+    void testFindNoMatches() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("nonexistent");
         assertEquals(0, results.size());
@@ -250,7 +250,7 @@ public class TaskListTest {
 
     // Test finding with empty search string
     @Test
-    void testFindWithEmptyString() {
+    void testFindWithEmptyString() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("");
         // Empty string matches all tasks
@@ -259,7 +259,7 @@ public class TaskListTest {
 
     // Test finding matches task type markers
     @Test
-    void testFindMatchesTaskTypeMarkers() {
+    void testFindMatchesTaskTypeMarkers() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("[T]");
         // Should find all ToDo tasks (3 of them)
@@ -268,7 +268,7 @@ public class TaskListTest {
 
     // Test finding matches completion status
     @Test
-    void testFindMatchesCompletionStatus() {
+    void testFindMatchesCompletionStatus() throws StudyMateException {
         populateListForFind();
         // Mark the first task
         LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(0));
@@ -283,7 +283,7 @@ public class TaskListTest {
 
     // Test finding with partial word match
     @Test
-    void testFindPartialMatch() {
+    void testFindPartialMatch() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("read");
         assertEquals(2, results.size());
@@ -294,7 +294,7 @@ public class TaskListTest {
 
     // Test finding is case-sensitive (based on contains() behavior)
     @Test
-    void testFindCaseSensitive() {
+    void testFindCaseSensitive() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> resultsLower = taskList.findTasks("book");
         ArrayList<Task> resultsUpper = taskList.findTasks("BOOK");
@@ -305,7 +305,7 @@ public class TaskListTest {
 
     // Test finding matches dates in deadlines
     @Test
-    void testFindMatchesDeadlineDate() {
+    void testFindMatchesDeadlineDate() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("2025-10-25");
         assertEquals(1, results.size());
@@ -314,7 +314,7 @@ public class TaskListTest {
 
     // Test finding matches dates in events
     @Test
-    void testFindMatchesEventDates() {
+    void testFindMatchesEventDates() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("2025-11-01");
         assertEquals(1, results.size());
@@ -323,7 +323,7 @@ public class TaskListTest {
 
     // Test finding with multiple words
     @Test
-    void testFindMultipleWords() {
+    void testFindMultipleWords() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("submit assignment");
         assertEquals(1, results.size());
@@ -332,7 +332,7 @@ public class TaskListTest {
 
     // Test finding all tasks returns correct order
     @Test
-    void testFindPreservesOrder() {
+    void testFindPreservesOrder() throws StudyMateException {
         populateListForFind();
         ArrayList<Task> results = taskList.findTasks("T");
         // Should find tasks in the order they were added
@@ -344,7 +344,7 @@ public class TaskListTest {
     // --- Test Cases for getSorted() ---
 
     // Helper function to populate a list with deadlines and events for testing sorting
-    private void populateListForSorting() {
+    private void populateListForSorting() throws StudyMateException {
         // Add tasks in non-chronological order
         taskList.addToDo("buy groceries"); // Should be excluded from sorted list
 
@@ -369,7 +369,7 @@ public class TaskListTest {
 
     // Test getSorted returns only deadlines and events
     @Test
-    void testGetSortedExcludesToDos() {
+    void testGetSortedExcludesToDos() throws StudyMateException {
         populateListForSorting();
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -384,7 +384,7 @@ public class TaskListTest {
 
     // Test getSorted returns tasks in chronological order
     @Test
-    void testGetSortedCorrectOrder() {
+    void testGetSortedCorrectOrder() throws StudyMateException {
         populateListForSorting();
         ArrayList<Task> sorted = taskList.getSorted();
 
@@ -398,7 +398,7 @@ public class TaskListTest {
 
     // Test getSorted with only deadlines
     @Test
-    void testGetSortedOnlyDeadlines() {
+    void testGetSortedOnlyDeadlines() throws StudyMateException {
         LocalDateTime deadline1 = LocalDateTime.of(2025, 12, 31, 23, 59);
         LocalDateTime deadline2 = LocalDateTime.of(2025, 11, 1, 9, 0);
         LocalDateTime deadline3 = LocalDateTime.of(2025, 11, 15, 17, 0);
@@ -417,7 +417,7 @@ public class TaskListTest {
 
     // Test getSorted with only events
     @Test
-    void testGetSortedOnlyEvents() {
+    void testGetSortedOnlyEvents() throws StudyMateException {
         LocalDateTime from1 = LocalDateTime.of(2025, 12, 1, 9, 0);
         LocalDateTime to1 = LocalDateTime.of(2025, 12, 3, 17, 0);
         LocalDateTime from2 = LocalDateTime.of(2025, 10, 20, 10, 0);
@@ -442,7 +442,7 @@ public class TaskListTest {
 
     // Test getSorted with mixed deadlines and events
     @Test
-    void testGetSortedMixedTasks() {
+    void testGetSortedMixedTasks() throws StudyMateException {
         LocalDateTime deadline1 = LocalDateTime.of(2025, 11, 5, 10, 0);
         LocalDateTime from1 = LocalDateTime.of(2025, 11, 1, 9, 0);
         LocalDateTime to1 = LocalDateTime.of(2025, 11, 3, 17, 0);
@@ -470,7 +470,7 @@ public class TaskListTest {
 
     // Test getSorted with only todos (should return empty)
     @Test
-    void testGetSortedOnlyToDos() {
+    void testGetSortedOnlyToDos() throws StudyMateException {
         taskList.addToDo("task 1");
         taskList.addToDo("task 2");
         taskList.addToDo("task 3");
@@ -481,7 +481,7 @@ public class TaskListTest {
 
     // Test getSorted with same dates
     @Test
-    void testGetSortedSameDates() {
+    void testGetSortedSameDates() throws StudyMateException {
         LocalDateTime sameDateTime = LocalDateTime.of(2025, 11, 1, 10, 0);
 
         taskList.addDeadline("deadline A", new DateTimeArg(sameDateTime.toLocalDate(), sameDateTime.toLocalTime()));
@@ -497,7 +497,7 @@ public class TaskListTest {
 
     // Test getSorted preserves original task list
     @Test
-    void testGetSortedDoesNotModifyOriginal() {
+    void testGetSortedDoesNotModifyOriginal() throws StudyMateException {
         populateListForSorting();
 
         // Get original task order
@@ -517,7 +517,7 @@ public class TaskListTest {
 
     // Test editing description of a ToDo task
     @Test
-    void testEditDescriptionOfToDo() {
+    void testEditDescriptionOfToDo() throws StudyMateException {
         taskList.addToDo("original task");
         taskList.editDesc(0, "updated task");
 
@@ -527,7 +527,7 @@ public class TaskListTest {
 
     // Test editing description of a Deadline task
     @Test
-    void testEditDescriptionOfDeadline() {
+    void testEditDescriptionOfDeadline() throws StudyMateException {
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
         taskList.addDeadline("original deadline", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
         taskList.editDesc(0, "updated deadline");
@@ -540,7 +540,7 @@ public class TaskListTest {
 
     // Test editing description of an Event task
     @Test
-    void testEditDescriptionOfEvent() {
+    void testEditDescriptionOfEvent() throws StudyMateException {
         LocalDateTime from = LocalDateTime.of(2025, 11, 1, 9, 0);
         LocalDateTime to = LocalDateTime.of(2025, 11, 3, 17, 0);
         taskList.addEvent("original event", new DateTimeArg(from.toLocalDate(), from.toLocalTime()),
@@ -556,7 +556,7 @@ public class TaskListTest {
 
     // Test editing deadline of a Deadline task
     @Test
-    void testEditDeadlineOfDeadlineTask() throws Exception {
+    void testEditDeadlineOfDeadlineTask() throws StudyMateException {
         LocalDateTime originalDateTime = LocalDateTime.of(2025, 11, 15, 10, 0);
         LocalDateTime newDateTime = LocalDateTime.of(2025, 12, 31, 23, 59);
         taskList.addDeadline("report", new DateTimeArg(originalDateTime.toLocalDate(), originalDateTime.toLocalTime()));
@@ -570,7 +570,7 @@ public class TaskListTest {
 
     // Test editing deadline of a non-Deadline task throws exception
     @Test
-    void testEditDeadlineOfToDoThrowsException() {
+    void testEditDeadlineOfToDoThrowsException() throws StudyMateException {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -583,7 +583,7 @@ public class TaskListTest {
 
     // Test editing deadline of an Event throws exception
     @Test
-    void testEditDeadlineOfEventThrowsException() {
+    void testEditDeadlineOfEventThrowsException() throws StudyMateException {
         LocalDateTime from = LocalDateTime.of(2025, 11, 1, 9, 0);
         LocalDateTime to = LocalDateTime.of(2025, 11, 3, 17, 0);
         taskList.addEvent("meeting", new DateTimeArg(from.toLocalDate(), from.toLocalTime()),
@@ -599,7 +599,7 @@ public class TaskListTest {
 
     // Test editing from date of an Event task
     @Test
-    void testEditFromDateOfEvent() throws Exception {
+    void testEditFromDateOfEvent() throws StudyMateException {
         LocalDateTime originalFrom = LocalDateTime.of(2025, 11, 1, 9, 0);
         LocalDateTime originalTo = LocalDateTime.of(2025, 11, 3, 17, 0);
         LocalDateTime newFrom = LocalDateTime.of(2025, 11, 5, 10, 0);
@@ -616,7 +616,7 @@ public class TaskListTest {
 
     // Test editing from date of a non-Event task throws exception
     @Test
-    void testEditFromOfToDoThrowsException() {
+    void testEditFromOfToDoThrowsException() throws StudyMateException {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -629,7 +629,7 @@ public class TaskListTest {
 
     // Test editing from date of a Deadline throws exception
     @Test
-    void testEditFromOfDeadlineThrowsException() {
+    void testEditFromOfDeadlineThrowsException() throws StudyMateException {
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
         taskList.addDeadline("report", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
@@ -660,7 +660,7 @@ public class TaskListTest {
 
     // Test editing to date of a non-Event task throws exception
     @Test
-    void testEditToOfToDoThrowsException() {
+    void testEditToOfToDoThrowsException() throws StudyMateException {
         taskList.addToDo("task");
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -673,7 +673,7 @@ public class TaskListTest {
 
     // Test editing to date of a Deadline throws exception
     @Test
-    void testEditToOfDeadlineThrowsException() {
+    void testEditToOfDeadlineThrowsException() throws StudyMateException {
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 15, 14, 30);
         taskList.addDeadline("assignment", new DateTimeArg(deadline.toLocalDate(), deadline.toLocalTime()));
 
@@ -717,7 +717,7 @@ public class TaskListTest {
 
     // Test editing preserves task completion status
     @Test
-    void testEditPreservesCompletionStatus() {
+    void testEditPreservesCompletionStatus() throws StudyMateException {
         taskList.addToDo("task");
         LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(0));
         taskList.mark(indexes);
@@ -744,7 +744,7 @@ public class TaskListTest {
 
     // Test editing description to empty string (if allowed)
     @Test
-    void testEditDescriptionToEmptyString() {
+    void testEditDescriptionToEmptyString() throws StudyMateException {
         taskList.addToDo("task");
         taskList.editDesc(0, "");
 
@@ -753,7 +753,7 @@ public class TaskListTest {
 
     // Test editing last task in list
     @Test
-    void testEditLastTask() {
+    void testEditLastTask() throws StudyMateException {
         taskList.addToDo("task 1");
         taskList.addToDo("task 2");
         taskList.addToDo("task 3");
@@ -762,5 +762,19 @@ public class TaskListTest {
 
         assertEquals("updated last task", taskList.getTask(2).getName());
         assertEquals(3, taskList.getCount());
+    }
+
+    // Test that adding tasks beyond 10000 limit throws exception
+    @Test
+    void testAddToDo_exceedsCapacity_throwsException() throws StudyMateException {
+        // Add 10000 tasks (the maximum allowed)
+        for (int i = 0; i < 10000; i++) {
+            taskList.addToDo("Task " + i);
+        }
+        assertEquals(10000, taskList.getCount());
+
+        // Attempting to add the 10001st task should throw exception
+        assertThrows(StudyMateException.class, () -> taskList.addToDo("Task 10001"));
+        assertEquals(10000, taskList.getCount()); // Count should remain at 10000
     }
 }

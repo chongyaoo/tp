@@ -17,6 +17,7 @@ import seedu.studymate.exceptions.StudyMateException;
  */
 public class TaskList {
     private static final Logger logger = Logger.getLogger("TaskList Logger");
+    private static final int cap = 10000;
     private final ArrayList<Task> taskList;
 
     /**
@@ -53,8 +54,11 @@ public class TaskList {
      *
      * @param task The description of the to-do
      */
-    public void addToDo(String task) {
+    public void addToDo(String task) throws StudyMateException {
         ToDo newTask = new ToDo(task);
+        if (taskList.size() >= cap) {
+            throw new StudyMateException("Too many tasks! Please delete some to add in more.");
+        }
         taskList.add(newTask);
         assert (taskList.contains(newTask));
         logger.log(Level.INFO, "Added To Do: " + newTask);
@@ -66,8 +70,11 @@ public class TaskList {
      * @param task     The description of the deadline
      * @param deadline The deadline time
      */
-    public void addDeadline(String task, DateTimeArg deadline) {
+    public void addDeadline(String task, DateTimeArg deadline) throws StudyMateException {
         Deadline newTask = new Deadline(task, deadline);
+        if (taskList.size() >= cap) {
+            throw new StudyMateException("Too many tasks! Please delete some to add in more.");
+        }
         taskList.add(newTask);
         assert (taskList.contains(newTask));
         logger.log(Level.INFO, "Added Deadline: " + newTask);
@@ -80,8 +87,11 @@ public class TaskList {
      * @param from The DateTimeArg from
      * @param to The DateTimeArg to
      */
-    public void addEvent(String task, DateTimeArg from, DateTimeArg to) {
+    public void addEvent(String task, DateTimeArg from, DateTimeArg to) throws StudyMateException {
         Event newTask = new Event(task, from, to);
+        if (taskList.size() >= cap) {
+            throw new StudyMateException("Too many tasks! Please delete some to add in more.");
+        }
         taskList.add(newTask);
         assert (taskList.contains(newTask));
         logger.log(Level.INFO, "Added Event: " + newTask);

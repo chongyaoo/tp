@@ -12,6 +12,7 @@ import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HabitListTest {
     private HabitList habitList;
@@ -22,13 +23,13 @@ public class HabitListTest {
     }
 
     @Test
-    void testAddHabit_singleHabit() {
+    void testAddHabit_singleHabit() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         assertEquals(1, habitList.getCount());
     }
 
     @Test
-    void testAddHabit_multipleHabits() {
+    void testAddHabit_multipleHabits() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         habitList.addHabit("Meditate", Duration.ofHours(6));
@@ -36,7 +37,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testGetHabit_validIndex() {
+    void testGetHabit_validIndex() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         Habit habit = habitList.getHabit(0);
         assertNotNull(habit);
@@ -49,14 +50,14 @@ public class HabitListTest {
     }
 
     @Test
-    void testGetCount_afterAdding() {
+    void testGetCount_afterAdding() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         assertEquals(2, habitList.getCount());
     }
 
     @Test
-    void testDeleteHabit_firstHabit() {
+    void testDeleteHabit_firstHabit() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         habitList.addHabit("Meditate", Duration.ofHours(6));
@@ -67,7 +68,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testDeleteHabit_middleHabit() {
+    void testDeleteHabit_middleHabit() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         habitList.addHabit("Meditate", Duration.ofHours(6));
@@ -77,7 +78,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testDeleteHabit_lastHabit() {
+    void testDeleteHabit_lastHabit() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         habitList.addHabit("Meditate", Duration.ofHours(6));
@@ -87,7 +88,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testDeleteHabit_onlyHabit() {
+    void testDeleteHabit_onlyHabit() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         assertEquals(1, habitList.getCount());
 
@@ -96,12 +97,12 @@ public class HabitListTest {
     }
 
     @Test
-    void testGetHabits_emptyList() {
+    void testGetHabits_emptyList(){
         assertEquals(0, habitList.getHabits().size());
     }
 
     @Test
-    void testGetHabits_withHabits() {
+    void testGetHabits_withHabits() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
         assertEquals(2, habitList.getHabits().size());
@@ -130,7 +131,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testGetAllHabits() {
+    void testGetAllHabits() throws StudyMateException {
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
 
@@ -138,7 +139,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testSequentialOperations() {
+    void testSequentialOperations() throws StudyMateException {
         // Add habits
         habitList.addHabit("Exercise", Duration.ofDays(1));
         habitList.addHabit("Read", Duration.ofHours(12));
@@ -159,7 +160,7 @@ public class HabitListTest {
     }
 
     @Test
-    void testAddHabit_differentIntervals() {
+    void testAddHabit_differentIntervals() throws StudyMateException {
         habitList.addHabit("Daily", Duration.ofDays(1));
         habitList.addHabit("Weekly", Duration.ofDays(7));
         habitList.addHabit("Hourly", Duration.ofHours(1));
@@ -278,5 +279,20 @@ public class HabitListTest {
         // Should be ON_TIME because we're within the grace period (6h 1min)
         assertEquals(StreakResult.ON_TIME, result);
         assertEquals(9, habit.getStreak()); // Streak should increment from 8 to 9
+    }
+
+    // Test that adding habits beyond 10000 limit throws exception
+    @Test
+    void testAddHabit_exceedsCapacity_throwsException() throws StudyMateException {
+        // Add 10000 habits (the maximum allowed)
+        for (int i = 0; i < 10000; i++) {
+            habitList.addHabit("Habit " + i, Duration.ofDays(1));
+        }
+        assertEquals(10000, habitList.getCount());
+
+        // Attempting to add the 10001st habit should throw exception
+        assertThrows(StudyMateException.class,
+                () -> habitList.addHabit("Habit 10001", Duration.ofDays(1)));
+        assertEquals(10000, habitList.getCount()); // Count should remain at 10000
     }
 }

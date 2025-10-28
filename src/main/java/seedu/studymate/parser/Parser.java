@@ -29,6 +29,7 @@ public class Parser {
     private static final String DEADLINE_FLAG = "-d";
     private static final String FROM_FLAG = "-f";
     private static final String TO_FLAG = "-t";
+    private static final int maxValue = 10000;
 
     private static final Pattern integerPattern = Pattern.compile("\\d");
     private static final Pattern multipleIntegerPattern = Pattern.compile(("\\d\\.\\.\\.\\d"));
@@ -327,6 +328,7 @@ public class Parser {
             for (String arg : indexArgs) {
                 if (multipleIntegerPattern.matcher(arg).find()) {
                     String[] rangeParts = arg.split("\\.\\.\\.");
+                    // lambda chain returns [startArg, endArg]
                     int[] startAndEndArgs = Arrays.stream(rangeParts)
                             .mapToInt(s -> Integer.parseInt(s.trim())) // Trim range tokens as well
                             .toArray();
@@ -334,10 +336,13 @@ public class Parser {
                         throw new NumberFormatException();
                     }
                     for (int i = startAndEndArgs[0]; i <= startAndEndArgs[1]; i++) {
+                        capNumbers(i);
                         indexes.add(i - 1);
                     }
                 } else if (integerPattern.matcher(arg).find()) {
-                    indexes.add(Integer.parseInt(arg) - 1);
+                    int index = Integer.parseInt(arg);
+                    capNumbers(index);
+                    indexes.add(index - 1);
                 } else {
                     throw new NumberFormatException();
                 }
@@ -561,7 +566,9 @@ public class Parser {
         }
 
         // Extract value and unit
-        long value = Long.parseLong(input.substring(0, input.length() - 1));
+        int value = Integer.parseInt(input.substring(0, input.length() - 1));
+        capNumbers(value);
+        long durationValue = (long) value;
         if (value <= 0) {
             throw new StudyMateException("Invalid duration provided! It must be greater than 0");
         }
@@ -570,13 +577,13 @@ public class Parser {
         try {
             switch (unit) {
             case 'm':
-                return Duration.ofMinutes(value);
+                return Duration.ofMinutes(durationValue);
             case 'h':
-                return Duration.ofHours(value);
+                return Duration.ofHours(durationValue);
             case 'd':
-                return Duration.ofDays(value);
+                return Duration.ofDays(durationValue);
             case 'w':
-                return Duration.ofDays(value * 7);
+                return Duration.ofDays(durationValue * 7);
             default:
                 throw new StudyMateException("Unknown duration unit: " + unit);
             }
@@ -602,7 +609,7 @@ public class Parser {
         // Setup variables
         Integer index = null;
         String label = null;
-        long minutes = 25; // Default duration is 25 minutes
+        int minutes = 25; // Default duration is 25 minutes
 
         // Match arguments
         Matcher matcher = TIMER_PATTERN.matcher(arguments.trim());
@@ -617,10 +624,11 @@ public class Parser {
         // Extract and validate minutes
         if (minutesStr != null) {
             try {
-                minutes = Long.parseLong(minutesStr);
+                minutes = Integer.parseInt(minutesStr);
                 if (minutes <= 0) {
                     throw new StudyMateException("Minutes for the timer must be a positive integer.");
                 }
+                capNumbers(minutes);
             } catch (NumberFormatException e) {
                 throw new StudyMateException("Minutes must be a valid integer.");
             }
@@ -731,6 +739,12 @@ public class Parser {
             return new Command(CommandType.HABIT_DELETE, index);
         } catch (NumberFormatException e) {
             throw new StudyMateException("Please input a valid index!");
+        }
+    }
+
+    private void capNumbers(int number) throws StudyMateException {
+        if (number > maxValue) {
+            throw new StudyMateException("Number is too high!");
         }
     }
 }

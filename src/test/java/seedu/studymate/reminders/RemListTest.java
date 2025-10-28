@@ -3,6 +3,7 @@ package seedu.studymate.reminders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Clock;
@@ -17,6 +18,7 @@ import java.util.LinkedHashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 
 public class RemListTest {
@@ -30,7 +32,7 @@ public class RemListTest {
     // --- Test Cases for Adding Reminders ---
 
     @Test
-    void testAddOneTime() {
+    void testAddOneTime() throws SecurityException, StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -44,7 +46,7 @@ public class RemListTest {
     }
 
     @Test
-    void testAddRecurring() {
+    void testAddRecurring() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -62,7 +64,7 @@ public class RemListTest {
     // --- Test Cases for Reminder Status ---
 
     @Test
-    void testSetRemindedOneTime() {
+    void testSetRemindedOneTime() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -84,7 +86,7 @@ public class RemListTest {
     }
 
     @Test
-    void testSetRemindedRecurring() {
+    void testSetRemindedRecurring() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -109,7 +111,7 @@ public class RemListTest {
     // --- Test Cases for Deletion ---
 
     // Helper function to populate a list to test for deletion
-    private void populateListForDeletion() {
+    private void populateListForDeletion() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -122,7 +124,7 @@ public class RemListTest {
     }
 
     // Helper function to populate a list with recurring reminders for deletion
-    private void populateListWithRecurringForDeletion() {
+    private void populateListWithRecurringForDeletion() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -138,7 +140,7 @@ public class RemListTest {
 
     //test for deleting one reminder
     @Test
-    void testDeleteSingleReminder() {
+    void testDeleteSingleReminder() throws StudyMateException {
         populateListForDeletion();
         assertEquals(4, reminderList.getCount());
 
@@ -154,7 +156,7 @@ public class RemListTest {
 
     // Test deleting 2 tasks
     @Test
-    void testDeleteMultipleReminders() {
+    void testDeleteMultipleReminders() throws StudyMateException {
         populateListForDeletion();
 
         // Delete Reminders 2 and 4
@@ -170,7 +172,7 @@ public class RemListTest {
 
     // Test deleting one recurring reminder
     @Test
-    void testDeleteSingleRecurringReminder() {
+    void testDeleteSingleRecurringReminder() throws StudyMateException {
         populateListWithRecurringForDeletion();
         assertEquals(4, reminderList.getCount());
 
@@ -186,7 +188,7 @@ public class RemListTest {
 
     // Test deleting multiple recurring reminders
     @Test
-    void testDeleteMultipleRecurringReminders() {
+    void testDeleteMultipleRecurringReminders() throws StudyMateException {
         populateListWithRecurringForDeletion();
 
         // Delete Reminders at index 0 and 2 (Weekly standup and Weekly review)
@@ -203,7 +205,7 @@ public class RemListTest {
     //--TestCases for checking isDue()--
 
     // Helper function to populate a list to test
-    private void populateListOneTimeDue() {
+    private void populateListOneTimeDue() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -217,7 +219,7 @@ public class RemListTest {
         reminderList.addReminderOneTime("running 15km", remDateTime);
     }
 
-    private void populateListOneTimeNotDue() {
+    private void populateListOneTimeNotDue() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2026, 9, 9, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -233,7 +235,7 @@ public class RemListTest {
 
 
     @Test
-    void reminderOneTimeIsDue_whenPastDateTime() {
+    void reminderOneTimeIsDue_whenPastDateTime() throws StudyMateException {
         populateListOneTimeDue();
         for (Reminder i : reminderList.getReminders()) {
             assertTrue(i.isDue());
@@ -241,7 +243,7 @@ public class RemListTest {
     }
 
     @Test
-    void reminderOneTimeIsFired() {
+    void reminderOneTimeIsFired() throws StudyMateException {
         populateListOneTimeDue();
         for (Reminder i : reminderList.getReminders()) {
             assertTrue(i.isDue()); //both should be due
@@ -251,14 +253,14 @@ public class RemListTest {
     }
 
     @Test
-    void reminderOneTimeIsNotDue() {
+    void reminderOneTimeIsNotDue() throws StudyMateException {
         populateListOneTimeNotDue();
         for (Reminder i : reminderList.getReminders()) {
             assertFalse(i.isDue());
         }
     }
 
-    private void populateListRecDue() {
+    private void populateListRecDue() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
@@ -275,7 +277,7 @@ public class RemListTest {
     }
 
     @Test
-    void reminderRecIsDue_whenPastDateTime() {
+    void reminderRecIsDue_whenPastDateTime() throws StudyMateException {
         populateListRecDue();
         for (Reminder i : reminderList.getReminders()) {
             assertTrue(i.isDue());
@@ -318,5 +320,23 @@ public class RemListTest {
 
         // The reminder should NOT be due anymore (next occurrence is tomorrow)
         assertFalse(recReminder.isDue(), "Reminder should not be due after rescheduling to tomorrow");
+    }
+
+    // Test that adding reminders beyond 10000 limit throws exception
+    @Test
+    void testAddReminderOneTime_exceedsCapacity_throwsException() throws StudyMateException {
+        LocalDateTime dateTime = LocalDateTime.of(2025, 10, 10, 18, 0);
+        DateTimeArg remDateTime = new DateTimeArg(dateTime.toLocalDate(), dateTime.toLocalTime());
+
+        // Add 10000 reminders (the maximum allowed)
+        for (int i = 0; i < 10000; i++) {
+            reminderList.addReminderOneTime("Reminder " + i, remDateTime);
+        }
+        assertEquals(10000, reminderList.getCount());
+
+        // Attempting to add the 10001st reminder should throw exception
+        assertThrows(StudyMateException.class,
+                () -> reminderList.addReminderOneTime("Reminder 10001", remDateTime));
+        assertEquals(10000, reminderList.getCount()); // Count should remain at 10000
     }
 }

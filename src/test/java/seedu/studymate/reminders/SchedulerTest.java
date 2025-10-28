@@ -3,6 +3,7 @@ package seedu.studymate.reminders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import seedu.studymate.exceptions.StudyMateException;
 import seedu.studymate.parser.DateTimeArg;
 
 import java.time.LocalDateTime;
@@ -51,7 +52,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_noDueReminders_returnsEmptyList() {
+    void tick_noDueReminders_returnsEmptyList() throws StudyMateException {
         // Add future reminder (tomorrow)
         LocalDateTime future = LocalDateTime.now().plusDays(1);
         DateTimeArg futureDateTime = new DateTimeArg(future.toLocalDate(), future.toLocalTime());
@@ -64,7 +65,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_withDueReminder_returnsReminder() {
+    void tick_withDueReminder_returnsReminder() throws StudyMateException {
         // Add past reminder (5 minutes ago)
         LocalDateTime past = LocalDateTime.now().minusMinutes(5);
         DateTimeArg pastDateTime = new DateTimeArg(past.toLocalDate(), past.toLocalTime());
@@ -77,7 +78,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_withCurrentTimeReminder_returnsReminder() {
+    void tick_withCurrentTimeReminder_returnsReminder() throws StudyMateException {
         // Add reminder for current time
         LocalDateTime now = LocalDateTime.now();
         DateTimeArg nowDateTime = new DateTimeArg(now.toLocalDate(), now.toLocalTime());
@@ -90,7 +91,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_multipleDueReminders_returnsAll() {
+    void tick_multipleDueReminders_returnsAll() throws StudyMateException {
         // Add multiple past reminders
         LocalDateTime past1 = LocalDateTime.now().minusHours(2);
         LocalDateTime past2 = LocalDateTime.now().minusMinutes(30);
@@ -110,7 +111,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_mixedDueAndFutureReminders_returnsOnlyDue() {
+    void tick_mixedDueAndFutureReminders_returnsOnlyDue() throws StudyMateException {
         // Add mix of past and future reminders
         LocalDateTime past = LocalDateTime.now().minusMinutes(10);
         LocalDateTime future1 = LocalDateTime.now().plusHours(1);
@@ -132,7 +133,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_calledTwice_doesNotReturnSameReminderTwice() {
+    void tick_calledTwice_doesNotReturnSameReminderTwice() throws StudyMateException {
         // Add past reminder
         LocalDateTime past = LocalDateTime.now().minusMinutes(5);
         DateTimeArg pastDateTime = new DateTimeArg(past.toLocalDate(), past.toLocalTime());
@@ -148,7 +149,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_newReminderAddedAfterCreation_isDetected() {
+    void tick_newReminderAddedAfterCreation_isDetected() throws StudyMateException {
         // Create scheduler with empty list
         List<IndexedReminder> firstTick = scheduler.tick();
         assertTrue(firstTick.isEmpty());
@@ -174,7 +175,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void scheduler_defaultConstructor_creates30SecondInterval() {
+    void scheduler_defaultConstructor_creates30SecondInterval() throws StudyMateException {
         Scheduler defaultScheduler = new Scheduler(reminderList);
 
         // Verify scheduler works with default interval
@@ -213,7 +214,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_recurringReminder_reschedulesAfterFiring() {
+    void tick_recurringReminder_reschedulesAfterFiring() throws StudyMateException {
         // Add recurring reminder (past, every 1 hour)
         LocalDateTime past = LocalDateTime.now().minusMinutes(5);
         DateTimeArg pastDateTime = new DateTimeArg(past.toLocalDate(), past.toLocalTime());
@@ -235,7 +236,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void tick_mixedOneTimeAndRecurring_handlesCorrectly() {
+    void tick_mixedOneTimeAndRecurring_handlesCorrectly() throws StudyMateException {
         // Add one-time reminder (past)
         LocalDateTime past1 = LocalDateTime.now().minusMinutes(10);
         DateTimeArg pastDateTime1 = new DateTimeArg(past1.toLocalDate(), past1.toLocalTime());
@@ -259,7 +260,7 @@ public class SchedulerTest {
     // ========== INTEGRATION TESTS - Testing Interval Scheduler Mechanism ==========
 
     @Test
-    void integrationTest_schedulerAutomaticallyFiresReminder() throws InterruptedException {
+    void integrationTest_schedulerAutomaticallyFiresReminder() throws InterruptedException, StudyMateException {
         // Create a scheduler with 3-second interval
         Scheduler integrationScheduler = new Scheduler(reminderList, 3);
 
@@ -283,7 +284,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void integrationTest_schedulerFiresMultipleReminders() throws InterruptedException {
+    void integrationTest_schedulerFiresMultipleReminders() throws InterruptedException, StudyMateException {
         Scheduler integrationScheduler = new Scheduler(reminderList, 3);
 
         // Add multiple past reminders
@@ -309,7 +310,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void integrationTest_schedulerFiresReminderAddedAfterStart() throws InterruptedException {
+    void integrationTest_schedulerFiresReminderAddedAfterStart() throws InterruptedException, StudyMateException {
         Scheduler integrationScheduler = new Scheduler(reminderList, 3);
 
         // Start scheduler with empty list
@@ -333,7 +334,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void integrationTest_recurringReminderFiresMultipleTimes() throws InterruptedException {
+    void integrationTest_recurringReminderFiresMultipleTimes() throws InterruptedException, StudyMateException {
         // Use a very short interval for recurring reminder (1 second)
         Scheduler integrationScheduler = new Scheduler(reminderList, 2);
 
@@ -364,7 +365,7 @@ public class SchedulerTest {
     }
 
     @Test
-    void integrationTest_schedulerPeriodicExecution() throws InterruptedException {
+    void integrationTest_schedulerPeriodicExecution() throws InterruptedException, StudyMateException {
         Scheduler integrationScheduler = new Scheduler(reminderList, 3);
 
         // Add a reminder that will be due

@@ -106,7 +106,7 @@ public class CommandHandler {
      * @param taskList The task list to add to
      * @param cmd The command containing the task description
      */
-    private static void handleToDo(TaskList taskList, Command cmd) {
+    private static void handleToDo(TaskList taskList, Command cmd) throws StudyMateException {
         taskList.addToDo(cmd.desc);
         int listCount = taskList.getCount();
         Task newTask = taskList.getTask(listCount - 1);
@@ -119,7 +119,7 @@ public class CommandHandler {
      * @param taskList The task list to add to
      * @param cmd The command containing the task description and deadline
      */
-    private static void handleDeadline(TaskList taskList, Command cmd) {
+    private static void handleDeadline(TaskList taskList, Command cmd) throws StudyMateException {
         taskList.addDeadline(cmd.desc, cmd.datetime0);
         int listCount = taskList.getCount();
         Task newTask = taskList.getTask(listCount - 1);
@@ -204,7 +204,7 @@ public class CommandHandler {
      * @param reminderList The reminder list to add to
      * @param cmd The command containing reminder name, datetime, and interval
      */
-    private static void handleRemAddRec(ReminderList reminderList, Command cmd) {
+    private static void handleRemAddRec(ReminderList reminderList, Command cmd) throws StudyMateException {
         reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.interval);
         int reminderCount = reminderList.getCount();
         Reminder newReminder = reminderList.getReminder(reminderCount - 1);
@@ -217,7 +217,7 @@ public class CommandHandler {
      * @param reminderList The reminder list to add to
      * @param cmd The command containing reminder name and datetime
      */
-    private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) {
+    private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) throws StudyMateException {
         reminderList.addReminderOneTime(cmd.desc, cmd.datetime0);
         int reminderCount = reminderList.getCount();
         Reminder newReminder = reminderList.getReminder(reminderCount - 1);
@@ -412,7 +412,7 @@ public class CommandHandler {
         }
     }
 
-    private static void handleHabitAdd(HabitList habitList, Command cmd) {
+    private static void handleHabitAdd(HabitList habitList, Command cmd) throws StudyMateException {
         habitList.addHabit(cmd.desc, cmd.interval);
     }
 
