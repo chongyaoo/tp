@@ -14,7 +14,13 @@ StudyMate is a desktop task management application designed for students to mana
 
 ## Features 
 
+---
+
+## Tasks
+
 StudyMate supports three kinds of tasks: todo, deadline, and event. You can also list, search, edit, mark, unmark, or delete them efficiently with CLI commands. All commands are case-insensitive, but task indices always start at 1 (as displayed in the list view).
+
+---
 
 ### Adding a todo: `todo`
 
@@ -44,6 +50,8 @@ Now you have X tasks in the list.
 * Use the `unmark` command a mark a todo as incomplete.
 * Use the `list` command to view all your tasks.
 
+---
+
 ### Adding a deadline: `deadline`
 
 Adds a task with a specific deadline date and time to your task list.
@@ -71,6 +79,8 @@ Now you have X tasks in the list.
 * Deadline tasks are marked with `[D]` to indicate they have a due date and time.
 * The date and time are stored and displayed in YYYY-MM-DD HH:mm format.
 * Use `list -s` to view tasks sorted by date and time (earliest deadline first).
+
+---
 
 ### Adding an event: `event`
 
@@ -105,6 +115,8 @@ Now you have X tasks in the list.
 * The end date/time cannot be before the start date/time.
 * If you supply dates/times in the wrong order, or with invalid format, you will get a parsing error.
 
+---
+
 ### Listing Tasks: `list`
 
 Shows all tasks in your list, in order of addition or by date.
@@ -135,6 +147,8 @@ Here are the deadlines and events in your task list, sorted by their deadlines a
 **Notes:**
 * `list -s` sorts by date (for events/deadlines, earliest first).
 
+---
+
 ### Finding Tasks: `find`
 
 Search for tasks by keyword.
@@ -155,6 +169,8 @@ Here are the tasks with the matching substring found!:
 **Notes:**
 * Search is case-insensitive.
 * If no match, you will receive an empty result.
+
+---
 
 ### Marking tasks: `mark`
 
@@ -183,6 +199,8 @@ Nice! I've marked these tasks as done:
 * Multiple indices and ranges are supported (`mark 2,5...7` marks tasks 2, 5, 6, and 7).
 * Indices must be valid, out-of-bounds numbers trigger parsing errors.
 
+---
+
 ### Unmarking tasks: `unmark`
 
 Mark one or more tasks as "not done".
@@ -204,6 +222,8 @@ OK, I've marked these tasks as not done yet:
 **Notes:**
 * Multiple indices and ranges are supported (`unmark 2,5...7` unmarks tasks 2, 5, 6, and 7).
 * Indices must be valid, out-of-bounds numbers trigger parsing errors.
+
+---
 
 ### Editing a Task: `edit`
 
@@ -236,6 +256,8 @@ OK, I've edited the description of the task to:
 * Invalid indices or edits to fields not present on the task type (e.g., deadline on a todo) will result in errors.
 * All edits use the one-based indices shown in list.
 
+---
+
 ### Deleting Tasks: `delete`
 
 Removes one or more tasks from your list
@@ -263,11 +285,133 @@ Now you have 2 tasks in the task list.
 * Multiple indices and ranges are supported (`delete 2,5...7` deletes tasks 2, 5, 6, and 7).
 * Indices must be valid, out-of-bounds numbers trigger parsing errors.
 
-### Tracking Habits: `habit`
+---
+
+## Timer
+
+The timer feature supports efficient time management for study sessions using simple CLI commands. Only one timer session can be active at a time, and all commands are case-insensitive.
+
+---
+
+### Starting a Timer: `start`
+
+Begin a study timer, optionally linked to a specific task, or use a custom label and duration.
+
+**Format:** `start [INDEX|NAME] [@MINUTES]`
+* `INDEX`: (Optional) Task number from the `list` command
+* `NAME`: (Optional) Custom label for the timer session
+* `@MINUTES`: (Optional) Duration in minutes (default: 25)
+* If no parameters, `start` starts a 25 minute "Focus Session"
+* If `INDEX` is supplied (e.g. `start 3 @ 45`), it starts a timer label with task 3's name for 45 minutes
+* If `NAME` and duration are supplied (e.g. `start Review Notes @ 30`), it starts a 30 minute timer labeled "Review Notes"
+* Only one timer can be active, you will receive an error if another timer's time has not run out
+
+**Examples:**
+* `start` (starts default 25 minute "Focus Session")
+* `start 2` (starts timer for task 2, default 25 minutes)
+* `start 4@40` (starts timer for task 4, 40 minutes)
+* `start Research @ 60` (starts timer for "Research", 60 minutes)
+
+**Expected Output:**
+```
+# TIMER
+# RUNNING 25:00 left - Focus session
+```
+
+**Notes:**
+* Only one timer can run or be paused at a time. Reset or complete before starting another.
+
+---
+
+### Pausing a Timer: `pause`
+
+Temporarily stop the active timer
+
+**Format:** `pause`
+
+**Expected Output:**
+```
+# TIMER
+# PAUSED 23:35 left - Focus session
+```
+
+**Notes:**
+* Only works if the timer is running
+* Trying to pause a timer that is already paused or stopped will result in an error
+
+---
+
+### Resuming a Timer: `resume`
+
+Continue a paused timer.
+
+**Format:** `resume`
+
+**Expected Output:**
+```
+# TIMER
+# RUNNING 23:35 left - Focus session
+```
+
+**Notes:**
+* Only works if the timer is paused
+* Timer resumes with the remaining time that was left when paused
+
+---
+
+### Resetting a Timer: `reset`
+
+Stop and clear the active timer session.
+
+**Format:** `reset`
+
+**Expected Output:**
+```
+# TIMER
+# RESET TIMER
+```
+
+**Notes:**
+* Only works if a timer is active (running or paused)
+* Stops monitoring and clears session, must start a new timer to begin tracking again
+
+---
+
+### Checking Timer Status: `stat`
+
+Displays the current timer status and time remaining.
+
+**Format:** `stat`
+
+**Expected Output:**
+```
+Timer Status
+  State: RUNNING
+  Time Left: 0:02
+  Label: Focus session
+```
+
+**Notes:**
+* Only works if a timer is active
+* Shows details like timer label, state (RUNNING/PAUSED/IDLE), and exact time left
+
+---
+
+### Timer Behaviour and Rules
+* Only a single timer sessions can be active at a time
+* The timer can be associated with a task (by index), or a custom label
+* Time always counts down to zero. When finished, you are notified and the timer is cleared for a new session
+* Time is tracked precisely to seconds, the UI displays minutes:seconds
+* If you pause, resume or reset the timer, actions are immediate and confirmed in output
+* If you attempt commands with no active timer, or redudant actions (e.g. resume while already running), you get a friendly error
+
+---
+
+## Habits: `habit`
 
 Track recurring habits with streak counting to build consistency. Habits help you maintain regular activities by setting deadlines and rewarding on-time completion with streak increments.
 
-#### Adding a Habit: `habit DESCRIPTION -t INTERVAL`
+### Adding a Habit:`habit DESCRIPTION -t INTERVAL`
 
 Creates a new habit with a specified time interval between completions.
 
