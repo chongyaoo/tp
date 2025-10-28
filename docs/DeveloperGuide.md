@@ -291,7 +291,7 @@ For all commands, the CommandHandler follows a similar pattern:
    * The `cleanup()` method is called when the application terminates
    * Active timers are reset and the scheduler is shut down to prevent resource leaks
 
----
+#### Key Design Considerations
 
 ## Key Design Considerations
 
@@ -547,7 +547,11 @@ Below, every class is described with all its fields, methods, and their individu
 
     - `public void delete(Set<Integer> indexes)`: Deletes the selected tasks, with batch and range support. Handles all edge cases (e.g., deletion order to avoid index shift)
 
-# INSERT TASK UML DIAGRAM HERE
+#### Task Component Class Diagram
+
+The classes with the Task Component can be summarised in the following Class Diagram:
+
+![Class Diagram of Task](images/TaskClassDiagram.png)
 
 ---
 
@@ -587,6 +591,18 @@ Below, every class is described with all its fields, methods, and their individu
 
 ---
 
+#### Task Component Interactions
+
+The diagram below shows how the Task component interacts with other components in the system:
+
+![Task Interaction Diagram](images/TaskInteractions.png)
+
+#### TaskList Component Interactions
+
+The diagram below shows the detailed interactions of the TaskList component:
+
+![Task Interaction Diagram](images/TaskListInteractions.png)
+
 ## Error Handling & Edge Cases
 
 - Every mutating operation (`edit`, `mark`, `unmark`, `delete`) rigorously validates the provided indices, throwing a `StudyMateException` for invalid cases
@@ -619,6 +635,13 @@ Below, every class is described with all its fields, methods, and their individu
     Now you have 4 tasks in the task list.
     ```
 
+#### Sequence Diagram
+
+The sequence diagram below illustrates Adding a Deadline:
+
+![Adding a Deadline Sequence Diagram](images/AddDeadlineSequence.png)
+
+
 ### Batch Deletion
 1. User enters: `delete 2,4...5`
 2. All indices are validated, and tasks are removed in descending order.
@@ -642,6 +665,224 @@ Below, every class is described with all its fields, methods, and their individu
 
 ---
 
+# Reminders Component
+
+**API**: `Reminder.java`, `ReminderList.java`, `Scheduler.java`
+
+The Reminders component is responsible for managing time-based notifications with support for both one-time and recurring 
+reminders. It enables users to set reminders that automatically trigger at specified times, with features like snoozing 
+and on/off toggling.
+
+#### Structure of the Reminders Component
+
+The Reminders component consists of the following key classes:
+
+![Class Diagram of Reminder](images/ReminderClassDiagram.png)
+
+* `ReminderList` - Manages the collection of reminders and provides operations for adding, deleting, toggling, and snoozing
+* `Reminder` - Represents a single reminder with a name, schedule, and reminder time
+* `Schedule` (Interface) - Defines the contract for different scheduling strategies
+* `OneTimeSchedule` - Implements one-time reminder scheduling that fires once and turns off
+* `RecurringSchedule` - Implements recurring reminder scheduling with configurable intervals
+* `Scheduler` - Monitors reminders periodically and triggers notifications for due reminders
+* `IndexedReminder` - Wraps a reminder with its list index for notification purposes
+* `DateTimeArg` - Encapsulates date and time for reminder deadlines
+* `Clock` - Provides time operations for testing and production use
+* `MessageHandler` - UI component for displaying reminder-related messages
+* `StudyMateException` - Exception type thrown for reminder operation errors
+
+#### Reminders Component Interactions
+
+The diagram below shows how the Reminders component interacts with other components in the system:
+
+![Reminders Component Interactions](images/ReminderInteractions.png)
+
+The ReminderList manages Reminder objects which contain Schedule implementations (either OneTimeSchedule or RecurringSchedule). The Scheduler periodically checks ReminderList for due reminders and coordinates with MessageHandler for user notifications. The Reminder class delegates scheduling logic to its Schedule implementation, which uses Clock for time operations and DateTimeArg for deadline management.
+
+#### ReminderList Component Interactions
+
+The diagram below shows the detailed interactions of the ReminderList component:
+
+![ReminderList Interactions Diagram](images/ReminderListInteractions.png)
+
+**Example: Scheduler checking and firing reminders**
+
+When the Scheduler performs a periodic check, the following steps occur:
+
+1. `Scheduler.checkAndNotify()` is triggered by the ScheduledExecutorService at configured intervals (default 30 seconds).
+
+2. `Scheduler` calls its own `tick()` method to check for due reminders.
+
+3. **Within the tick() method:**
+    * Synchronizes on the `ReminderList` to ensure thread safety
+    * Iterates through all reminders via `reminderList.getReminders()`
+    * For each reminder, calls `reminder.isDue()` to check if it should fire
+
+4. **Within a Reminder's isDue() method:**
+    * Delegates to `schedule.isDue()`
+    * **For OneTimeSchedule**:
+        - Gets current time from Clock
+        - Compares against target datetime
+        - Returns true only if: current time >= target AND not yet fired AND reminder is on
+    * **For RecurringSchedule**:
+        - Gets current time from injected Clock
+        - Compares against target datetime
+        - Returns true if: current time >= target AND reminder is on
+
+5. If a reminder is due:
+    * Gets the reminder's index in the list
+    * Creates an `IndexedReminder` wrapping the reminder and its index
+    * Adds it to the list of reminders to output
+    * Calls `reminder.isFired()` to update the reminder state
+
+6. **Within isFired() method:**
+    * Delegates to `schedule.isFired()`
+    * **For OneTimeSchedule**:
+        - Sets onReminder to false (automatically turns off)
+        - Marks isFired flag as true
+    * **For RecurringSchedule**:
+        - Calls `setNextSchedule()` to calculate next occurrence
+        - Advances deadline by adding interval repeatedly until it's in the future
+        - Updates the reminder's datetime
+
+7. The list of `IndexedReminder` objects is returned to `checkAndNotify()`.
+
+8. If the list is not empty, `Scheduler` calls `MessageHandler.sendReminder(dueReminders)` to display notifications.
+
+#### Sequence Diagram
+
+The sequence diagram below illustrates the interactions within the Reminders component when the scheduler checks for due reminders:
+
+![Sequence Diagram for Reminder Checking](images/ReminderCheckSequence.png)
+
+#### Key Design Considerations
+
+**Aspect: Schedule Strategy Pattern**
+
+* **Current choice**: Use Strategy pattern with Schedule interface and separate implementations
+    * Pros: Clean separation of concerns; easy to add new schedule types; each schedule type has its own logic
+    * Cons: More classes to maintain; slight overhead from interface dispatch
+
+* **Alternative**: Use single Schedule class with type flag
+    * Pros: Fewer classes; simpler structure
+    * Cons: Violates Open-Closed Principle; if-else logic for different behaviors; harder to extend
+
+**Aspect: Clock Injection**
+
+* **Current choice**: Inject `Clock` dependency into Schedule implementations and ReminderList
+    * Pros: Testable with fixed clocks; supports deterministic testing; follows dependency injection principles
+    * Cons: Additional parameter in constructors; slightly more complex initialization
+
+* **Alternative**: Use `LocalDateTime.now()` directly
+    * Pros: Simpler code; fewer parameters; standard Java approach
+    * Cons: Untestable; time-dependent tests become flaky; cannot simulate different times
+
+**Aspect: Automatic Shutdown for One-Time Reminders**
+
+* **Current choice**: OneTimeSchedule automatically turns off after firing
+    * Pros: Prevents duplicate notifications; clear lifecycle; intuitive behavior
+    * Cons: Users must manually turn back on if they want it to fire again; cannot easily "replay" a reminder
+
+* **Alternative**: Keep reminder on after firing
+    * Pros: User has full control; can manually decide when to turn off
+    * Cons: Could fire repeatedly on every check cycle; requires user action to prevent spam
+
+**Aspect: Recurring Schedule Advancement**
+
+* **Current choice**: Advance deadline by adding intervals until it's in the future
+    * Pros: Handles missed periods gracefully; catches up if system was offline; maintains consistent intervals
+    * Cons: If system is offline for long periods, might skip many occurrences without notification
+
+* **Alternative**: Reset deadline to current time + interval
+    * Pros: Simpler logic; always fires at regular intervals from now
+    * Cons: Loses original timing; drifts from intended schedule; doesn't account for missed periods
+
+#### Reminder Operations Flow
+
+**Adding a One-Time Reminder:**
+1. User provides reminder name and datetime (e.g., "remind Study for exam -t 25/12/2024 1400")
+2. Parser creates `REMINDER_ADD` command with name and datetime
+3. CommandHandler calls `ReminderList.addReminderOneTime(name, dateTime)`
+4. ReminderList creates new Reminder with:
+    - OneTimeSchedule containing the target datetime
+    - onReminder flag set to true
+    - isFired flag set to false
+    - Injected clock for time operations
+5. Reminder is added to internal list
+6. MessageHandler displays confirmation with reminder details
+
+**Adding a Recurring Reminder:**
+1. User provides reminder name, datetime, and interval (e.g., "remind Take medicine -t 01/01/2025 0900 -rec 12h")
+2. Parser creates `REMINDER_ADD` command with name, datetime, and interval
+3. CommandHandler calls `ReminderList.addReminderRec(name, dateTime, interval)`
+4. ReminderList creates new Reminder with:
+    - RecurringSchedule containing target datetime and interval
+    - onReminder flag set to true
+    - Injected clock for time operations
+5. Reminder is added to internal list
+6. MessageHandler displays confirmation with reminder details including recurrence interval
+
+**Listing Reminders:**
+1. User types "remind ls"
+2. Parser creates `REMINDER_LIST` command
+3. CommandHandler calls `MessageHandler.sendReminderList(reminderList)`
+4. MessageHandler iterates through all reminders and displays:
+    - Index number (1-based)
+    - On/Off status indicator
+    - Reminder name
+    - Target datetime
+    - Recurrence interval (if recurring)
+
+**Turning On/Off Reminders:**
+1. User provides reminder indexes (e.g., "remind on 1,3" or "remind off 2")
+2. Parser creates `REMINDER_ON` or `REMINDER_OFF` command with index set
+3. CommandHandler validates indexes with IndexValidator
+4. CommandHandler calls `ReminderList.turnOnReminders(indexes)` or `turnOffReminders(indexes)`
+5. ReminderList iterates through each index:
+    - Retrieves the reminder
+    - Checks current onReminder status
+    - If changing state: updates onReminder flag and adds to changed list
+    - If already in desired state: adds to already-in-state list
+6. MessageHandler displays appropriate messages for changed and unchanged reminders
+
+**Snoozing a Reminder:**
+1. User provides reminder index and duration (e.g., "remind snooze 1 -t 30m")
+2. Parser creates `REMINDER_SNOOZE` command with index and duration
+3. CommandHandler validates index with IndexValidator
+4. CommandHandler calls `ReminderList.handleSnooze(index, duration)`
+5. ReminderList retrieves the reminder and checks if it's recurring
+6. **If recurring**: MessageHandler displays error (recurring reminders cannot be snoozed)
+7. **If one-time**:
+    - Calls `reminder.snooze(duration)`
+    - OneTimeSchedule calculates new datetime by adding duration
+    - Validates new datetime is in the future
+    - If valid: updates datetime, resets isFired flag, sets onReminder to true
+    - If invalid (duration too short): throws StudyMateException
+8. MessageHandler displays confirmation or error message
+
+**Deleting Reminders:**
+1. User provides reminder indexes (e.g., "remind rm 1,2,5")
+2. Parser creates `REMINDER_DELETE` command with index set
+3. CommandHandler validates indexes with IndexValidator
+4. CommandHandler calls `ReminderList.delete(indexes)`
+5. ReminderList sorts indexes in reverse order (to prevent index shifting issues)
+6. Iterates through sorted indexes and removes each reminder from internal list
+7. MessageHandler displays confirmation with deleted reminders and updated count
+
+**Scheduler Background Operation:**
+1. On application startup, `Scheduler.start()` is called
+2. Scheduler creates a ScheduledExecutorService with single thread
+3. Performs immediate check via `checkAndNotify()`
+4. Schedules periodic checks at configured interval (default 30 seconds)
+5. On each cycle:
+    - Calls `tick()` to check all reminders
+    - Collects all due reminders into IndexedReminder list
+    - Fires each due reminder (updating state appropriately)
+    - Sends batch notification via MessageHandler
+6. On application shutdown, `Scheduler.shutdown()` is called to clean up executor service
+
+
+---
 # Habits Component
 
 **API**: `Habit.java`, `HabitList.java`
