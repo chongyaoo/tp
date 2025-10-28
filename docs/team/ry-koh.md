@@ -117,6 +117,26 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
 
 ---
 
+### Contributions to the User Guide
+- Documented the Task Creation Commands (`todo`, `deadline`, `event`), including detailed formats and required delimiters
+- Specified the required `YYYY-MM-DD HH:mm` format for all date/time inputs
+- Documented Batch Operations (`mark`, `unmark`, `delete`), specifying support for comma-separated indices and ranges (e.g. `mark 2...4`)
+- Documented the edit command, detailing all four flags for field manipulation (`-n`, `-d`, `-f`, `-t`)
+- Documented the list command, including the sorted view flag (`-s`)
+- Documented Timer Operations (`start`, `pause`, `resume`, `reset`, `stat`)
+
+---
+
+### Contributions to the Developer Guide
+- Documented the `TaskList` Manager architecture and its use of polymorphism for handling `ToDo`, `Deadline`, and `Event` classes
+- Detailed the implementation of batch operations
+- Documented the logic for sorted listing (`getSorted`), which filters and sorts deadlines and events based on their respective date fields
+- Documented the implementation of `editDeadline` and `editFrom`/`editTo`, including the requirement for strict type checking
+- Defined the separation of concerns between MessageHandler (handling output routing and decoration) and MessageFormatting (providing pure string utilities)
+- Documented how MessageHandler centralises all feedback output for operations, including batch confirmations and error messages
+
+---
+
 ## Pull Requests
 - [#4](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/4/)
 - [#6](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/6/)
@@ -127,6 +147,7 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
 - [#42](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/42)
 - [#44](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/44)
 - [#51](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/51)
+- [#65](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/65)
 
 ---
 
@@ -151,3 +172,4 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
 - [#57](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/57)
 - [#62](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/62)
 - [#63](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/63)
+- [#68](https://github.com/AY2526S1-CS2113-W12-3/tp/pull/68)
