@@ -865,7 +865,7 @@ It serializes model objects into human-readable strings and deserializes them in
 
 ## Structure of the Storage Component
 
-![Class Diagram of Storage Component](images/Storage1.png)
+![Class Diagram of Storage Component](images/Storage.png)
 
 ### Key Classes
 * `Storage` – Central manager for file I/O (read/write)
