@@ -14,6 +14,8 @@ StudyMate is a desktop task management application designed for students to mana
 
 ## Features 
 
+StudyMate supports three kinds of tasks: todo, deadline, and event. You can also list, search, edit, mark, unmark, or delete them efficiently with CLI commands. All commands are case-insensitive, but task indices always start at 1 (as displayed in the list view).
+
 ### Adding a todo: `todo`
 
 Adds a simple task to your task list without any specific deadline or time frame.
@@ -39,7 +41,8 @@ Now you have X tasks in the list.
 * Todo tasks are marked with `[T]` to indicate they are simple tasks.
 * `[ ]` indicates the task is not yet completed. It will show `[X]` when marked as done.
 * Use the `mark` command to mark a todo as completed.
-* Use the `list` command to view all your tasks including todos.
+* Use the `unmark` command a mark a todo as incomplete.
+* Use the `list` command to view all your tasks.
 
 ### Adding a deadline: `deadline`
 
@@ -50,8 +53,7 @@ Adds a task with a specific deadline date and time to your task list.
 * The `DESCRIPTION` is the name or details of the deadline task.
 * The `/by` delimiter is required to separate the description from the deadline.
 * The deadline must be in `YYYY-MM-DD HH:mm` format (e.g., 2025-12-31 23:59).
-* Both date and time components are required.
-* Both description and deadline cannot be empty.
+* Both description and deadline are required.
 
 **Examples:**
 * `deadline Submit assignment /by 2025-11-15 23:59`
@@ -101,12 +103,171 @@ Now you have X tasks in the list.
 * Both start and end date/times are displayed in YYYY-MM-DD HH:mm format.
 * Use `list -s` to view tasks sorted by date (earliest start date/time first).
 * The end date/time cannot be before the start date/time.
+* If you supply dates/times in the wrong order, or with invalid format, you will get a parsing error.
 
-### Tracking habits: `habit`
+### Listing Tasks: `list`
+
+Shows all tasks in your list, in order of addition or by date.
+
+**Format:**
+* Listed as added: `list`
+* List sorted by date: `list -s`
+
+**Expected Output:**
+
+All current tasks, each line numbered and showing completion, type, description, and any dates/times.
+
+Normal List
+```
+Here are the tasks in your task list:
+1. [T][ ] Read chapter 5 of textbook
+2. [D][ ] Submit assignment (by: 2025-11-15 23:59)
+3. [E][ ] Project week (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
+```
+
+Sorted List
+```
+Here are the deadlines and events in your task list, sorted by their deadlines and/or start times:
+1. [E][ ] Project week (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
+2. [D][ ] Submit assignment (by: 2025-11-15 23:59)
+```
+
+**Notes:**
+* `list -s` sorts by date (for events/deadlines, earliest first).
+
+### Finding Tasks: `find`
+
+Search for tasks by keyword.
+
+**Format:** `find KEYWORD`
+* `KEYWORD` is any word or substring.
+
+**Examples:**
+* `find assignment`
+* `find exam`
+
+**Expected Output:**
+```
+Here are the tasks with the matching substring found!:
+1. [D][ ] Submit assignment (by: 2025-11-15 23:59)
+```
+
+**Notes:**
+* Search is case-insensitive.
+* If no match, you will receive an empty result.
+
+### Marking tasks: `mark`
+
+Mark one or more tasks as "done".
+
+**Format:** `mark INDEX[,INDEX...]`
+* `INDEX` corresponds to the task number from the list command.
+* Can accept multiple indices separated by commas (e.g., `mark 3,5`), or ranges (e.g., `mark 2...4`).
+
+**Examples:**
+* `mark 1`
+* `mark 2,4,6`
+* `mark 3..5`
+
+**Expected Output:**
+
+Shows tasks now marked [X] as done.
+```
+Nice! I've marked these tasks as done:
+[T][X] Read chapter 5 of textbook
+[D][X] Submit assignment (by: 2025-11-15 23:59)
+[E][X] Project week (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
+```
+
+**Notes:**
+* Multiple indices and ranges are supported (`mark 2,5...7` marks tasks 2, 5, 6, and 7).
+* Indices must be valid, out-of-bounds numbers trigger parsing errors.
+
+### Unmarking tasks: `unmark`
+
+Mark one or more tasks as "not done".
+
+**Format:** `unmark INDEX[,INDEX...]`
+* `INDEX` corresponds to the task number from the list command.
+* Can accept multiple indices separated by commas (e.g., `unmark 3,5`), or ranges (e.g., `unmark 2...4`).
+
+**Expected Output:**
+
+Shows tasks now back to [ ] incomplete.
+```
+OK, I've marked these tasks as not done yet:
+[T][ ] Read chapter 5 of textbook
+[D][ ] Submit assignment (by: 2025-11-15 23:59)
+[E][ ] Project week (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
+```
+
+**Notes:**
+* Multiple indices and ranges are supported (`unmark 2,5...7` unmarks tasks 2, 5, 6, and 7).
+* Indices must be valid, out-of-bounds numbers trigger parsing errors.
+
+### Editing a Task: `edit`
+
+Update a task’s description or the relevant dates/times.
+
+**Format:**
+* Edit name/description: `edit INDEX -n NEW_DESCRIPTION`
+* Edit deadline (deadline task): `edit INDEX -d NEW_DEADLINE`
+* Edit event start (event task): `edit INDEX -f NEW_START`
+* Edit event end (event task): `edit INDEX -t NEW_END`
+* All date/time values must use format YYYY-MM-DD HH:mm.
+* Only update fields that apply to the type of task (e.g., deadlines for deadline tasks, start/end for event tasks).
+
+**Examples:**
+* `edit 3 -n Finish reading Act II`
+* `edit 2 -d 2025-12-01 20:00`
+* `edit 4 -f 2025-11-05 09:00`
+* `edit 4 -t 2025-11-06 17:00`
+
+**Expected Output:**
+
+Task updated with new details.
+
+```
+OK, I've edited the description of the task to:
+[E][ ] Finish reading Act II (from: 2025-11-01 09:00, to: 2025-11-07 17:00)
+```
+
+**Notes:**
+* Invalid indices or edits to fields not present on the task type (e.g., deadline on a todo) will result in errors.
+* All edits use the one-based indices shown in list.
+
+### Deleting Tasks: `delete`
+
+Removes one or more tasks from your list
+
+**Format:** `delete INDEX[,INDEX...]`
+* `INDEX` corresponds to the task number from the list command.
+* Can accept multiple indices separated by commas (e.g., `delete 3,5`), or ranges (e.g., `delete 2...4`).
+
+**Examples:**
+* `delete 1`
+* `delete 2,4,6`
+* `delete 3..5`
+
+**Expected Output:**
+
+Confirmation message and the updated task count.
+
+```
+Got it. I've deleted these tasks:
+[T][ ] Read chapter 5 of textbook
+Now you have 2 tasks in the task list.
+```
+
+**Notes:**
+* Multiple indices and ranges are supported (`delete 2,5...7` deletes tasks 2, 5, 6, and 7).
+* Indices must be valid, out-of-bounds numbers trigger parsing errors.
+
+### Tracking Habits: `habit`
 
 Track recurring habits with streak counting to build consistency. Habits help you maintain regular activities by setting deadlines and rewarding on-time completion with streak increments.
 
-#### Adding a habit: `habit DESCRIPTION -t INTERVAL`
+#### Adding a Habit: `habit DESCRIPTION -t INTERVAL`
 
 Creates a new habit with a specified time interval between completions.
 
@@ -140,7 +301,7 @@ Now you have X habits in the list.
 * The deadline shows when you should next complete the habit.
 * Your streak tracks consecutive successful completions.
 
-#### Listing all habits: `habit ls`
+#### Listing Habits: `habit ls`
 
 Displays all your tracked habits with their deadlines and current streaks.
 
@@ -158,7 +319,7 @@ Here are your habits:
 * Each habit shows its index number, name, next deadline, and current streak.
 * Use these index numbers for streak increments and deletions.
 
-#### Incrementing a habit streak: `habit streak INDEX`
+#### Incrementing Habit Streak: `habit streak INDEX`
 
 Attempts to increment the streak for a habit when you complete it.
 
@@ -207,7 +368,7 @@ Habit: [H] Exercise (deadline: 2025-10-28 14:30, streak: 1)
 * If you're too late, the streak resets to 1 (not 0), giving you credit for the current completion.
 * The system compares times truncated to the minute level, so completing at any second within the same minute as the deadline counts as on-time.
 
-#### Deleting a habit: `habit rm INDEX`
+#### Deleting a Habit: `habit rm INDEX`
 
 Removes a habit from your tracking list.
 
@@ -229,6 +390,21 @@ Now you have X habits in the list.
 **Notes:**
 * Deleting a habit is permanent and cannot be undone.
 * The index numbers will update after deletion.
+
+### Exiting the Application: `bye`
+
+Safely closes StudyMate, saving all your data automatically before shutdown.
+
+**Format:** `bye`
+
+**Expected Output:**
+```
+Bye. Hope to see you again soon!
+```
+
+**Notes:**
+* All tasks, habits, reminders, and timer states are saved before exiting.
+* After this command, you can close your terminal safely.
 
 ## FAQ
 

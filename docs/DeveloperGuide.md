@@ -1,18 +1,22 @@
 # Developer Guide
 
-## Acknowledgements
+# Acknowledgements
 
 Thank you teaching team of CS2113!
 
-## Design & implementation
+# Design & Implementation
 
-### Parser Component
+---
+
+# Parser Component
 
 **API**: `Parser.java`
 
 The Parser component is responsible for interpreting user input and converting it into executable commands that the application can process.
 
-#### Structure of the Parser Component
+---
+
+## Structure of the Parser Component
 
 The Parser component consists of several key classes that work together to handle command parsing and validation:
 
@@ -32,7 +36,9 @@ The Parser component works with the following workflow:
 4. **Command Object Creation**: A `Command` object is instantiated with the appropriate `CommandType` and parameters
 5. **Error Handling**: If parsing fails, a `StudyMateException` is thrown with a descriptive error message
 
-#### Parser Component Interactions
+---
+
+## Parser Component Interactions
 
 The diagram below shows how the Parser component interacts with other components in the system:
 
@@ -40,7 +46,9 @@ The diagram below shows how the Parser component interacts with other components
 
 The Parser creates Command objects that are consumed by CommandHandler. It uses DateTimeArg for temporal data and throws StudyMateException for errors.
 
-#### How the Parser Component Works
+---
+
+## How the Parser Component Works
 
 The sequence diagram below illustrates the interactions within the Parser component, taking `parse("todo read book")` as an example:
 
@@ -99,9 +107,11 @@ When the Parser component is called upon to parse a command, the following steps
 
 10. Results are communicated back to the user through the `MessageHandler` UI component.
 
-#### Key Design Considerations
+---
 
-**Aspect: Index handling**
+## Key Design Considerations
+
+### Aspect: Index handling
 
 * **Current choice**: Support multiple index formats (single, comma-separated, ranges with "...")
   * Pros: User-friendly; allows batch operations; flexible input; reduces repetitive commands
@@ -111,7 +121,7 @@ When the Parser component is called upon to parse a command, the following steps
   * Pros: Simpler parsing; fewer edge cases; easier to debug
   * Cons: Less convenient for users; requires multiple commands for batch operations; reduced productivity
 
-**Aspect: Time handling in reminders**
+### Aspect: Time handling in reminders
 
 * **Current choice**: Require time component for all reminders (format: `yyyy-MM-dd HH:mm`)
   * Pros: Precise scheduling; consistent behaviour with recurring reminders; no ambiguity about when reminders fire
@@ -121,11 +131,13 @@ When the Parser component is called upon to parse a command, the following steps
   * Pros: More convenient for date-only reminders; less typing
   * Cons: Ambiguity about default time; inconsistent reminder behaviour; harder to reason about recurring reminder schedules
 
-#### Supported Command Formats
+---
+
+## Supported Command Formats
 
 The Parser component supports the following command formats:
 
-**Task Management:**
+### Task Management
 * `todo DESCRIPTION` - Creates a todo task
 * `deadline DESCRIPTION /by DATE TIME` - Creates a deadline task (DATE TIME format: yyyy-MM-dd HH:mm)
 * `event DESCRIPTION /from DATE TIME /to DATE TIME` - Creates an event task (DATE TIME format: yyyy-MM-dd HH:mm)
@@ -140,7 +152,7 @@ The Parser component supports the following command formats:
 * `unmark INDEX[,INDEX...]` - Marks tasks as not done
 * `delete INDEX[,INDEX...]` - Deletes tasks
 
-**Reminder Management:**
+### Reminder Management
 * `rem MESSAGE @ DATE TIME` - Creates a one-time reminder (DATE TIME format: yyyy-MM-dd HH:mm)
 * `rem MESSAGE @ DATE TIME -r INTERVAL` - Creates a recurring reminder (INTERVAL format: number + unit [m/h/d/w])
 * `rem ls` - Lists all reminders
@@ -149,26 +161,26 @@ The Parser component supports the following command formats:
 * `rem on INDEX[,INDEX...]` - Turns reminders on
 * `rem off INDEX[,INDEX...]` - Turns reminders off
 
-**Timer Operations:**
+### Timer Operations
 * `start [INDEX|NAME] [@MINUTES]` - Starts a timer with optional task index/label and duration (default: 25 minutes)
 * `pause` - Pauses the active timer
 * `resume` - Resumes the paused timer
 * `reset` - Resets and stops the timer
 * `stat` - Shows timer statistics
 
-**Habit Tracking:**
+### Habit Tracking
 * `habit DESCRIPTION -t INTERVAL` - Creates a new habit with specified interval (INTERVAL format: number + unit [m/h/d/w])
 * `habit ls` - Lists all habits
 * `habit streak INDEX` - Increments the streak for a habit (validates timing with grace period)
 * `habit rm INDEX` - Deletes a habit
 
-**Index Formats:**
+### Index Formats
 * Single: `1`
 * Multiple: `1,2,3`
 * Range: `1...5`
 * Combined: `1,3...5,7`
 
-**Special Parsing Features:**
+### Special Parsing Features
 
 1. **Case Insensitivity**: All command words are case-insensitive (e.g., `TODO`, `todo`, `ToDo` are all valid)
 
@@ -180,13 +192,17 @@ The Parser component supports the following command formats:
 
 5. **Duration Interval Parsing**: Custom `parseInterval()` method supports human-readable formats like `30m`, `2h`, `1d`, `1w` for minutes, hours, days, and weeks respectively
 
-### CommandHandler Component
+---
+
+# CommandHandler Component
 
 **API**: `CommandHandler.java`
 
 The CommandHandler component is responsible for executing parsed commands by coordinating between the Model components (TaskList, ReminderList, Timer) and the UI layer.
 
-#### Structure of the CommandHandler Component
+---
+
+## Structure of the CommandHandler Component
 
 The CommandHandler component acts as the controller in the application architecture:
 
@@ -208,7 +224,9 @@ The CommandHandler component acts as the controller in the application architect
 * `IndexValidator` - Utility class for validating index inputs
 * `StudyMateException` - Exception type thrown for command execution errors
 
-#### CommandHandler Component Interactions
+---
+
+## CommandHandler Component Interactions
 
 The diagram below shows how the CommandHandler component interacts with other components in the system:
 
@@ -216,7 +234,9 @@ The diagram below shows how the CommandHandler component interacts with other co
 
 The CommandHandler receives Command objects from the Parser, coordinates with Model components (TaskList, ReminderList, HabitList, Timer), validates operations using IndexValidator, and communicates results through MessageHandler.
 
-#### How the CommandHandler Component Works
+---
+
+## How the CommandHandler Component Works
 
 The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, habitList, todoCommand)` as an example where the command is for "todo read book":
 
@@ -241,39 +261,41 @@ When the CommandHandler component is called upon to execute a command, the follo
 
 5. Control returns to StudyMate through the call stack.
 
-**General Command Execution Pattern:**
+### General Command Execution Pattern
 
 For all commands, the CommandHandler follows a similar pattern:
 
-4. **For index-based operations:**
+1. **For index-based operations:**
    * `IndexValidator.validateIndexes()` is called to ensure all indices are within valid ranges
    * If validation fails, a `StudyMateException` is thrown with a descriptive error message
    * If validation succeeds, the operation proceeds on the Model component
 
-5. **For task operations:**
+2. **For task operations:**
    * The handler interacts with `TaskList` to add, modify, or delete tasks
    * After the operation, the result is retrieved from TaskList
    * `MessageHandler` is called to display the result to the user
 
-6. **For reminder operations:**
+3. **For reminder operations:**
    * The handler interacts with `ReminderList` to add or remove reminders
    * For recurring reminders, a `Duration` interval is stored alongside the reminder
    * Results are displayed through `MessageHandler`
 
-7. **For timer operations:**
+4. **For timer operations:**
    * The handler manages a static `activeTimer` instance
    * When starting a timer, a new `Timer` object is created and `startTimerMonitoring()` is invoked
    * `ScheduledExecutorService` is used to check timer state every second
    * When the timer completes, pauses, or is reset, appropriate messages are sent via `MessageHandler`
    * The scheduler is properly shut down when the timer ends or is reset
 
-8. **Cleanup on exit:**
+5. **Cleanup on exit:**
    * The `cleanup()` method is called when the application terminates
    * Active timers are reset and the scheduler is shut down to prevent resource leaks
 
-#### Key Design Considerations
+---
 
-**Aspect: Static vs Instance Methods**
+## Key Design Considerations
+
+### Aspect: Static vs Instance Methods
 
 * **Current choice**: Use static methods and static state for CommandHandler
   * Pros: Simple access pattern; no need to pass CommandHandler instance around; centralised state management
@@ -283,7 +305,7 @@ For all commands, the CommandHandler follows a similar pattern:
   * Pros: Better testability; easier to mock; supports multiple independent instances
   * Cons: More complex initialisation; need to pass instance around; more boilerplate code
 
-**Aspect: Command Routing**
+### Aspect: Command Routing
 
 * **Current choice**: Single large switch statement on CommandType
   * Pros: Simple to understand; centralised routing logic; easy to add new commands
@@ -293,11 +315,13 @@ For all commands, the CommandHandler follows a similar pattern:
   * Pros: Better separation of concerns; each command encapsulates its own execution logic; follows OOP principles
   * Cons: More classes; more complex structure; harder to trace execution flow
 
-#### Command Execution Flow
+---
+
+## Command Execution Flow
 
 The CommandHandler executes commands in the following categories:
 
-**Task Commands:**
+### Task Commands
 1. **Add Commands** (`TODO`, `DEADLINE`, `EVENT`):
    - Add new task to TaskList
    - Retrieve the newly added task
@@ -322,7 +346,7 @@ The CommandHandler executes commands in the following categories:
    - Remove tasks from TaskList
    - Display confirmation with deleted tasks
 
-**Reminder Commands:**
+### Reminder Commands
 1. **Add Commands** (`REM_ADD_ONETIME`, `REM_ADD_REC`):
    - Add reminder to ReminderList with date/time
    - For recurring reminders, include interval duration
@@ -343,7 +367,7 @@ The CommandHandler executes commands in the following categories:
 5. **Turn On/Off Commands** (`rem on/off INDEX`)
    - Turns a One-Time/Recurring reminder On/Off
 
-**Timer Commands:**
+### Timer Commands
 1. **Start Command** (`START`):
    - Check if another timer is active
    - Create new Timer with task index/label and duration
@@ -360,7 +384,7 @@ The CommandHandler executes commands in the following categories:
    - Validate timer exists
    - Display timer statistics
 
-**Habit Commands:**
+### Habit Commands
 1. **Add Command** (`HABIT_ADD`):
    - Add new habit to HabitList with name and interval
    - Initial streak is set to 1
@@ -385,13 +409,248 @@ The CommandHandler executes commands in the following categories:
    - Remove habit from HabitList
    - Display confirmation
 
-### Habits Component
+---
+
+# Task Component
+
+The Task component in StudyMate manages all user-defined items that represent actions, deadlines, or scheduled events. It provides the structure and logic required for creating, modifying, storing, searching, and deleting these items. The component is designed for extensibility, robustness, and batch-friendly operations.
+
+---
+
+## Overview
+
+The component centres on an abstraction hierarchy rooted in the `Task` base class, and a `TaskList` manager. Every command that concerns user tasks (whether a simple `ToDo`, a time-bound `Deadline`, or a scheduled `Event`) relies on this cohesive module. It provides safe and flexible batch operations and easy integration with input parsing and UI.
+
+---
+
+## Architecture
+
+Below, every class is described with all its fields, methods, and their individual roles as implemented in the StudyMate Task Component.
+
+---
+
+### Task (abstract class)
+
+- **Purpose:**  
+  Serves as the superclass for all task types in StudyMate, providing a shared interface for description and completion status.
+
+- **Fields:**
+    - `protected String name`: The description of the task, e.g., "Do homework"
+    - `protected boolean isDone`: True if the task is completed, false otherwise
+
+- **Constructors:**
+    - `Task(String name)`: Initialises with the provided name and sets `isDone = false`.
+
+- **Methods:**
+    - `public String getName()`: Returns the task description
+    - `public void setName(String name)`: Updates the task description
+    - `public boolean getDone()`: Returns completion status
+    - `public void setDone(boolean isDone)`: Sets completion status
+    - `public abstract String toSaveString()`: Each subclass must implement its own persistent string representation for storage
+    - `public abstract String toString()`: Each subclass must implement a display string for the UI
+
+---
+
+### ToDo (extends Task)
+
+- **Purpose:**  
+  Represents a simple task with no associated date or time.
+
+- **Fields:**
+    - Inherits all fields from `Task` (`name` and `isDone`)
+
+- **Constructors:**
+    - `ToDo(String name)`: Calls the superclass constructor with the provided description
+
+- **Overrides:**
+    - `public String toSaveString()`: Returns a save line like `T | 0 | Buy groceries`
+    - `public String toString()`: Returns `[T][ ] Buy groceries` or `[T][X] Buy groceries` depending on completion
+
+---
+
+### Deadline (extends Task)
+
+- **Purpose:**  
+  Represents a task with a specified deadline.
+
+- **Fields:**
+    - Inherits: `name`, `isDone`
+    - `private DateTimeArg deadline`: Stores the due date/time
+
+- **Constructors:**
+    - `Deadline(String name, DateTimeArg deadline)`: Calls the super constructor, sets deadline
+
+- **Methods:**
+    - `public DateTimeArg getDeadline()`: Gets the current deadline
+    - `public void setDeadline(DateTimeArg deadline)`: Updates the deadline
+
+- **Overrides:**
+    - `public String toSaveString()`: Returns a string like `D | 1 | Submit Assignment | 2025-11-15T23:59`
+    - `public String toString()`: Returns `[D][ ] Submit Assignment (by: 2025-11-15 23:59)` or `[D][X] Submit Assignment (by: 2025-11-15 23:59)` if marked done
+
+---
+
+### Event (extends Task)
+
+- **Purpose:**  
+  Represents an event spanning a start and end time.
+
+- **Fields:**
+    - Inherits: `name`, `isDone`.
+    - `private DateTimeArg from`: Event start time
+    - `private DateTimeArg to`: Event end time
+
+- **Constructors:**
+    - `Event(String name, DateTimeArg from, DateTimeArg to)`: Calls super constructor and sets timeframe
+
+- **Methods:**
+    - `public DateTimeArg getFrom()`: Accesses event start
+    - `public void setFrom(DateTimeArg from)`: Updates start time
+    - `public DateTimeArg getTo()`: Accesses event end
+    - `public void setTo(DateTimeArg to)`: Updates end time
+
+- **Overrides:**
+    - `public String toSaveString()`: Produces a save line like `E | 0 | Project meeting | 2025-11-04T15:00 | 2025-11-04T16:00`
+    - `public String toString()`: Outputs `[E][ ] Project meeting (from: 2025-11-04 15:00, to: 2025-11-04 16:00)`
+
+---
+
+### TaskList
+
+- **Purpose:**  
+  Maintains and manipulates all Task objects tracked by the user. Orchestrates creation, modification, deletion, and batch operations.
+
+- **Fields:**
+    - `private ArrayList<Task> taskList`: Stores all current tasks
+
+- **Constructors:**
+    - `TaskList()`: Initialises an empty task list
+
+- **Methods:**
+    - `public void addToDo(String desc)`: Adds a new ToDo
+    - `public void addDeadline(String desc, DateTimeArg deadline)`: Adds a Deadline
+    - `public void addEvent(String desc, DateTimeArg from, DateTimeArg to)`: Adds an Event
+
+    - `public int getCount()`: Returns the number of tasks in the list
+    - `public Task getTask(int index)`: Accesses a task by its 0-based index
+    - `public ArrayList<Task> getTasks()`: Returns a copy of the internal task list
+    - `public ArrayList<Task> getSorted()`: Returns a sorted list of all deadlines/events by date/time
+    - `public ArrayList<Task> findTasks(String substring)`: Finds all tasks whose `toString()` contains the substring
+
+    - `public void editDesc(int index, String newDesc)`: Changes the description of a task at the specified index
+    - `public void editDeadline(int index, DateTimeArg deadline)`: Sets deadline for a Deadline task
+    - `public void editFrom(int index, DateTimeArg from)`: Changes `from` field of an Event
+    - `public void editTo(int index, DateTimeArg to)`: Changes `to` field of an Event
+
+    - `public void mark(Set<Integer> indexes)`: Marks all specified tasks as done
+    - `public void unmark(Set<Integer> indexes)`: Marks all specified tasks as not done
+
+    - `public void delete(Set<Integer> indexes)`: Deletes the selected tasks, with batch and range support. Handles all edge cases (e.g., deletion order to avoid index shift)
+
+# INSERT TASK UML DIAGRAM HERE
+
+---
+
+## How the Task Component Works
+
+### Task Creation
+
+- The Parser interprets user input and constructs the correct Task type, passing required parameters
+- The TaskList receives the construction request, instantiates the appropriate subclass, and appends it to its collection
+- Each new Task goes through necessary validation (e.g., `Deadline` requires a valid `DateTimeArg`)
+
+### Editing and Mutation
+
+- `TaskList` exposes a range of edit methods specific to each type of task and field
+- Prior to each modification, type and index checks are performed, inappropriate operations (e.g., editing the deadline of a ToDo) throw `StudyMateException`
+- Modification methods propagate UI feedback via the CommandHandler/UI layer
+
+### Deleting and Batch Operations
+
+- Methods for `delete`, `mark`, and `unmark` accept any valid index set (including single, comma-separated, and range formats)
+- Deletion is performed in descending index order to prevent shifting issues
+- After each operation, the batch of affected tasks is returned so UI may inform the user
+
+### Searching and Listing
+
+- `findTasks(substring)` returns all tasks whose `toString()` includes the given substring
+- `getTasks()` provides direct indexed access for the entire current list, supporting paged/batch output
+- `getSorted()` finds all deadlines and events and returns them sorted by relevant date fields
+
+### Storage/Persistence
+
+- Each type encodes itself as a flat string for robust and future-proof file storage. For example:
+    - A `ToDo`: `T | 0 | Buy groceries`
+    - A `Deadline`: `D | 0 | Submit assignments | 2025-12-31T23:59`
+    - An `Event`: `E | 0 | Project Meeting | 2025-11-04T09:00 | 2025-11-04T12:00`
+- Restoring these from file involves parsing each part and reconstructing the right object/type
+
+---
+
+## Error Handling & Edge Cases
+
+- Every mutating operation (`edit`, `mark`, `unmark`, `delete`) rigorously validates the provided indices, throwing a `StudyMateException` for invalid cases
+- Edits enforced to only valid type/field pairs—protects against corrupt data
+- Batched deletions always process in descending order, eliminating index-shift bugs
+- Duplicate or out-of-bounds indices are rejected before any mutation is applied
+- Invariant: the list is always in a valid, displayable state
+
+---
+
+## Integration and Interactions
+
+- The Task component operates in concert with:
+    - The **Parser**, which constructs user commands into actionable TaskList requests
+    - The **CommandHandler**, which mediates between the UI layer and the data/model operations
+    - The **UI (MessageHandler/Formatting)**, which receives all toString-formatted entities for batch/single output and confirmations
+- Never directly handles user interaction or file I/O; all serialisation and feedback are abstracted away
+
+---
+
+## Example Scenarios
+
+### Adding a Deadline
+1. User enters: `deadline "Finish report" /by 2025-11-05 23:59`
+2. The Parser constructs a Deadline task and submits it to TaskList
+3. Confirmation, via UI:
+    ```
+    Got it. I've added this task:
+    [D][ ] Finish report (by: 2025-11-05 23:59)
+    Now you have 4 tasks in the task list.
+    ```
+
+### Batch Deletion
+1. User enters: `delete 2,4...5`
+2. All indices are validated, and tasks are removed in descending order.
+3. UI reports removed items and new list count.
+
+### Partial/Failed Operations
+1. User tries `edit 3 -d 2025-12-01` on a ToDo.
+2. TaskList checks type and throws `StudyMateException`; UI reports:  
+   `Error: Task at index 3 is not a deadline!`
+
+---
+
+## Glossary
+
+- **Task**: The basic item in StudyMate, can be ToDo, Deadline, or Event.
+- **ToDo**: A task with only a description, no due date/time.
+- **Deadline**: Task with a specific due date/time.
+- **Event**: Scheduled task with both a start and end timestamp.
+- **TaskList**: Contains and manages all Task objects, providing batch and validated mutation.
+- **Batch Operation**: Any user command or UI request that acts on multiple tasks at once (e.g., mark 2,4...6).
+
+---
+
+# Habits Component
 
 **API**: `Habit.java`, `HabitList.java`
 
 The Habits component is responsible for tracking recurring habits with deadlines, intervals, and streak counting. It enables users to build consistency by incrementing streaks when they complete habits within valid time windows.
 
-#### Structure of the Habits Component
+---
+
+## Structure of the Habits Component
 
 The Habits component consists of the following key classes:
 
@@ -405,7 +664,9 @@ The Habits component consists of the following key classes:
 * `MessageHandler` - UI component for displaying habit-related messages
 * `StudyMateException` - Exception type thrown for habit operation errors
 
-#### Habits Component Interactions
+---
+
+## Habits Component Interactions
 
 The diagram below shows how the Habits component interacts with other components in the system:
 
@@ -413,13 +674,17 @@ The diagram below shows how the Habits component interacts with other components
 
 The HabitList manages Habit objects and coordinates with MessageHandler for user notifications. The Habit class uses Clock for time operations and DateTimeArg for deadline management, returning StreakResult to indicate the outcome of streak increment attempts.
 
-#### HabitList Component Interactions
+---
+
+## HabitList Component Interactions
 
 The diagram below shows the detailed interactions of the HabitList component:
 
 ![HabitList Interactions Diagram](images/HabitListInteractions.png)
 
-#### How the Habits Component Works
+---
+
+## How the Habits Component Works
 
 The sequence diagram below illustrates the interactions within the Habits component when incrementing a habit's streak:
 
@@ -457,9 +722,11 @@ When a user attempts to increment a habit's streak, the following steps occur:
 
 7. Control returns to `CommandHandler`.
 
-#### Key Design Considerations
+---
 
-**Aspect: Time Precision**
+## Key Design Considerations
+
+### Aspect: Time Precision
 
 * **Current choice**: Truncate deadline comparison to minutes (ignore seconds)
   * Pros: User-friendly; allows completion at any second within the same minute; reduces false negatives
@@ -469,7 +736,7 @@ When a user attempts to increment a habit's streak, the following steps occur:
   * Pros: Maximum precision; deterministic behaviour
   * Cons: Too strict for user experience; seconds-level precision rarely matters for habits
 
-**Aspect: Clock Injection**
+### Aspect: Clock Injection
 
 * **Current choice**: Inject `Clock` dependency into Habit and HabitList constructors
   * Pros: Testable with fixed clocks; supports deterministic testing; follows dependency injection principles
@@ -479,9 +746,11 @@ When a user attempts to increment a habit's streak, the following steps occur:
   * Pros: Simpler code; fewer parameters; standard Java approach
   * Cons: Untestable; time-dependent tests become flaky; cannot simulate different times
 
-#### Habit Operations Flow
+---
 
-**Adding a Habit:**
+## Habit Operations Flow
+
+### Adding a Habit
 1. User provides habit name and interval (e.g., "habit Exercise -t 1d")
 2. Parser creates `HABIT_ADD` command with name and interval
 3. CommandHandler calls `HabitList.addHabit(name, interval)`
@@ -492,7 +761,7 @@ When a user attempts to increment a habit's streak, the following steps occur:
 5. Habit is added to internal list
 6. MessageHandler displays confirmation with habit details
 
-**Listing Habits:**
+### Listing Habits
 1. User types "habit ls"
 2. Parser creates `HABIT_LIST` command
 3. CommandHandler calls `MessageHandler.sendHabitList(habitList)`
@@ -502,7 +771,7 @@ When a user attempts to increment a habit's streak, the following steps occur:
    - Current deadline
    - Current streak count
 
-**Incrementing a Streak:**
+### Incrementing a Streak
 1. User provides habit index (e.g., "habit streak 1")
 2. Parser creates `HABIT_STREAK` command with index
 3. CommandHandler validates index with IndexValidator
@@ -515,7 +784,7 @@ When a user attempts to increment a habit's streak, the following steps occur:
    - Returns StreakResult (TOO_EARLY, ON_TIME, or TOO_LATE)
 7. MessageHandler displays result with updated habit information
 
-**Deleting a Habit:**
+### Deleting a Habit
 1. User provides habit index (e.g., "habit rm 1")
 2. Parser creates `HABIT_DELETE` command with index
 3. CommandHandler validates index with IndexValidator
@@ -523,7 +792,9 @@ When a user attempts to increment a habit's streak, the following steps occur:
 5. HabitList removes habit from internal list
 6. MessageHandler displays confirmation
 
-#### Grace Period Calculation
+---
+
+## Grace Period Calculation
 
 The grace period is a critical feature that makes habit tracking user-friendly. Here's how it works:
 
@@ -531,7 +802,7 @@ The grace period is a critical feature that makes habit tracking user-friendly. 
 Valid Window = [deadline (truncated to minute), deadline + (interval / 4) + 1 minute]
 ```
 
-**Examples:**
+### Examples
 
 For a daily habit (interval = 24 hours):
 - Deadline: 2025-10-26 08:00
@@ -550,7 +821,9 @@ For an hourly habit (interval = 1 hour):
 
 This design ensures that habits with longer intervals have proportionally longer grace periods, maintaining fairness across different habit types.
 
-#### Integration with Storage
+---
+
+## Integration with Storage
 
 Habits are persisted to the data file with the following format:
 
@@ -573,22 +846,321 @@ When loading from file:
 
 This ensures habits persist across application sessions with their streaks and deadlines intact.
 
-{Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
+---
 
-## Product scope
-### Target user profile
+# UI Component
+
+**API**: `MessageHandler.java`, `MessageFormatting.java`
+
+The UI component in StudyMate is responsible for all user-facing output. It displays information about tasks, reminders, habits, timers, and error messages. The UI is designed for clarity, consistency, and user productivity via the Command Line Interface (CLI). All user feedback—including data summaries, confirmations, and errors—flows through this layer.
+
+---
+
+## Structure of the UI Component
+
+The UI component provides a strict separation between application logic and output logic, making StudyMate’s output human-friendly and easily maintained.
+
+### Key classes and roles
+
+* `MessageHandler`
+  * Main class for all user interaction: all console output, confirmations, errors, and informational lists are routed here
+  * Centralises feedback and aesthetics (lines, pluralisation, empty state messages), handling batching for operations like marking, deleting, or finding tasks
+
+* `MessageFormatting`
+  * Provides static string utility methods to format every modeled object—tasks, reminders, timers, habits—before display
+  * Ensures output is uniformly readable and self-explanatory even for batch/edge cases
+
+# Insert UI UML Diagram here
+
+---
+
+## How the UI Component Works
+
+### Output Routing and Decoration
+* Uses a decorative horizontal line (`private static final String LINE`) to wrap multi-line messages for clarity
+* Routing: All feedback is composed by MessageHandler and then displayed. No direct print logic elsewhere, maximizing separation
+
+### Batch and Index Presentation**
+* All listings are index starting from 1 (user-facing)
+* Batch feedback for add, remove, mark, includes output for each affected item
+
+### Error and Edge Case Handling**
+* All user-facing errors and empty states are output via `sendMessage`
+
+### Dynamic Message Content**
+* Smart pluralisation and context-aware updates
+* Batch operations (e.g. `delete 2, 3...6`) list all affected tasks/reminders
+* Contextual motivational feedback for habits and timers (e.g. `Great!`, `Too early!`)
+
+---
+
+### Key API (Major Methods)
+
+#### Tasks
+
+- **sendTaskList(TaskList)**
+    - **Purpose:** Display all current tasks to the user.
+    - **Example output:**
+      ```
+      1. [T][ ] Read book
+      2. [D][X] Submit assignment (by: 2025-12-31 23:59)
+      ```
+      If the list is empty:
+      ```
+      Task list is empty!
+      ```
+
+- **sendAddTaskMessage(Task, int)**
+    - **Purpose:** Confirm that a task was successfully added, and show the new count.
+    - **Example output:**
+      ```
+      Got it. I've added this task:
+      [T][ ] Read book
+      Now you have 4 tasks in the task list.
+      ```
+
+- **sendDeleteTaskMessage(List<Task>, int)**
+    - **Purpose:** Confirm deletion of multiple tasks, with a summary of the new total.
+    - **Example output:**
+      ```
+      Got it. I've deleted these tasks:
+      1. [T][ ] Buy groceries
+      2. [D][ ] Submit assignment (by: 2025-12-31 23:59)
+      Now you have 2 tasks in the task list.
+      ```
+
+- **sendMarkMessage(List<Task>)**
+    - **Purpose:** Display feedback after marking tasks as completed.
+    - **Example output:**
+      ```
+      Nice! I've marked these tasks as done:
+      1. [T][X] Read book
+      ```
+
+- **sendUnmarkMessage(List<Task>)**
+    - **Purpose:** Feedback for marking tasks as incomplete.
+    - **Example output:**
+      ```
+      OK, I've marked these tasks as not done:
+      1. [T][ ] Read book
+      ```
+
+- **sendEditDescMessage(Task)**
+    - **Purpose:** Confirm a description change.
+    - **Example output:**
+      ```
+      Successfully updated description:
+      [T][ ] Read chapter 2
+      ```
+
+---
+
+#### Reminders
+
+- **sendReminderList(ReminderList)**
+    - **Purpose:** List reminders currently set in the system.
+    - **Example output:**
+      ```
+      1. [ROO] Doctor Appointment 2025-11-01 09:00
+      2. [RROO] Pay bills (1w) Next: 2025-11-03 08:00
+      ```
+      If the list is empty:
+      ```
+      No reminders found!
+      ```
+
+- **sendAddReminderOneTimeMessage(Reminder, int)**
+    - **Purpose:** Confirm a one-time reminder was added.
+    - **Example output:**
+      ```
+      Got it. One-time reminder added:
+      [ROO] Doctor Appointment 2025-11-01 09:00
+      Now you have 2 reminders in the list.
+      ```
+
+- **sendAddReminderRecMessage(Reminder, int)**
+    - **Purpose:** Confirm a recurring reminder was added.
+    - **Example output:**
+      ```
+      Got it. Recurring reminder added:
+      [RROO] Pay bills (1w) Next: 2025-11-03 08:00
+      Now you have 3 reminders in the list.
+      ```
+
+- **sendDeleteReminderMessage(List<Reminder>, int)**
+    - **Purpose:** Confirm reminders were deleted.
+    - **Example output:**
+      ```
+      Removed the following reminders:
+      1. [ROO] Doctor Appointment 2025-11-01 09:00
+      Now you have 1 reminder in the list.
+      ```
+
+---
+
+#### Timer
+
+- **sendTimerStartMessage(long, String)**
+    - **Purpose:** Show the user when a timer has started.
+    - **Example output:**
+      ```
+      TIMER RUNNING 25:00 left - Focus session
+      ```
+
+- **sendTimerPauseMessage(long, String)**
+    - **Purpose:** Indicate the timer is paused.
+    - **Example output:**
+      ```
+      Timer paused at 15:22 left - Math HW
+      ```
+
+- **sendTimerResumeMessage(long, String)**
+    - **Purpose:** Indicate the timer has resumed.
+    - **Example output:**
+      ```
+      Timer resumed, 15:22 left - Math HW
+      ```
+
+- **sendTimerResetMessage()**
+    - **Purpose:** Tell the user the timer was stopped and reset.
+    - **Example output:**
+      ```
+      Timer stopped and reset.
+      ```
+
+- **sendTimerStatMessage(String)**
+    - **Purpose:** Output the status or statistics of the timer.
+    - **Example output:**
+      ```
+      Timer running for: 10:05, remaining: 14:55 (Task: Read book)
+      ```
+
+- **sendTimerEndedMessage()**
+    - **Purpose:** Alert the user the timer has finished.
+    - **Example output:**
+      ```
+      Time's up! Focus session completed.
+      ```
+
+---
+
+#### Habits
+
+- **sendHabitList(HabitList)**
+    - **Purpose:** List all tracked habits with streaks/status.
+    - **Example output:**
+      ```
+      1. [H] Exercise (deadline: 2025-11-01 08:00, streak: 5)
+      2. [H] Meditate (deadline: 2025-11-01 20:00, streak: 3)
+      ```
+      If no habits:
+      ```
+      No habits being tracked!
+      ```
+
+- **sendAddHabitMessage(Habit, int)**
+    - **Purpose:** Confirm a new habit was added.
+    - **Example output:**
+      ```
+      Got it. I've added this habit:
+      [H] Exercise (deadline: 2025-11-02 09:00, streak: 1)
+      Now you have 2 habits in the list.
+      ```
+
+- **sendDeleteHabitMessage(Habit, int)**
+    - **Purpose:** Confirm a habit was deleted.
+    - **Example output:**
+      ```
+      Noted! I've removed this habit:
+      [H] Meditate (deadline: 2025-11-01 20:00, streak: 4)
+      Now you have 1 habit in the list.
+      ```
+
+- **sendIncStreakMessage(Habit, StreakResult)**
+    - **Purpose:** Feedback on streak increment attempt.
+    - **Example output:**
+        - Success/on time:
+          ```
+          Great! You've incremented your streak.
+          ```
+        - Too early:
+          ```
+          Too early! You can only increment the streak after the deadline.
+          ```
+        - Missed:
+          ```
+          Missed the deadline! Your streak has been reset to 1.
+          ```
+
+---
+
+#### Generic/Error
+
+- **sendMessage(String...)**
+    - **Purpose:** Handle and show generic errors, empty state notifications, or information.
+    - **Example output:**
+      ```
+      Invalid command! Please try again.
+      Task list is empty!
+      Too many arguments.
+      ```
+
+---
+
+### Error Handling
+* Always routed through `sendMessage`, with user-actionable text
+* "Empty states" (no tasks/reminders/habits) called out clearly
+* Informative error messages for timing, index and data format errors
+* Motivational feedback for habits
+
+---
+
+## Formatting Patterns
+
+| Entity      | Example string                        | Produced by     |
+|-------------|--------------------------------------|-----------------|
+| ToDo        | `[T][ ] Read notes`                  | toDoString      |
+| Deadline    | `[D][X] Submit HW (by: 2025-10-28)`  | deadlineString  |
+| Event       | `[E][ ] Meeting (from..., to:...)`    | eventString     |
+| Reminder    | `[ROO] Call mom 2025-11-01 09:00`    | oneTimeReminderString |
+| Recurring   | `[RROO] Study interval 1d Next reminder: ...` | recReminderString |
+| Habit       | `[H] Hydrate (deadline: ..., streak: 3)` | habitString      |
+| Timer       | `TIMER RUNNING 23:30 left - Math HW` | MessageHandler   |
+
+---
+
+## Sample Sequence Flow
+
+### Delete Multiple Tasks
+
+1. CommandHandler receives: `delete 2,4...6`
+2. Tasks removed in reverse order to avoid index shift; batch sent as list to MessageHandler.
+3. MessageHandler:
+    - Prints decorative line.
+    - “Got it. I've deleted these tasks:”
+    - Every removed task, formatted and indexed.
+    - "Now you have N tasks in the task list."
+    - Decorative line.
+
+---
+
+
+# Product scope
+## Target user profile
 
 NUS students who rely on laptops to manage lectures, labs, CCAs, and project deadlines, prefer typing to clicking, 
 and need a quick, distraction-free way to record tasks, run short focus timers, set reminders, and track simple 
 habits offline.
 
-### Value proposition
+## Value proposition
 
 A keyboard-first planner: add tasks, start focus timers, set reminders, and log habits in seconds from the command line. 
 Built for fast typing and offline use, it displays clear summaries of tasks, due dates, time spent, and habit streaks 
 to help students manage workload during busy weeks and exams.
 
-## User Stories
+---
+
+# User Stories
 
 | Version | As a ...                          | I want to ...                                                                         | So that I can ...                                               |
 |---------|-----------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------------|
@@ -622,14 +1194,20 @@ to help students manage workload during busy weeks and exams.
 | v2.0    | student                           | manage overlapping or invalid index ranges                                            | avoid errors in batch operations                                |
 | v2.0    | student                           | use date-time parsing for deadlines and reminders                                     | input dates and times reliably                                  |
 
-## Non-Functional Requirements
+---
+
+# Non-Functional Requirements
 
 {Give non-functional requirements}
 
-## Glossary
+---
+
+# Glossary
 
 * *glossary item* - Definition
 
-## Instructions for manual testing
+---
+
+# Instructions for manual testing
 
 {Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
