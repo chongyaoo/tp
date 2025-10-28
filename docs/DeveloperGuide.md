@@ -848,6 +848,136 @@ This ensures habits persist across application sessions with their streaks and d
 
 ---
 
+# Storage Component
+
+**API**: `Storage.java`
+
+The Storage component is responsible for **persistent data management** in StudyMate. It handles saving and loading of all user data — tasks, reminders, and habits — between sessions using local text files.
+
+---
+
+## Overview
+
+The Storage component ensures that all application data is **automatically restored on startup** and **safely written back** to disk whenever modifications occur.  
+It serializes model objects into human-readable strings and deserializes them into Java objects for easy restoration.
+
+---
+
+## Structure of the Storage Component
+
+![Class Diagram of Storage Component](images/Storage.png)
+
+### Key Classes
+* `Storage` – Central manager for file I/O (read/write)
+* `TaskList`, `ReminderList`, `HabitList` – Data containers loaded and saved by Storage
+* `StudyMateException` – Custom exceptions for file or data format issues
+
+---
+
+## Responsibilities
+
+1. **Loading Data**
+   * Reads a text file (`data/studymate.txt`) line by line.
+   * Distinguishes data types by prefix (T, D, E, R, H). The R prefix encodes both one-time and recurring reminders via flag values.
+   * Parses each line and reconstructs the appropriate model object.
+   * Populates `TaskList`, `ReminderList`, and `HabitList`.
+
+2. **Saving Data**
+   * Iterates through all in-memory objects.
+   * Calls each object’s `toSaveString()` method.
+   * Writes all entries to the data file, overwriting previous contents.
+
+3. **Directory and File Handling**
+   * Creates directories/files automatically if they don’t exist.
+   * Provides fallback behavior with empty lists when missing or corrupt files are detected.
+
+---
+
+## File Format
+
+The save file is a plain UTF-8 text file containing one line per entity:
+
+T | 0 | Read book
+D | 1 | Submit report | 2025-11-15T23:59
+E | 0 | Project meeting | 2025-11-04T15:00 | 2025-11-04T16:00
+RO | Call mom | 2025-11-01T09:00
+RR | Pay bills | 2025-11-03T08:00 | PT1W
+H | Exercise | 2025-11-02T09:00 | PT24H | 3
+
+Where:
+- The first token identifies the type.
+- Boolean values (`0` or `1`) represent completion status.
+- Date/time uses format (`yyyy-MM-ddTHH:mm`).
+- Recurring reminders include an interval in `Duration` form.
+- Habits store name, deadline, interval, and streak.
+
+---
+
+## How It Works
+
+### Loading Sequence
+
+1. `StudyMate` creates a `Storage` instance and calls `loadAll()`.
+2. `Storage` opens the file and reads each line.
+3. Each line is split by the delimiter `" | "` and reconstructed as:
+   * `T` → `ToDo`
+   * `D` → `Deadline`
+   * `E` → `Event`
+   * `RO` → One-time `Reminder`
+   * `RR` → Recurring `Reminder`
+   * `H` → `Habit`
+4. Objects are added to their respective lists.
+5. Lists are returned to `StudyMate` for runtime use.
+
+### Saving Sequence
+
+1. Whenever the user adds, edits, or deletes data, or upon exit, `Storage.saveAll()` is called.
+2. Each model component provides its serialized representation via `toSaveString()`.
+3. All lines are written to `data/studymate.txt` using buffered writers.
+4. The file is atomically replaced to ensure consistency.
+
+---
+
+## Key Design Considerations
+
+### Aspect: Text File Format
+* **Current choice:** Human-readable text with delimiters.
+  - Pros: Easy to debug or manually edit.
+  - Cons: Slightly larger file size, possible parsing errors.
+* **Alternative:** JSON or binary.
+  - Pros: Structured and compact.
+  - Cons: Harder for users to inspect manually.
+
+### Aspect: Exception Handling
+* Invalid lines are skipped, logging a warning internally.
+* Missing or malformed files trigger automatic recreation of a new, clean data file.
+
+### Aspect: Synchronization
+* Save operations are complete rewrites, not append.
+* Guarantees consistency as well as prevent duplicate or corrupted entries.
+
+---
+
+## Example Flow
+
+1. User launches StudyMate.  
+   → `Storage.loadAll()` reconstructs all saved tasks, reminders, and habits.  
+2. User adds a new task.  
+   → The system calls `Storage.saveAll()` to persist updated data.  
+3. Upon next startup, all changes are restored automatically.
+
+---
+
+## Integration
+
+| Component | Interaction | Description |
+|------------|-------------|--------------|
+| **StudyMate** | Calls `Storage.loadAll()` and `Storage.saveAll()` | Manages lifecycle of data persistence |
+| **TaskList / ReminderList / HabitList** | Used as load/save targets | Provides and receives serialized data |
+| **Parser & CommandHandler** | Indirectly trigger saves after updates | Ensures all changes are persisted |
+
+---
+
 # UI Component
 
 **API**: `MessageHandler.java`, `MessageFormatting.java`
