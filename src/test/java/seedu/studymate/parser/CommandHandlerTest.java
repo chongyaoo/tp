@@ -20,7 +20,7 @@ public class CommandHandlerTest {
     private Parser parser;
 
     @BeforeEach
-    void setup() {
+    void setup() throws StudyMateException {
         taskList = new TaskList();
         reminderList = new ReminderList();
         habitList = new HabitList();

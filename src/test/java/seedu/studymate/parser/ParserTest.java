@@ -705,4 +705,57 @@ public class ParserTest {
         assertEquals(CommandType.HABIT_DELETE, cmd.type);
         assertEquals(2, cmd.index);
     }
+
+    // Tests for exceeding maximum value cap (10000)
+    @Test
+    void testMarkWithExcessiveIndexThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("mark 10001"));
+    }
+
+    @Test
+    void testMarkWithRangeExceedingCapThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("mark 1...10001"));
+    }
+
+    @Test
+    void testTimerStartWithExcessiveMinutesThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start @10001"));
+    }
+
+    @Test
+    void testTimerStartWithLabelAndExcessiveMinutesThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("start Study Session @10001"));
+    }
+
+    @Test
+    void testHabitAddWithExcessiveIntervalThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("habit Exercise -t 10001d"));
+    }
+
+    @Test
+    void testRemAddWithExcessiveIntervalThrowsException() {
+        assertThrows(StudyMateException.class, () -> parser.parse("rem Study @ 2025-12-31 12:00 -r 10001h"));
+    }
+
+    // Tests for boundary values at exactly 10000 (should succeed)
+    @Test
+    void testMarkWithMaximumAllowedIndex() throws StudyMateException {
+        Command cmd = parser.parse("mark 10000");
+        assertEquals(CommandType.MARK, cmd.type);
+        assertEquals(Integer.valueOf(9999), cmd.indexes.iterator().next()); // 1-based to 0-based
+    }
+
+    @Test
+    void testTimerStartWithMaximumAllowedMinutes() throws StudyMateException {
+        Command cmd = parser.parse("start @10000");
+        assertEquals(CommandType.START, cmd.type);
+        assertEquals(Long.valueOf(10000), cmd.duration);
+    }
+
+    @Test
+    void testHabitAddWithMaximumAllowedInterval() throws StudyMateException {
+        Command cmd = parser.parse("habit Exercise -t 10000d");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Exercise", cmd.desc);
+    }
 }

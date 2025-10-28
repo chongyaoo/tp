@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  */
 public class HabitList {
     private static final Logger logger = Logger.getLogger("HabitList Logger");
+    private static final int cap = 10000;
     private final ArrayList<Habit> habits;
     private final Clock clock;
 
@@ -70,8 +71,11 @@ public class HabitList {
      * @param name The name of the habit
      * @param interval The interval for the habit
      */
-    public void addHabit(String name, Duration interval) {
+    public void addHabit(String name, Duration interval) throws StudyMateException {
         Habit newHabit = new Habit(name, interval, clock);
+        if (habits.size() >= cap) {
+            throw new StudyMateException("Too many habits! Please delete some to add in more.");
+        }
         habits.add(newHabit);
         assert (habits.contains(newHabit));
         logger.log(Level.INFO, "Added Habit: " + newHabit);

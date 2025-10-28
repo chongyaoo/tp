@@ -19,6 +19,7 @@ import seedu.studymate.ui.MessageHandler;
  */
 public class ReminderList {
     private static final Logger logger = Logger.getLogger("TaskList Logger");
+    private static final int cap = 10000;
     private final ArrayList<Reminder> reminderList;
     private final Clock clock;
 
@@ -34,14 +35,21 @@ public class ReminderList {
         this(Clock.systemDefaultZone());
     }
 
-    public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval) {
+    public synchronized void addReminderRec(String name, DateTimeArg dateTime, Duration interval)
+            throws StudyMateException {
         Reminder newReminder = new Reminder(name, dateTime, interval, clock);
+        if (reminderList.size() >= cap) {
+            throw new StudyMateException("Too many reminders! Please delete some to add in more.");
+        }
         reminderList.add(newReminder);
         assert (reminderList.contains(newReminder));
     }
 
-    public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) {
+    public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) throws StudyMateException {
         Reminder newReminder = new Reminder(name, dateTime, clock);
+        if (reminderList.size() >= cap) {
+            throw new StudyMateException("Too many reminders! Please delete some to add in more.");
+        }
         reminderList.add(newReminder);
         assert (reminderList.contains(newReminder));
     }
