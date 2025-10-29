@@ -1,8 +1,12 @@
 # User Guide
 
+---
+
 ## Introduction
 
 StudyMate is a desktop task management application designed for students to manage their tasks, deadlines, events, reminders, and study timers efficiently. It uses a Command Line Interface (CLI) for fast and efficient task management.
+
+---
 
 ## Quick Start
 
@@ -11,6 +15,8 @@ StudyMate is a desktop task management application designed for students to mana
 3. Copy the file to the folder you want to use as the home folder for StudyMate.
 4. Open a command terminal, navigate to the folder containing the JAR file, and run `java -jar studymate.jar`.
 5. Type commands in the terminal and press Enter to execute them.
+
+---
 
 ## Features 
 
@@ -411,6 +417,8 @@ Timer Status
 
 Track recurring habits with streak counting to build consistency. Habits help you maintain regular activities by setting deadlines and rewarding on-time completion with streak increments.
 
+---
+
 ### Adding a Habit:`habit DESCRIPTION -t INTERVAL`
 
 Creates a new habit with a specified time interval between completions.
@@ -445,7 +453,9 @@ Now you have X habits in the list.
 * The deadline shows when you should next complete the habit.
 * Your streak tracks consecutive successful completions.
 
-#### Listing Habits: `habit ls`
+---
+
+### Listing Habits: `habit ls`
 
 Displays all your tracked habits with their deadlines and current streaks.
 
@@ -463,7 +473,9 @@ Here are your habits:
 * Each habit shows its index number, name, next deadline, and current streak.
 * Use these index numbers for streak increments and deletions.
 
-#### Incrementing Habit Streak: `habit streak INDEX`
+---
+
+### Incrementing Habit Streak: `habit streak INDEX`
 
 Attempts to increment the streak for a habit when you complete it.
 
@@ -512,7 +524,9 @@ Habit: [H] Exercise (deadline: 2025-10-28 14:30, streak: 1)
 * If you're too late, the streak resets to 1 (not 0), giving you credit for the current completion.
 * The system compares times truncated to the minute level, so completing at any second within the same minute as the deadline counts as on-time.
 
-#### Deleting a Habit: `habit rm INDEX`
+---
+
+### Deleting a Habit: `habit rm INDEX`
 
 Removes a habit from your tracking list.
 
@@ -535,6 +549,8 @@ Now you have X habits in the list.
 * Deleting a habit is permanent and cannot be undone.
 * The index numbers will update after deletion.
 
+---
+
 ### Exiting the Application: `bye`
 
 Safely closes StudyMate, saving all your data automatically before shutdown.
@@ -549,6 +565,8 @@ Bye. Hope to see you again soon!
 **Notes:**
 * All tasks, habits, reminders, and timer states are saved before exiting.
 * After this command, you can close your terminal safely.
+
+---
 
 ## FAQ
 
@@ -576,6 +594,8 @@ Bye. Hope to see you again soon!
 
 **A**: The system truncates timing to minutes to be more user-friendly. This means if your deadline is at 14:30:59 and you complete at 14:30:00, it still counts as on-time because both are in the same minute.
 
+---
+
 ## Command Summary
 
 **Task Management:**
@@ -589,12 +609,6 @@ Bye. Hope to see you again soon!
 * Edit task: `edit INDEX -FLAG VALUE`
 * Delete task: `delete INDEX`
 * Find tasks: `find KEYWORD`
-
-**Habit Tracking:**
-* Add habit: `habit DESCRIPTION -t INTERVAL`
-* List habits: `habit ls`
-* Increment streak: `habit streak INDEX`
-* Delete habit: `habit rm INDEX`
 
 **Reminders:**
 * Add one-time reminder: `rem MESSAGE @ YYYY-MM-DD HH:mm`
@@ -611,6 +625,12 @@ Bye. Hope to see you again soon!
 * Resume timer: `resume`
 * Reset timer: `reset`
 * Show timer status: `stat`
+
+**Habit Tracking:**
+* Add habit: `habit DESCRIPTION -t INTERVAL`
+* List habits: `habit ls`
+* Increment streak: `habit streak INDEX`
+* Delete habit: `habit rm INDEX`
 
 **Other:**
 * Exit application: `bye`
