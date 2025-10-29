@@ -10,7 +10,7 @@ cd text-ui-test
 
 export TEST_TIME=2025-10-25T12:00:00
 
-java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input.txt > ACTUAL.TXT
+java -jar $(find ../build/libs/ -maxdepth 1 -name "*.jar" -type f -print -quit) < input.txt > ACTUAL.TXT
 
 cp EXPECTED.TXT EXPECTED-UNIX.TXT
 dos2unix EXPECTED-UNIX.TXT ACTUAL.TXT
@@ -25,7 +25,7 @@ fi
 
 export TEST_TIME=2025-10-26T00:00:00
 
-java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input2.txt > ACTUAL2.TXT
+java -jar $(find ../build/libs/ -maxdepth 1 -name "*.jar" -type f -print -quit) < input2.txt > ACTUAL2.TXT
 
 cp EXPECTED2.TXT EXPECTED2-UNIX.TXT
 dos2unix EXPECTED2-UNIX.TXT ACTUAL2.TXT
@@ -42,7 +42,9 @@ fi
 mkdir -p ../build/libs/data
 cp badsave.txt ../build/libs/data/StudyMate.txt
 
-java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input3.txt > ACTUAL3.TXT
+cd ../build/libs
+java -jar $(find . -maxdepth 1 -name "*.jar" -type f -print -quit) < ../../text-ui-test/input3.txt > ../../text-ui-test/ACTUAL3.TXT
+cd ../../text-ui-test
 
 cp EXPECTED3.TXT EXPECTED3-UNIX.TXT
 dos2unix EXPECTED3-UNIX.TXT ACTUAL3.TXT
@@ -58,7 +60,6 @@ fi
 echo "All tests passed!"
 
 rm -f ../data/StudyMate.txt
+rm -rf data
 
 exit 0
-
-

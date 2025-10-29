@@ -55,4 +55,3 @@ FC ACTUAL3.TXT EXPECTED3.TXT >NUL && ECHO Test 3 passed! || (
 echo All tests passed!
 
 if exist "..\data\StudyMate.txt" del "..\data\StudyMate.txt"
-
