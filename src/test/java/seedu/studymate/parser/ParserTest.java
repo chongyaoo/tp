@@ -294,6 +294,22 @@ public class ParserTest {
     }
 
     @Test
+    void testRemAddRecurringCommand() throws StudyMateException {
+        Command cmd = parser.parse("rem meeting @ 2024-12-15 18:00 -r 1d");
+        assertEquals(CommandType.REM_ADD_REC, cmd.type);
+        assertEquals("meeting", cmd.message);
+        assertEquals("PT24H", cmd.interval.toString());
+    }
+
+    @Test
+    void testRemAddRecurringCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("rem meeting @ 2024-12-15 18:00 -R 1d");
+        assertEquals(CommandType.REM_ADD_REC, cmd.type);
+        assertEquals("meeting", cmd.message);
+        assertEquals("PT24H", cmd.interval.toString());
+    }
+
+    @Test
     void testRemWithoutSubcommandThrowsException() {
         assertThrows(StudyMateException.class, () -> parser.parse("rem"));
     }
@@ -352,6 +368,13 @@ public class ParserTest {
     @Test
     void testListSortedCommand() throws StudyMateException {
         Command cmd = parser.parse("list -s");
+        assertEquals(CommandType.LIST, cmd.type);
+        assertEquals(true, cmd.isSorted);
+    }
+
+    @Test
+    void testListSortedCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("list -S");
         assertEquals(CommandType.LIST, cmd.type);
         assertEquals(true, cmd.isSorted);
     }
@@ -496,6 +519,41 @@ public class ParserTest {
     }
 
     @Test
+    void testEditDescriptionCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("edit 1 -N new description");
+        assertEquals(CommandType.EDIT_DESC, cmd.type);
+        assertEquals(0, cmd.index);
+        assertEquals("new description", cmd.desc);
+    }
+
+    @Test
+    void testEditDeadlineCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("edit 2 -D 2025-12-31 23:59");
+        assertEquals(CommandType.EDIT_DEADLINE, cmd.type);
+        assertEquals(1, cmd.index);
+        assertEquals(LocalDate.of(2025, 12, 31), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(23, 59), cmd.datetime0.getTime());
+    }
+
+    @Test
+    void testEditFromCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("edit 3 -F 2025-11-15 10:00");
+        assertEquals(CommandType.EDIT_FROM, cmd.type);
+        assertEquals(2, cmd.index);
+        assertEquals(LocalDate.of(2025, 11, 15), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(10, 0), cmd.datetime0.getTime());
+    }
+
+    @Test
+    void testEditToCommandCaseInsensitive() throws StudyMateException {
+        Command cmd = parser.parse("edit 4 -T 2025-11-20 17:30");
+        assertEquals(CommandType.EDIT_TO, cmd.type);
+        assertEquals(3, cmd.index);
+        assertEquals(LocalDate.of(2025, 11, 20), cmd.datetime0.getDate());
+        assertEquals(LocalTime.of(17, 30), cmd.datetime0.getTime());
+    }
+
+    @Test
     void testEditWithLongDescription() throws StudyMateException {
         Command cmd = parser.parse("edit 1 -n This is a very long task description with multiple words");
         assertEquals(CommandType.EDIT_DESC, cmd.type);
@@ -598,6 +656,14 @@ public class ParserTest {
         assertEquals(CommandType.HABIT_ADD, cmd.type);
         assertEquals("Quick stretch", cmd.desc);
         assertEquals("PT30M", cmd.interval.toString());
+    }
+
+    @Test
+    void testHabitAddWithCaseInsensitiveFlag() throws StudyMateException {
+        Command cmd = parser.parse("habit Exercise -T 1d");
+        assertEquals(CommandType.HABIT_ADD, cmd.type);
+        assertEquals("Exercise", cmd.desc);
+        assertEquals("PT24H", cmd.interval.toString());
     }
 
     @Test
