@@ -1,0 +1,4 @@
+list
+rem ls
+habit ls
+bye

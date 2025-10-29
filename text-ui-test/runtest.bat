@@ -37,6 +37,22 @@ FC ACTUAL2.TXT EXPECTED2.TXT >NUL && ECHO Test 2 passed! || (
     exit /b 1
 )
 
+REM Test 3: Simulate file corruption by copying badsave.txt to StudyMate.txt
+if not exist "..\build\libs\data\" mkdir "..\build\libs\data\"
+copy badsave.txt ..\build\libs\data\StudyMate.txt >NUL
+
+cd ..\build\libs
+java -jar %jarloc% < ..\..\text-ui-test\input3.txt > ..\..\text-ui-test\ACTUAL3.TXT
+
+cd ..\..\text-ui-test
+
+FC ACTUAL3.TXT EXPECTED3.TXT >NUL && ECHO Test 3 passed! || (
+    Echo Test 3 failed!
+    FC ACTUAL3.TXT EXPECTED3.TXT
+    exit /b 1
+)
+
 echo All tests passed!
 
 if exist "..\data\StudyMate.txt" del "..\data\StudyMate.txt"
+

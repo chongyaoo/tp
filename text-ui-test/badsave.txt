@@ -1,0 +1,11 @@
+T1Read chapter 1
+D1Prepare presentation2025-10-20T17:00
+E0Team meeting2025-10-25T09:002025-10-25T17:00
+T0Test persistence
+D0Test deadline2025-12-01T10:00
+E0Test event2025-12-05T09:002025-12-06T17:00
+R01Project sync2025-11-01T14:30
+R01Test one-time2025-12-10T10:00
+R11Test recurring2025-12-15T15:00PT72H
+HMorning routine2025-10-26T02:00PT2H1
+HReading2025-10-26T12:00PT12H2
