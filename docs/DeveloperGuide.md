@@ -20,8 +20,6 @@ The Parser component is responsible for interpreting user input and converting i
 
 The Parser component consists of several key classes that work together to handle command parsing and validation:
 
-![Class Diagram of Parser Component](images/Parser.png)
-
 * `Parser` - The main parser class that interprets raw user input and creates `Command` objects
 * `Command` - Encapsulates the parsed command with its type and relevant parameters
 * `CommandType` - An enumeration that defines all supported command types in the application
@@ -194,6 +192,41 @@ The Parser component supports the following command formats:
 
 ---
 
+## Parser Helper Methods
+
+The Parser component includes several private helper methods:
+
+* `parseIndexes(String[] arguments)` - Parses index arguments supporting multiple formats:
+  * Single: `1` → {0}
+  * Multiple: `1,2,3` → {0, 1, 2}
+  * Range: `1...5` → {0, 1, 2, 3, 4}
+  * Combined: `1,3...5,7` → {0, 2, 3, 4, 6}
+  * Returns `LinkedHashSet<Integer>` of 0-based indices
+  * Validates start ≤ end for ranges
+  * Calls `capNumbers()` on each index
+
+* `parseDateTimeString(String dateTimeString)` - Parses date-time strings:
+  * Format: `yyyy-MM-dd HH:mm` (both date and time required)
+  * Splits on space to separate date and time components
+  * Uses `LocalDate.parse()` and `LocalTime.parse()`
+  * Returns `DateTimeArg` object
+  * Throws `DateTimeParseException` if format invalid or time missing
+
+* `parseInterval(String input)` - Parses duration/interval strings:
+  * Format: `<number><unit>` where unit is m/h/d/w
+  * Normalizes input to lowercase
+  * Validates format matches `\\d+[smhdw]` pattern
+  * Calls `capNumbers()` to validate value
+  * Returns `Duration` object
+  * Throws `StudyMateException` for invalid format/unit or non-positive values
+
+* `capNumbers(int number)` - Validates numeric inputs:
+  * Ensures number ≤ 10000 (maxValue constant)
+  * Throws `StudyMateException` if exceeded
+  * Used throughout to prevent overflow and unreasonable values
+
+---
+
 # CommandHandler Component
 
 **API**: `CommandHandler.java`
@@ -205,8 +238,6 @@ The CommandHandler component is responsible for executing parsed commands by coo
 ## Structure of the CommandHandler Component
 
 The CommandHandler component acts as the controller in the application architecture:
-
-![Class Diagram of CommandHandler Component](images/CommandHandler.png)
 
 * `CommandHandler` - Static class that executes commands and manages application state
 * `Command` - Encapsulates the parsed command with its type and relevant parameters
@@ -290,6 +321,30 @@ For all commands, the CommandHandler follows a similar pattern:
 5. **Cleanup on exit:**
    * The `cleanup()` method is called when the application terminates
    * Active timers are reset and the scheduler is shut down to prevent resource leaks
+
+---
+
+## CommandHandler Helper Methods
+
+The CommandHandler includes private helper methods for timer management:
+
+* `startTimerMonitoring()` - Initializes timer monitoring:
+  * Asserts scheduler is null before initialization
+  * Creates `ScheduledExecutorService` with single thread
+  * Schedules `checkTimerState()` to run every 1 second
+  * Logs initialization at INFO level
+
+* `checkTimerState()` - Synchronized method monitoring timer state:
+  * Returns early if activeTimer is null (shuts down scheduler)
+  * Returns early if timer not in RUNNING state (e.g., PAUSED)
+  * Calls `activeTimer.getRemainingTime()` to update timer
+  * When timer reaches IDLE (completed):
+    * Sends completion message via MessageHandler
+    * Shuts down scheduler
+    * Clears activeTimer reference
+  * All transitions logged at INFO level
+
+---
 
 #### Key Design Considerations
 
@@ -895,8 +950,6 @@ The Habits component is responsible for tracking recurring habits with deadlines
 
 The Habits component consists of the following key classes:
 
-![Class Diagram of Habit](images/Habit.png)
-
 * `HabitList` - Manages the collection of habits and provides operations for adding, deleting, and incrementing streaks
 * `Habit` - Represents a single habit with a name, deadline, interval, streak count, and clock for time operations
 * `StreakResult` - Enumeration defining the result of a streak increment attempt (TOO_EARLY, ON_TIME, TOO_LATE)
@@ -921,7 +974,7 @@ The HabitList manages Habit objects and coordinates with MessageHandler for user
 
 The diagram below shows the detailed interactions of the HabitList component:
 
-![HabitList Interactions Diagram](images/HabitListInteractions.png)
+![HabitList Interactions Diagram](images/HabitInteractions.png)
 
 ---
 
