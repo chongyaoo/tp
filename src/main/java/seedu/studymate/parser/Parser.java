@@ -220,7 +220,7 @@ public class Parser {
      * @throws StudyMateException If invalid flags are provided
      */
     private Command parseList(String arguments) throws StudyMateException {
-        if (arguments.equals(SORTED_FLAG)) {
+        if (arguments.equalsIgnoreCase(SORTED_FLAG)) {
             return new Command(CommandType.LIST, true);
         } else if (arguments.isEmpty()) {
             return new Command(CommandType.LIST);
@@ -268,7 +268,7 @@ public class Parser {
         }
         try {
             int index = Integer.parseInt(editArgs[0]) - 1;
-            switch (editArgs[1]) {
+            switch (editArgs[1].toLowerCase()) {
             case DESCRIPTION_FLAG -> {
                 return new Command(CommandType.EDIT_DESC, index, editArgs[2]);
             }
@@ -369,7 +369,7 @@ public class Parser {
         String[] parts = arguments[1].trim().split("\\s+", 2);
         String rest = parts.length > 1 ? parts[1].trim() : "";
         logger.log(Level.INFO, "rem command recorded : " + parts[0]);
-        return switch (parts[0]) {
+        return switch (parts[0].toLowerCase()) {
         case "rm" -> parseRemRm(parts);
         case "ls" -> parseRemLs(rest);
         case "on" -> parseRemOn(parts);
@@ -490,7 +490,7 @@ public class Parser {
 
         int rIndex = 0;
         for (int i = 0; i < arguments.length; i++) {
-            if (arguments[i].equals("-r")) {
+            if (arguments[i].equalsIgnoreCase("-r")) {
                 rIndex = i;
                 break;
             }
@@ -682,7 +682,7 @@ public class Parser {
         String[] parts = arguments[1].trim().split("\\s+", 2);
         String rest = parts.length > 1 ? parts[1].trim() : "";
         logger.log(Level.INFO, "Habit command recorded : " + parts[0]);
-        return switch (parts[0]) {
+        return switch (parts[0].toLowerCase()) {
         case "rm" -> parseHabitRm(rest);
         case "ls" -> new Command(CommandType.HABIT_LIST);
         case "streak" -> parseHabitStreak(rest);
@@ -699,7 +699,9 @@ public class Parser {
      */
     private Command parseHabitAdd(String habit) throws StudyMateException {
         String[] arguments = habit.trim().split("\\s+");
-        int tIndex = Arrays.asList(arguments).indexOf("-t");
+        // Convert arguments to lowercase for case-insensitive flag matching
+        String[] lowerArgs = Arrays.stream(arguments).map(String::toLowerCase).toArray(String[]::new);
+        int tIndex = Arrays.asList(lowerArgs).indexOf("-t");
         if (habit.isBlank() || tIndex == 0) {
             throw new StudyMateException("Input a habit!");
         } else if (tIndex == arguments.length - 1 || tIndex == -1) {
