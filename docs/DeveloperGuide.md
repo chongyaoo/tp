@@ -1211,11 +1211,11 @@ Where:
 
 ## Integration
 
-| Component | Interaction | Description |
-|------------|-------------|--------------|
-| **StudyMate** | Calls `Storage.loadAll()` and `Storage.saveAll()` | Manages lifecycle of data persistence |
-| **TaskList / ReminderList / HabitList** | Used as load/save targets | Provides and receives serialized data |
-| **Parser & CommandHandler** | Indirectly trigger saves after updates | Ensures all changes are persisted |
+| Component                               | Interaction                                       | Description                           |
+|-----------------------------------------|---------------------------------------------------|---------------------------------------|
+| **StudyMate**                           | Calls `Storage.loadAll()` and `Storage.saveAll()` | Manages lifecycle of data persistence |
+| **TaskList / ReminderList / HabitList** | Used as load/save targets                         | Provides and receives serialized data |
+| **Parser & CommandHandler**             | Indirectly trigger saves after updates            | Ensures all changes are persisted     |
 
 ---
 
@@ -1488,15 +1488,15 @@ The UI component provides a strict separation between application logic and outp
 
 ## Formatting Patterns
 
-| Entity      | Example string                        | Produced by     |
-|-------------|--------------------------------------|-----------------|
-| ToDo        | `[T][ ] Read notes`                  | toDoString      |
-| Deadline    | `[D][X] Submit HW (by: 2025-10-28)`  | deadlineString  |
-| Event       | `[E][ ] Meeting (from..., to:...)`    | eventString     |
-| Reminder    | `[ROO] Call mom 2025-11-01 09:00`    | oneTimeReminderString |
-| Recurring   | `[RROO] Study interval 1d Next reminder: ...` | recReminderString |
-| Habit       | `[H] Hydrate (deadline: ..., streak: 3)` | habitString      |
-| Timer       | `TIMER RUNNING 23:30 left - Math HW` | MessageHandler   |
+| Entity    | Example string                                | Produced by           |
+|-----------|-----------------------------------------------|-----------------------|
+| ToDo      | `[T][ ] Read notes`                           | toDoString            |
+| Deadline  | `[D][X] Submit HW (by: 2025-10-28)`           | deadlineString        |
+| Event     | `[E][ ] Meeting (from..., to:...)`            | eventString           |
+| Reminder  | `[ROO] Call mom 2025-11-01 09:00`             | oneTimeReminderString |
+| Recurring | `[RROO] Study interval 1d Next reminder: ...` | recReminderString     |
+| Habit     | `[H] Hydrate (deadline: ..., streak: 3)`      | habitString           |
+| Timer     | `TIMER RUNNING 23:30 left - Math HW`          | MessageHandler        |
 
 ---
 
