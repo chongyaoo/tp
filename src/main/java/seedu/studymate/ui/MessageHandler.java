@@ -201,7 +201,7 @@ public class MessageHandler {
      */
     public static void sendEditDescMessage(Task task) {
         System.out.println(LINE);
-        System.out.println("OK, I've edited the description of the task to:");
+        System.out.println("OK, I've edited the description of the task to: ");
         System.out.println(task);
         System.out.println(LINE);
     }
@@ -213,7 +213,7 @@ public class MessageHandler {
      */
     public static void sendEditDeadlineMessage(Task task, DateTimeArg dateTimeArg) {
         System.out.println(LINE);
-        System.out.println("OK, I've edited the deadline of the deadline " + task.getName() + "to:");
+        System.out.println("OK, I've edited the deadline of the deadline " + task.getName() + " to:");
         System.out.println(dateTimeArg);
         System.out.println(LINE);
     }
@@ -225,7 +225,7 @@ public class MessageHandler {
      */
     public static void sendEditFromMessage(Task task, DateTimeArg dateTimeArg) {
         System.out.println(LINE);
-        System.out.println("OK, I've edited the from date of the event " + task.getName() + "to:");
+        System.out.println("OK, I've edited the from date of the event " + task.getName() + " to:");
         System.out.println(dateTimeArg);
         System.out.println(LINE);
     }
@@ -237,7 +237,7 @@ public class MessageHandler {
      */
     public static void sendEditToMessage(Task task, DateTimeArg dateTimeArg) {
         System.out.println(LINE);
-        System.out.println("OK, I've edited the to date of the event " + task.getName() + "to:");
+        System.out.println("OK, I've edited the to date of the event " + task.getName() + " to:");
         System.out.println(dateTimeArg);
         System.out.println(LINE);
     }

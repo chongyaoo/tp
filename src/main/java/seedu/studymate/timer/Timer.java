@@ -127,7 +127,17 @@ public class Timer {
 
     @Override
     public synchronized String toString() {
-        int[] formattedTime = formatDuration(remainingSec);
+        Duration elapsed = Duration.between(startedAt, Instant.now());
+        long currentRemaining;
+        if (state == TimerState.RUNNING) {
+            currentRemaining = remainingSec - elapsed.getSeconds();
+        } else if (state == TimerState.PAUSED) {
+            currentRemaining = remainingSec;
+        } else {
+            currentRemaining = 0;
+        }
+
+        String[] formattedTime = formatDuration(currentRemaining);
         String output = "Timer Status\n"
                 + "  State: " + state.toString() + "\n"
                 + "  Time Left: " + formattedTime[0] + ":" + formattedTime[1] + "\n"
@@ -136,10 +146,12 @@ public class Timer {
         return output;
     }
 
-    private static int[] formatDuration(long totalSeconds) {
+    private static String[] formatDuration(long totalSeconds) {
         int minutes = (int) (totalSeconds / 60);
         int seconds = (int) (totalSeconds % 60);
-        logger.log(Level.INFO, "Format duration: " + minutes + ":" + seconds);
-        return new int[]{minutes, seconds};
+        String formattedMinutes = minutes + "";
+        String formattedSeconds = String.format("%02d", seconds);
+        logger.log(Level.INFO, "Format duration: " + minutes + ":" + formattedSeconds);
+        return new String[]{formattedMinutes, formattedSeconds};
     }
 }
