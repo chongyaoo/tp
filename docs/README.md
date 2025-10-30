@@ -36,7 +36,7 @@ See the [User Guide](UserGuide.md) for detailed command examples.
 
 ## Screenshots
 
-# ADD SCREENSHOTS HERE!!!!!!!!!!!!!!!!!
+![Startup Image](images/StartupSplash.png)
 
 ---
 
