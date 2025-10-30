@@ -1,3 +1,31 @@
+<style>
+@media print {
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Ensure images fit within a single A4 page */
+  img {
+    max-width: 100% !important;
+    max-height: 240mm !important; /* A4 height (297mm) minus margins (~57mm) */
+    height: auto !important;
+    width: auto !important;
+    page-break-inside: avoid !important;
+    page-break-before: auto !important;
+    page-break-after: auto !important;
+    display: block !important;
+    margin: 10px auto !important;
+    object-fit: contain !important;
+  }
+  
+  /* Ensure image containers don't cause overflow */
+  figure, .figure {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+  }
+}
+</style>
+
 # Developer Guide
 
 # Acknowledgements
@@ -40,6 +68,8 @@ The Parser component works with the following workflow:
 
 The diagram below shows how the Parser component interacts with other components in the system:
 
+<div class="page-break"></div>
+
 ![Parser Interactions Diagram](images/ParserInteractions.png)
 
 The Parser creates Command objects that are consumed by CommandHandler. It uses DateTimeArg for temporal data and throws StudyMateException for errors.
@@ -49,6 +79,8 @@ The Parser creates Command objects that are consumed by CommandHandler. It uses 
 ## How the Parser Component Works
 
 The sequence diagram below illustrates the interactions within the Parser component, taking `parse("todo read book")` as an example:
+
+<div class="page-break"></div>
 
 ![Sequence Diagram for Parsing Todo Command](images/ParserToDo.png)
 
@@ -261,6 +293,8 @@ The CommandHandler component acts as the controller in the application architect
 
 The diagram below shows how the CommandHandler component interacts with other components in the system:
 
+<div class="page-break"></div>
+
 ![CommandHandler Interactions Diagram](images/CommandHandlerInteractions.png)
 
 The CommandHandler receives Command objects from the Parser, coordinates with Model components (TaskList, ReminderList, HabitList, Timer), validates operations using IndexValidator, and communicates results through MessageHandler.
@@ -270,6 +304,8 @@ The CommandHandler receives Command objects from the Parser, coordinates with Mo
 ## How the CommandHandler Component Works
 
 The sequence diagram below illustrates the interactions within the CommandHandler component, taking `executeCommand(taskList, reminderList, habitList, todoCommand)` as an example where the command is for "todo read book":
+
+<div class="page-break"></div>
 
 ![Sequence Diagram for Command Execution](images/CommandHandlerToDo.png)
 
@@ -606,6 +642,8 @@ Below, every class is described with all its fields, methods, and their individu
 
 The classes with the Task Component can be summarised in the following Class Diagram:
 
+<div class="page-break"></div>
+
 ![Class Diagram of Task](images/TaskClassDiagram.png)
 
 ---
@@ -650,11 +688,15 @@ The classes with the Task Component can be summarised in the following Class Dia
 
 The diagram below shows how the Task component interacts with other components in the system:
 
+<div class="page-break"></div>
+
 ![Task Interaction Diagram](images/TaskInteractions.png)
 
 #### TaskList Component Interactions
 
 The diagram below shows the detailed interactions of the TaskList component:
+
+<div class="page-break"></div>
 
 ![Task Interaction Diagram](images/TaskListInteractions.png)
 
@@ -694,6 +736,8 @@ The diagram below shows the detailed interactions of the TaskList component:
 
 The sequence diagram below illustrates Adding a Deadline:
 
+<div class="page-break"></div>
+
 ![Adding a Deadline Sequence Diagram](images/AddDeadlineSequence.png)
 
 
@@ -732,6 +776,8 @@ and on/off toggling.
 
 The Reminders component consists of the following key classes:
 
+<div class="page-break"></div>
+
 ![Class Diagram of Reminder](images/ReminderClassDiagram.png)
 
 * `ReminderList` - Manages the collection of reminders and provides operations for adding, deleting, toggling, and snoozing
@@ -750,6 +796,8 @@ The Reminders component consists of the following key classes:
 
 The diagram below shows how the Reminders component interacts with other components in the system:
 
+<div class="page-break"></div>
+
 ![Reminders Component Interactions](images/ReminderInteractions.png)
 
 The ReminderList manages Reminder objects which contain Schedule implementations (either OneTimeSchedule or RecurringSchedule). The Scheduler periodically checks ReminderList for due reminders and coordinates with MessageHandler for user notifications. The Reminder class delegates scheduling logic to its Schedule implementation, which uses Clock for time operations and DateTimeArg for deadline management.
@@ -757,6 +805,8 @@ The ReminderList manages Reminder objects which contain Schedule implementations
 #### ReminderList Component Interactions
 
 The diagram below shows the detailed interactions of the ReminderList component:
+
+<div class="page-break"></div>
 
 ![ReminderList Interactions Diagram](images/ReminderListInteractions.png)
 
@@ -807,6 +857,8 @@ When the Scheduler performs a periodic check, the following steps occur:
 #### Sequence Diagram
 
 The sequence diagram below illustrates the interactions within the Reminders component when the scheduler checks for due reminders:
+
+<div class="page-break"></div>
 
 ![Sequence Diagram for Reminder Checking](images/ReminderCheckSequence.png)
 
@@ -964,6 +1016,8 @@ The Habits component consists of the following key classes:
 
 The diagram below shows how the Habits component interacts with other components in the system:
 
+<div class="page-break"></div>
+
 ![Habits Component Interactions](images/HabitInteractions.png)
 
 The HabitList manages Habit objects and coordinates with MessageHandler for user notifications. The Habit class uses Clock for time operations and DateTimeArg for deadline management, returning StreakResult to indicate the outcome of streak increment attempts.
@@ -974,13 +1028,17 @@ The HabitList manages Habit objects and coordinates with MessageHandler for user
 
 The diagram below shows the detailed interactions of the HabitList component:
 
-![HabitList Interactions Diagram](images/HabitInteractions.png)
+<div class="page-break"></div>
+
+![HabitList Interactions Diagram](images/HabitListInteractions.png)
 
 ---
 
 ## How the Habits Component Works
 
 The sequence diagram below illustrates the interactions within the Habits component when incrementing a habit's streak:
+
+<div class="page-break"></div>
 
 ![Sequence Diagram for Habit Streak Increment](images/HabitStreakSequence.png)
 
@@ -1158,6 +1216,8 @@ It serializes model objects into human-readable strings and deserializes them in
 ---
 
 ## Structure of the Storage Component
+
+<div class="page-break"></div>
 
 ![Class Diagram of Storage Component](images/Storage.png)
 
@@ -1622,16 +1682,298 @@ to help students manage workload during busy weeks and exams.
 
 # Non-Functional Requirements
 
-{Give non-functional requirements}
+1. **Performance**: The application should respond to user commands within 2 seconds under normal operating conditions.
 
----
+2. **Scalability Constraints**: 
+   - The system imposes a maximum limit of 10,000 items per list (tasks, reminders, habits) to ensure reasonable memory usage and maintain responsive performance.
+   - Timer and recurring reminder duration arguments are capped at 10,000 units (minutes/hours) to prevent integer overflow and ensure the system can accurately track and schedule events within practical timeframes.
+   - These limits are designed to accommodate typical student workloads while preventing system degradation from excessive data volumes or unreasonably large time values.
 
-# Glossary
+3. **Reliability**: The application should maintain data integrity by safely persisting all changes to disk, with proper error handling for file I/O operations.
 
-* *glossary item* - Definition
+4. **Usability**: The CLI interface should be intuitive for users comfortable with typing, with clear error messages and command feedback.
+
+5. **Portability**: The application should run on any system with Java 17 or above installed, across Windows, macOS, and Linux platforms.
 
 ---
 
 # Instructions for manual testing
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+This section provides instructions for manual testing of StudyMate. These test cases can be used to verify the functionality of the application.
+
+## Initial Setup
+
+1. Download the latest `studymate.jar` file from the releases page.
+2. Place the jar file in an empty folder designated for testing.
+3. Open a terminal/command prompt and navigate to the folder containing the jar file.
+4. Run the application using `java -jar studymate.jar`.
+5. The application should start and display a welcome message. A `data` folder will be created with a `StudyMate.txt` save file.
+
+## Testing Task Management
+
+### Adding Tasks
+
+**Test case: Add a ToDo task**
+- Command: `todo Read chapter 5`
+- Expected: Task is added successfully. Message shows: `Got it. I've added this task: [T][ ] Read chapter 5`
+
+**Test case: Add a Deadline task**
+- Command: `deadline Submit assignment /by 2025-11-15 23:59`
+- Expected: Deadline task is added. Message shows task with deadline date and time.
+
+**Test case: Add an Event task**
+- Command: `event Team meeting /from 2025-11-10 14:00 /to 2025-11-10 16:00`
+- Expected: Event task is added with start and end times.
+
+**Test case: Invalid deadline format**
+- Command: `deadline Test /by tomorrow`
+- Expected: Error message about bad datetime syntax. Format should be `yyyy-mm-dd HH:mm`.
+
+### Listing Tasks
+
+**Test case: List all tasks**
+- Command: `list`
+- Expected: All tasks are displayed with their index numbers, types, completion status, and details.
+
+**Test case: List sorted tasks**
+- Command: `list -s`
+- Expected: Tasks are displayed sorted by date (deadlines and events sorted chronologically, todos at the end).
+
+### Marking Tasks
+
+**Test case: Mark a single task as done**
+- Command: `mark 1`
+- Expected: Task at index 1 is marked as done. Message confirms the task(s) marked.
+
+**Test case: Mark multiple tasks**
+- Command: `mark 1 2 3`
+- Expected: Tasks at indices 1, 2, and 3 are marked as done.
+
+**Test case: Unmark tasks**
+- Command: `unmark 1`
+- Expected: Task at index 1 is marked as not done.
+
+**Test case: Invalid index**
+- Command: `mark 999`
+- Expected: Error message indicating invalid index.
+
+### Finding Tasks
+
+**Test case: Find tasks by keyword**
+- Command: `find assignment`
+- Expected: All tasks containing "assignment" are displayed.
+
+**Test case: Case-insensitive search**
+- Command: `find CHAPTER`
+- Expected: Tasks containing "chapter" (case-insensitive) are displayed.
+
+### Editing Tasks
+
+**Test case: Edit task description**
+- Command: `edit 1 -d New description`
+- Expected: Task at index 1 has its description updated.
+
+**Test case: Edit deadline**
+- Command: `edit 2 -by 2025-12-01 10:00`
+- Expected: Deadline of task at index 2 is updated.
+
+**Test case: Edit event start time**
+- Command: `edit 3 -from 2025-11-10 15:00`
+- Expected: Start time of event task is updated.
+
+### Deleting Tasks
+
+**Test case: Delete a single task**
+- Command: `delete 1`
+- Expected: Task at index 1 is deleted. Remaining tasks are re-indexed.
+
+**Test case: Delete multiple tasks**
+- Command: `delete 1 3 5`
+- Expected: Tasks at indices 1, 3, and 5 are deleted.
+
+## Testing Reminder Management
+
+### Adding Reminders
+
+**Test case: Add one-time reminder**
+- Command: `rem add Meeting reminder @ 2025-11-05 14:30`
+- Expected: One-time reminder is added with specified date and time.
+
+**Test case: Add recurring reminder**
+- Command: `rem add Weekly review @ 2025-11-01 10:00 -t 168h`
+- Expected: Recurring reminder is added with 168-hour (weekly) interval.
+
+**Test case: Invalid interval format**
+- Command: `rem add Test @ 2025-11-01 10:00 -t abc`
+- Expected: Error message about invalid interval format.
+
+### Managing Reminders
+
+**Test case: List all reminders**
+- Command: `rem ls`
+- Expected: All reminders are displayed with their indices, types, and next reminder times.
+
+**Test case: Delete reminder**
+- Command: `rem rm 1`
+- Expected: Reminder at index 1 is deleted.
+
+**Test case: Turn on reminders**
+- Command: `rem on 1 2`
+- Expected: Reminders at indices 1 and 2 are turned on (will fire notifications).
+
+**Test case: Turn off reminders**
+- Command: `rem off 1`
+- Expected: Reminder at index 1 is turned off (will not fire notifications).
+
+**Test case: Snooze reminder**
+- Command: `rem snooze 1 -t 30m`
+- Expected: Reminder at index 1 is snoozed for 30 minutes.
+
+**Test case: Snooze recurring reminder (invalid)**
+- Command: `rem snooze 2 -t 30m` (where index 2 is a recurring reminder)
+- Expected: Error message indicating recurring reminders cannot be snoozed.
+
+## Testing Timer Functionality
+
+### Basic Timer Operations
+
+**Test case: Start a timer with duration**
+- Command: `start Focus session @25`
+- Expected: Timer starts with 25 minutes, displays "# TIMER # RUNNING 25:00 left - Focus session".
+
+**Test case: Start a timer for a task**
+- Command: `start 1 @40` (assuming task at index 1 exists)
+- Expected: Timer starts for 40 minutes with task name in label.
+
+**Test case: Pause timer**
+- Command: `pause`
+- Expected: Timer is paused. Display shows "# TIMER # PAUSED [time] left - [label]".
+
+**Test case: Resume timer**
+- Command: `resume`
+- Expected: Timer resumes counting down.
+
+**Test case: Check timer status**
+- Command: `stat`
+- Expected: Current timer status is displayed with state, time left, and label.
+
+**Test case: Reset timer**
+- Command: `reset`
+- Expected: Timer is stopped and cleared. Message shows "# TIMER # RESET TIMER".
+
+**Test case: Start timer when one is already running**
+- Command: `start New timer @15` (when a timer is already active)
+- Expected: Error message indicating a timer is already running or paused.
+
+### Invalid Timer Commands
+
+**Test case: Invalid timer format**
+- Command: `start @abc`
+- Expected: Error message about invalid timer start format.
+
+**Test case: Pause when no timer is active**
+- Command: `pause`
+- Expected: Error message indicating no timer is currently active.
+
+## Testing Habit Tracking
+
+### Adding Habits
+
+**Test case: Add a habit**
+- Command: `habit add Morning exercise -t 24h`
+- Expected: Habit is added with 24-hour interval. Streak starts at 1.
+
+**Test case: Add habit without name**
+- Command: `habit add -t 24h`
+- Expected: Error message indicating a habit name is required.
+
+**Test case: Add habit without interval**
+- Command: `habit add Reading`
+- Expected: Error message indicating interval is required after -t flag.
+
+**Test case: Invalid interval format**
+- Command: `habit add Study -t invalid`
+- Expected: Error message about invalid interval format.
+
+### Managing Habits
+
+**Test case: List all habits**
+- Command: `habit ls`
+- Expected: All habits are displayed with index, name, deadline, and current streak.
+
+**Test case: Increment habit streak (on time)**
+- Command: `habit streak 1` (when current time is after the deadline)
+- Expected: Streak is incremented. Message shows updated habit with new streak and next deadline.
+
+**Test case: Increment streak too early**
+- Command: `habit streak 1` (when current time is before the deadline)
+- Expected: Error message: "Too early! You can only increment the streak after the deadline."
+
+**Test case: Delete habit**
+- Command: `habit rm 1`
+- Expected: Habit at index 1 is deleted.
+
+**Test case: Invalid habit index**
+- Command: `habit streak 999`
+- Expected: Error message about invalid index.
+
+## Testing Data Persistence
+
+### Save and Load
+
+**Test case: Data persistence after exit**
+1. Add several tasks, reminders, and habits.
+2. Command: `bye`
+3. Restart the application: `java -jar studymate.jar`
+4. Command: `list`, `rem ls`, `habit ls`
+- Expected: All previously added data is loaded and displayed correctly.
+
+**Test case: Corrupted save file handling**
+1. Exit the application.
+2. Open `data/StudyMate.txt` in a text editor.
+3. Corrupt the first line by adding random characters.
+4. Restart the application.
+- Expected: Application displays message about skipping invalid lines and loads valid data.
+
+## Testing Case Insensitivity
+
+**Test case: Commands are case-insensitive**
+- Command: `TODO test task`, `List`, `MARK 1`, `BYE`
+- Expected: All commands work correctly regardless of case.
+
+**Test case: Flags are case-insensitive**
+- Command: `list -S`, `edit 1 -D New description`, `rem add Test @ 2025-11-01 10:00 -T 24h`
+- Expected: All flags are recognized regardless of case.
+
+## Testing Edge Cases
+
+**Test case: Empty description**
+- Command: `todo`
+- Expected: Error message about empty todo description.
+
+**Test case: Missing delimiter**
+- Command: `deadline Test task`
+- Expected: Error message about missing `/by` delimiter.
+
+**Test case: Delete with no arguments**
+- Command: `delete`
+- Expected: Error message indicating delete command needs valid input.
+
+**Test case: Maximum list size (stress test)**
+1. Add tasks until reaching 10,000 items.
+2. Try to add one more task.
+- Expected: System should handle gracefully (either accept if within limit or show appropriate message).
+
+**Test case: Very long timer duration**
+- Command: `start Test @10000`
+- Expected: Timer starts with 10,000 minutes (or appropriate validation message if exceeding limits).
+
+## Notes for Testers
+
+- Always test commands with both valid and invalid inputs.
+- Verify that error messages are clear and helpful.
+- Check that data persists correctly after each major operation.
+- Test boundary conditions (empty lists, maximum indices, etc.).
+- Verify that the application handles concurrent operations gracefully.
+- Test with both lowercase and uppercase commands/flags to ensure case insensitivity.
+
