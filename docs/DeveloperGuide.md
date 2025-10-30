@@ -1746,8 +1746,12 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: Task at index 1 is marked as done. Message confirms the task(s) marked.
 
 **Test case: Mark multiple tasks**
-- Command: `mark 1 2 3`
+- Command: `mark 1,2,3`
 - Expected: Tasks at indices 1, 2, and 3 are marked as done.
+
+**Test case: Mark tasks with range notation**
+- Command: `mark 2...5`
+- Expected: Tasks at indices 2, 3, 4, and 5 are marked as done.
 
 **Test case: Unmark tasks**
 - Command: `unmark 1`
@@ -1770,15 +1774,15 @@ This section provides instructions for manual testing of StudyMate. These test c
 ### Editing Tasks
 
 **Test case: Edit task description**
-- Command: `edit 1 -d New description`
+- Command: `edit 1 -n New description`
 - Expected: Task at index 1 has its description updated.
 
 **Test case: Edit deadline**
-- Command: `edit 2 -by 2025-12-01 10:00`
+- Command: `edit 2 -d 2025-12-01 10:00`
 - Expected: Deadline of task at index 2 is updated.
 
 **Test case: Edit event start time**
-- Command: `edit 3 -from 2025-11-10 15:00`
+- Command: `edit 3 -f 2025-11-10 15:00`
 - Expected: Start time of event task is updated.
 
 ### Deleting Tasks
@@ -1788,23 +1792,27 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: Task at index 1 is deleted. Remaining tasks are re-indexed.
 
 **Test case: Delete multiple tasks**
-- Command: `delete 1 3 5`
+- Command: `delete 1,3,5`
 - Expected: Tasks at indices 1, 3, and 5 are deleted.
+
+**Test case: Delete tasks with range notation**
+- Command: `delete 2...4`
+- Expected: Tasks at indices 2, 3, and 4 are deleted.
 
 ## Testing Reminder Management
 
 ### Adding Reminders
 
 **Test case: Add one-time reminder**
-- Command: `rem add Meeting reminder @ 2025-11-05 14:30`
+- Command: `rem Meeting reminder @ 2025-11-05 14:30`
 - Expected: One-time reminder is added with specified date and time.
 
 **Test case: Add recurring reminder**
-- Command: `rem add Weekly review @ 2025-11-01 10:00 -t 168h`
+- Command: `rem Weekly review @ 2025-11-01 10:00 -r 168h`
 - Expected: Recurring reminder is added with 168-hour (weekly) interval.
 
 **Test case: Invalid interval format**
-- Command: `rem add Test @ 2025-11-01 10:00 -t abc`
+- Command: `rem Test @ 2025-11-01 10:00 -r abc`
 - Expected: Error message about invalid interval format.
 
 ### Managing Reminders
@@ -1818,7 +1826,7 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: Reminder at index 1 is deleted.
 
 **Test case: Turn on reminders**
-- Command: `rem on 1 2`
+- Command: `rem on 1,2`
 - Expected: Reminders at indices 1 and 2 are turned on (will fire notifications).
 
 **Test case: Turn off reminders**
@@ -1826,11 +1834,11 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: Reminder at index 1 is turned off (will not fire notifications).
 
 **Test case: Snooze reminder**
-- Command: `rem snooze 1 -t 30m`
+- Command: `rem snooze 1 30m`
 - Expected: Reminder at index 1 is snoozed for 30 minutes.
 
 **Test case: Snooze recurring reminder (invalid)**
-- Command: `rem snooze 2 -t 30m` (where index 2 is a recurring reminder)
+- Command: `rem snooze 2 30m` (where index 2 is a recurring reminder)
 - Expected: Error message indicating recurring reminders cannot be snoozed.
 
 ## Testing Timer Functionality
@@ -1838,11 +1846,11 @@ This section provides instructions for manual testing of StudyMate. These test c
 ### Basic Timer Operations
 
 **Test case: Start a timer with duration**
-- Command: `start Focus session @25`
+- Command: `start Focus session @ 25`
 - Expected: Timer starts with 25 minutes, displays "# TIMER # RUNNING 25:00 left - Focus session".
 
 **Test case: Start a timer for a task**
-- Command: `start 1 @40` (assuming task at index 1 exists)
+- Command: `start 1 @ 40` (assuming task at index 1 exists)
 - Expected: Timer starts for 40 minutes with task name in label.
 
 **Test case: Pause timer**
@@ -1862,13 +1870,13 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: Timer is stopped and cleared. Message shows "# TIMER # RESET TIMER".
 
 **Test case: Start timer when one is already running**
-- Command: `start New timer @15` (when a timer is already active)
+- Command: `start New timer @ 15` (when a timer is already active)
 - Expected: Error message indicating a timer is already running or paused.
 
 ### Invalid Timer Commands
 
 **Test case: Invalid timer format**
-- Command: `start @abc`
+- Command: `start @ abc`
 - Expected: Error message about invalid timer start format.
 
 **Test case: Pause when no timer is active**
@@ -1880,19 +1888,19 @@ This section provides instructions for manual testing of StudyMate. These test c
 ### Adding Habits
 
 **Test case: Add a habit**
-- Command: `habit add Morning exercise -t 24h`
+- Command: `habit Morning exercise -t 24h`
 - Expected: Habit is added with 24-hour interval. Streak starts at 1.
 
 **Test case: Add habit without name**
-- Command: `habit add -t 24h`
+- Command: `habit -t 24h`
 - Expected: Error message indicating a habit name is required.
 
 **Test case: Add habit without interval**
-- Command: `habit add Reading`
+- Command: `habit Reading`
 - Expected: Error message indicating interval is required after -t flag.
 
 **Test case: Invalid interval format**
-- Command: `habit add Study -t invalid`
+- Command: `habit Study -t invalid`
 - Expected: Error message about invalid interval format.
 
 ### Managing Habits
@@ -1942,7 +1950,7 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: All commands work correctly regardless of case.
 
 **Test case: Flags are case-insensitive**
-- Command: `list -S`, `edit 1 -D New description`, `rem add Test @ 2025-11-01 10:00 -T 24h`
+- Command: `list -S`, `edit 1 -N New description`, `rem Test @ 2025-11-01 10:00 -R 24h`
 - Expected: All flags are recognized regardless of case.
 
 ## Testing Edge Cases
@@ -1965,7 +1973,7 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Expected: System should handle gracefully (either accept if within limit or show appropriate message).
 
 **Test case: Very long timer duration**
-- Command: `start Test @10000`
+- Command: `start Test @ 10000`
 - Expected: Timer starts with 10,000 minutes (or appropriate validation message if exceeding limits).
 
 ## Notes for Testers
