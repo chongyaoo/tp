@@ -293,6 +293,247 @@ Now you have 2 tasks in the task list.
 
 ---
 
+## Reminders
+
+StudyMate's reminder system helps you stay on top of important events and recurring tasks. Set one-time or recurring reminders with customizable intervals, and manage them with simple CLI commands.
+
+---
+
+### Adding a One-Time Reminder: `rem`
+
+Creates a reminder that fires once at a specified date and time.
+
+**Format:** `rem MESSAGE @ YYYY-MM-DD HH:mm`
+
+* The `MESSAGE` is the text that will be displayed when the reminder fires.
+* The `@` delimiter is required to separate the message from the date/time.
+* The date and time must be in `YYYY-MM-DD HH:mm` format.
+* The reminder must be set for a future date/time.
+
+**Examples:**
+* `rem Submit project report @ 2025-11-15 09:00`
+* `rem Doctor appointment @ 2025-11-01 14:30`
+* `rem Call mom @ 2025-10-31 18:00`
+
+**Expected output:**
+```
+Got it! I've added this One-Time reminder:
+[RO][O] Submit project report (2025-11-15 09:00)
+Now you have X reminders in the reminder list.
+```
+
+**Notes:**
+* Reminders are marked with `[RO]` to indicate they are one-time reminders.
+* `[O]` indicates the reminder is active. It will show `[ ]` when turned off.
+* One-time reminders automatically turn off after firing.
+
+---
+
+### Adding a Recurring Reminder: `rem`
+
+Creates a reminder that repeats at regular intervals.
+
+**Format:** `rem MESSAGE @ YYYY-MM-DD HH:mm -r INTERVAL`
+
+* The `MESSAGE` is the text that will be displayed when the reminder fires.
+* The `@` delimiter separates the message from the initial date/time.
+* The `-r` flag indicates this is a recurring reminder.
+* The `INTERVAL` must follow the format: number + unit
+    * `m` for minutes (e.g., `30m`)
+    * `h` for hours (e.g., `2h`)
+    * `d` for days (e.g., `1d`)
+    * `w` for weeks (e.g., `1w`)
+
+**Examples:**
+* `rem Take medicine @ 2025-10-31 08:00 -r 12h`
+* `rem Weekly review @ 2025-11-01 10:00 -r 1w`
+* `rem Standup meeting @ 2025-10-31 09:00 -r 1d`
+
+**Expected output:**
+```
+Got it! I've added this recurring reminder:
+[RR][O] Take medicine (interval: 12H)
+Next reminder: 2025-10-31 08:00
+Now you have X reminders in the reminder list.
+```
+
+**Notes:**
+* After firing, recurring reminders automatically reschedule to the next interval.
+* Recurring reminders remain `[O]` after firing unless manually turned off.
+
+---
+
+### Listing Reminders: `rem ls`
+
+Displays all your reminders with their status and scheduled times.
+
+**Format:** `rem ls`
+
+**Expected output:**
+```
+Here are your reminders:
+1. [RO][O] Submit project report (2025-11-15 09:00)
+2. [RO][O] Take medicine (2025-10-31 08:00)
+3. [RR][O] Weekly review (interval: 1w)
+Next reminder: 2025-10-30 20:00
+```
+
+**Notes:**
+* Each reminder shows its index number, status, message, and schedule.
+* Use these index numbers for other reminder commands.
+* For Recurring reminders, the timing of the next reminder will also be shown.
+
+---
+
+### Turning Reminders On: `rem on`
+
+Activates one or more reminders.
+
+**Format:** `rem on INDEX[,INDEX...]`
+
+* `INDEX` corresponds to the reminder number from the `rem ls` command.
+* Can accept multiple indices separated by commas (e.g., `rem on 1,3`).
+
+**Examples:**
+* `rem on 2`
+* `rem on 1,3,5`
+
+**Expected output:**
+```
+The following reminders have been turned on:
+[RO][O] Weekly review (2025-11-01 10:00)
+
+The following reminders have already been turned on:
+[RO][O] Go the the toilet (2025-11-01 11:00)
+```
+
+**Notes:**
+* If a reminder is already on, you'll be notified separately.
+* Only `[O]` reminders will fire when their time comes.
+
+---
+
+### Turning Reminders Off: `rem off`
+
+Deactivates one or more reminders without deleting them.
+
+**Format:** `rem off INDEX[,INDEX...]`
+
+* `INDEX` corresponds to the reminder number from the `rem ls` command.
+* Can accept multiple indices separated by commas (e.g., `rem off 2,4`).
+
+**Examples:**
+* `rem off 3`
+* `rem off 1,2`
+
+**Expected output:**
+```
+The following reminders have been turned off:
+[RO][ ] Take medicine (2025-10-31 08:00)
+```
+
+**Notes:**
+* Turned off reminders won't fire but remain in your list.
+* You can turn them back on with `rem on` when needed.
+
+---
+
+### Snoozing a Reminder: `rem snooze`
+
+Postpones a one-time reminder by a specified duration.
+
+**Format:** `rem snooze INDEX INTERVAL`
+
+* `INDEX` is the reminder number from the `rem ls` command.
+* `INTERVAL` follows the same format as recurring reminders: number + unit (`m`, `h`, `d`, `w`)
+* The new time must be in the future.
+* **Only works with one-time reminders.**
+
+**Examples:**
+* `rem snooze 1 30m` - Snooze for 30 minutes
+* `rem snooze 2 2h` - Snooze for 2 hours
+* `rem snooze 3 1d` - Snooze for 1 day
+
+**Expected output:**
+```
+Snooze duration too short! New reminder time (2025-10-17T10:00) is not in the future.
+
+The following reminder has successfully been snoozed: 
+[RO][O] Going to the toilet (2025-11-14 10:00)
+```
+
+**Notes:**
+* Recurring reminders cannot be snoozed - they automatically reschedule.
+* If the snooze duration is too short (new snoozed timing is still in the past), you'll get an error, as shown in the 
+first Expected Output.
+* Snoozing automatically turns the reminder back on.
+
+---
+
+### Deleting Reminders: `rem rm`
+
+Permanently removes one or more reminders.
+
+**Format:** `rem rm INDEX[,INDEX...]`
+
+* `INDEX` corresponds to the reminder number from the `rem ls` command.
+* Can accept multiple indices separated by commas (e.g., `rem rm 2,4`).
+
+**Examples:**
+* `rem rm 1`
+* `rem rm 2,3,5`
+
+**Expected output:**
+```
+Got it. I've deleted these reminders:
+[RO][O] Running (2025-11-14 10:00)
+Now you have 1 reminder in the Reminders list.
+```
+
+**Notes:**
+* Deletion is permanent and cannot be undone.
+* Index numbers will update after deletion.
+
+---
+
+### Reminder Behavior and Rules
+
+* **Background Monitoring**: The system checks for due reminders every 30 seconds in the background while StudyMate is running. This means reminders may fire up to 30 seconds after their scheduled time.
+
+
+* **Firing Notifications**: When a reminder fires, you'll see a notification message displaying the reminder's index number and message. This appears in your terminal regardless of what command you're currently typing.
+
+
+* **One-Time Reminder Lifecycle**:
+    * One-time reminders fire once at their scheduled time.
+    * After firing, they automatically turn `[ ]` to prevent repeat notifications.
+    * You can safely delete fired one-time reminders or leave them in your list as a record.
+
+
+* **Recurring Reminder Lifecycle**:
+    * Recurring reminders fire at their scheduled time, then automatically reschedule to the next interval.
+    * They remain `[O]` after firing and will continue to fire at each interval.
+    * The next scheduled time is calculated by adding the interval to the current time when fired.
+    * To stop recurring reminders, use `rem off` or delete them with `rem rm`.
+
+
+* **Time Precision**:
+    * A reminder fires once when the current time equals or exceeds its scheduled time
+    * The 30-second check interval means a reminder scheduled for 14:30:00 will fire on the first check after 14:30:00 (between 14:30:00 and 14:30:30), if StudyMate is on during this period.
+    * After firing, the reminder either turns off (One-Time) or reschedules (Recurring), preventing duplicate notifications
+
+
+* **Reminder Status Control**:
+    * Only reminders marked `[O]` will fire when their time comes
+    * `[ ]` reminders are skipped during background checks
+    * Turning a reminder off does not change its scheduled time
+    * Snoozed reminders are automatically turned back `[O]`
+
+
+* **Persistence**: All reminders (including their on/off status) are automatically saved when you exit with `bye` and restored when you restart StudyMate.
+
+---
+
 ## Timer
 
 The timer feature supports efficient time management for study sessions using simple CLI commands. Only one timer session can be active at a time, and all commands are case-insensitive.
