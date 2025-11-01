@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -50,7 +51,7 @@ public class Storage {
             return;
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 try {
@@ -73,7 +74,7 @@ public class Storage {
      * @throws StudyMateException If an error occurs while writing to the file.
      */
     public void save(List<Task> tasks, List<Reminder> reminders, List<Habit> habits) throws StudyMateException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))) {
             for (Task task : tasks) {
                 bw.write(task.toSaveString());
                 bw.newLine();
