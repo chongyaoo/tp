@@ -123,12 +123,12 @@ public class Parser {
             throw new StudyMateException("The description of the deadline task cannot be empty!");
         }
 
-        if (!arguments.contains(DELIMITER_BY)) {
+        if (!arguments.toLowerCase().contains(DELIMITER_BY)) {
             throw new StudyMateException("The deadline task must have a " + DELIMITER_BY + " delimiter!");
         }
 
-        // Split the content into description and deadline part using DelimiterType.DELIMITER_BY
-        String[] deadlineParts = arguments.split(DELIMITER_BY, 2);
+        // Split the content into description and deadline part using DelimiterType.DELIMITER_BY (case-insensitive)
+        String[] deadlineParts = arguments.split("(?i)" + Pattern.quote(DELIMITER_BY), 2);
         String desc = deadlineParts[0].trim();
         String deadline = deadlineParts.length > 1 ? deadlineParts[1].trim() : "";
 
@@ -158,27 +158,28 @@ public class Parser {
             throw new StudyMateException("The description of the event task cannot be empty!");
         }
 
-        if (!arguments.contains(DELIMITER_FROM) || !arguments.contains(DELIMITER_TO)) {
+        String lowerArgs = arguments.toLowerCase();
+        if (!lowerArgs.contains(DELIMITER_FROM) || !lowerArgs.contains(DELIMITER_TO)) {
             throw new StudyMateException("The event task must have both " + DELIMITER_FROM + " and " + DELIMITER_TO +
                     " delimiters!");
         }
 
-        // Ensure /from comes before /to
-        int fromIndex = arguments.indexOf(DELIMITER_FROM);
-        int toIndex = arguments.indexOf(DELIMITER_TO);
+        // Ensure /from comes before /to (case-insensitive check)
+        int fromIndex = lowerArgs.indexOf(DELIMITER_FROM);
+        int toIndex = lowerArgs.indexOf(DELIMITER_TO);
         if (fromIndex >= toIndex) {
             throw new StudyMateException("The " + DELIMITER_FROM + " delimiter must come before " + DELIMITER_TO + "!");
         }
 
-        // Split the content into description, from and to parts
-        String[] firstSplit = arguments.split(Pattern.quote(DELIMITER_FROM), 2);
+        // Split the content into description, from and to parts (case-insensitive)
+        String[] firstSplit = arguments.split("(?i)" + Pattern.quote(DELIMITER_FROM), 2);
         String desc = firstSplit[0].trim();
 
         if (firstSplit.length < 2) {
             throw new StudyMateException("The description, from date and to date of an event cannot be empty!");
         }
 
-        String[] secondSplit = firstSplit[1].split(Pattern.quote(DELIMITER_TO), 2);
+        String[] secondSplit = firstSplit[1].split("(?i)" + Pattern.quote(DELIMITER_TO), 2);
         String fromDateTime = secondSplit[0].trim();
         String toDateTime = secondSplit.length > 1 ? secondSplit[1].trim() : "";
 
