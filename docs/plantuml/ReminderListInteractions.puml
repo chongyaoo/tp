@@ -1,0 +1,51 @@
+
+@startuml ReminderListInteractions
+' Detailed ReminderList component interactions
+skinparam roundcorner 5
+hide circle
+skinparam classAttributeIconSize 0
+class ":ReminderList" {
+  + addReminderOneTime()
+  + addReminderRec()
+  + delete()
+  + turnOnReminders()
+  + turnOffReminders()
+  + handleSnooze()
+}
+
+class ":Reminder" {
+  + isDue()
+  + isFired()
+  + isRecurring()
+  + snooze()
+  + setOnReminder()
+  + getOnReminder()
+}
+
+class ":MessageHandler" <<UI>> {
+  + sendDeleteReminderMessage()
+  + sendIsTurnOnReminderMessage()
+  + sendAlreadyTurnOnReminderMessage()
+  + sendIsTurnOffReminderMessage()
+  + sendAlreadyTurnOffReminderMessage()
+  + sendSnoozeMessage()
+  + sendRecUnableToSnoozeError()
+  + sendReminder()
+}
+
+class ":IndexValidator" <<Util>> {
+  + validateIndexes()
+}
+
+class ":CommandHandler" <<Controller>> {
+  + execute()
+}
+
+":CommandHandler" --> ":ReminderList" : calls operations
+":CommandHandler" ..> ":IndexValidator" : validates indexes
+
+":ReminderList" "1" *-- "0..*" ":Reminder" : manages
+":ReminderList" ..> ":MessageHandler" : sends UI messages
+":ReminderList" ..> ":Reminder" : queries state\nupdates reminders
+
+@enduml

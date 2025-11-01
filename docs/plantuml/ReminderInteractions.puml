@@ -1,0 +1,49 @@
+@startuml ReminderInteractions
+' High-level component interactions diagram
+skinparam componentStyle rectangle
+skinparam roundcorner 10
+
+package "Reminders Component" {
+  component ReminderList
+  component Reminder
+  component Schedule <<interface>>
+  component OneTimeSchedule
+  component RecurringSchedule
+  component Scheduler
+}
+
+component MessageHandler <<UI>>
+component DateTimeArg <<Model>>
+component Clock <<Util>>
+component CommandHandler <<Controller>>
+
+' Main interactions
+CommandHandler --> ReminderList : manages
+ReminderList --> Reminder : contains *
+Reminder --> Schedule : delegates to
+Schedule <|-- OneTimeSchedule
+Schedule <|-- RecurringSchedule
+
+OneTimeSchedule ..> Clock : uses
+OneTimeSchedule ..> DateTimeArg : uses
+RecurringSchedule ..> Clock : uses
+RecurringSchedule ..> DateTimeArg : uses
+
+Scheduler --> ReminderList : monitors
+Scheduler ..> MessageHandler : notifies
+
+ReminderList ..> MessageHandler : sends messages
+
+note left of Scheduler
+  Periodically checks ReminderList
+  for due reminders, and triggers
+  notifications via MessageHandler
+end note
+
+note left of Reminder
+  Delegates scheduling logic
+end note
+
+
+
+@enduml

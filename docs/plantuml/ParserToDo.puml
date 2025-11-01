@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant ":StudyMate" as StudyMate
+participant ":Parser" as Parser
+participant ":Command" as Command
+
+StudyMate -> Parser: parse("todo read book")
+activate Parser
+
+Parser -> Parser: cleanLine = line.replaceAll("\\s+", " ")
+Parser -> Parser: arguments = cleanLine.split(" ", 2)
+note right: arguments[0] = "todo"\narguments[1] = "read book"
+
+Parser -> Parser: parseToDo("read book")
+activate Parser
+
+alt desc.isEmpty()
+    Parser -> Parser: throw StudyMateException
+else
+    create Command
+    Parser -> Command: new Command(CommandType.TODO, "read book")
+    activate Command
+    Command --> Parser: Command
+    deactivate Command
+    Parser --> Parser: return Command
+    deactivate Parser
+end
+
+Parser --> StudyMate: Command
+deactivate Parser
+
+@enduml

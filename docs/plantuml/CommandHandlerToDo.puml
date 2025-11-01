@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant ":StudyMate" as StudyMate
+participant ":CommandHandler" as CommandHandler
+
+StudyMate -> CommandHandler: executeCommand(taskList, reminderList, cmd)
+activate CommandHandler
+
+CommandHandler -> CommandHandler: switch(cmd.type)
+note right: cmd.type = TODO
+
+CommandHandler -> CommandHandler: handleToDo(taskList, cmd)
+activate CommandHandler
+
+CommandHandler -> ":TaskList" as TaskList: addToDo(cmd.desc)
+TaskList --> CommandHandler
+
+CommandHandler -> TaskList: getCount()
+TaskList --> CommandHandler: listCount
+
+CommandHandler -> TaskList: getTask(listCount - 1)
+TaskList --> CommandHandler: newTask
+
+CommandHandler -> ":MessageHandler" as MessageHandler: sendAddTaskMessage(newTask, listCount)
+
+CommandHandler --> CommandHandler
+deactivate CommandHandler
+
+CommandHandler --> StudyMate
+deactivate CommandHandler
+deactivate CommandHandler
+
+@enduml

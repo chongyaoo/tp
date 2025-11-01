@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+class HabitList {
+  - {static} logger: Logger
+  - habits: ArrayList<Habit>
+  - clock: Clock
+
+  + HabitList(clock: Clock)
+  + HabitList()
+  + getHabit(index: int): Habit
+  + getAllHabits(): ArrayList<Habit>
+  + getCount(): int
+  + addHabit(name: String, interval: Duration): void
+  + addHabit(name: String, deadline: DateTimeArg, interval: Duration, streak: int): void
+  + deleteHabit(index: int): void
+  + getHabits(): ArrayList<Habit>
+  + incStreak(index: int): StreakResult
+}
+
+@enduml

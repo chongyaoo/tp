@@ -1,0 +1,70 @@
+@startuml AddDeadlineSequence
+' Sequence diagram for adding a deadline
+skinparam roundcorner 5
+
+actor User
+participant ":UI" as UI
+participant ":Parser" as Parser
+participant ":Command" as Command
+participant ":CommandHandler" as CommandHandler
+participant ":TaskList" as TaskList
+participant ":Deadline" as Deadline
+participant ":MessageHandler" as MessageHandler
+participant ":DateTimeArg" as DateTimeArg
+
+User -> UI : deadline "Finish report" /by 2025-11-05 23:59
+activate UI
+
+UI -> Parser : parse(input)
+activate Parser
+
+Parser -> Parser : extract task name\nand deadline datetime
+activate Parser
+
+Parser -> DateTimeArg ** : create(2025-11-05 23:59)
+Parser -> Command ** : create(DEADLINE_ADD, name, dateTime)
+activate Command
+Command --> Parser
+deactivate Command
+
+Parser --> Parser : return Command
+deactivate Parser
+
+Parser --> UI : Command
+deactivate Parser
+
+UI -> CommandHandler : execute(taskList)
+activate CommandHandler
+
+CommandHandler -> TaskList : addDeadline("Finish report", dateTime)
+activate TaskList
+
+TaskList -> Deadline ** : new Deadline("Finish report", dateTime)
+
+TaskList -> TaskList : taskList.add(newTask)
+activate TaskList
+TaskList --> TaskList
+deactivate TaskList
+
+TaskList -> TaskList : assert(taskList.contains(newTask))
+activate TaskList
+TaskList --> TaskList
+deactivate TaskList
+
+TaskList --> CommandHandler
+deactivate TaskList
+
+CommandHandler -> MessageHandler : sendAddTaskMessage(task, count)
+activate MessageHandler
+
+MessageHandler -> UI : display confirmation
+
+deactivate CommandHandler
+|||
+deactivate MessageHandler
+
+UI -> User : Got it. I've added this task:\n[D][ ] Finish report (by: 2025-11-05 23:59)\nNow you have 4 tasks in the task list.
+
+deactivate UI
+
+@enduml

@@ -1,0 +1,119 @@
+@startuml TaskClassDiagram
+' Full detailed class diagram for Task component
+skinparam classAttributeIconSize 0
+skinparam roundcorner 5
+hide circle
+
+' Abstract Base Class
+abstract class ":Task" <<abstract>> {
+  # name: String
+  # isDone: Boolean
+  + Task()
+  + getName(): String
+  + setName(): void
+  + getDone(): boolean
+  + setDone(): void
+  {abstract} + toSaveString(): String
+}
+
+' Concrete Task Types
+class ":ToDo" {
+  + ToDo()
+  + toSaveString(): String
+  + toString(): String
+}
+
+class ":Deadline" {
+  - deadline: DateTimeArg
+  + Deadline()
+  + getDeadline(): DateTimeArg
+  + setDeadline(): void
+  + toSaveString(): String
+  + toString(): String
+}
+
+class ":Event" {
+  - from: DateTimeArg
+  - to: DateTimeArg
+  + Event()
+  + getFrom(): DateTimeArg
+  + getTo(): DateTimeArg
+  + setFrom(): void
+  + setTo(): void
+  + toSaveString(): String
+  + toString(): String
+}
+
+' Task List Management
+class ":TaskList" {
+  - taskList: ArrayList<Task>
+  + TaskList()
+  + addToDo(): void
+  + addDeadline(): void
+  + addEvent(): void
+  + getTask(): Task
+  + getCount(): int
+  + getTasks(): ArrayList<Task>
+  + delete(): void
+  + mark(): void
+  + unmark(): void
+  + findTasks(): ArrayList<Task>
+  + getSorted(): ArrayList<Task>
+  + editDesc(): void
+  + editDeadline(): void
+  + editFrom(): void
+  + editTo(): void
+  - getTaskDate(): DateTimeArg
+}
+
+' External dependencies
+class ":DateTimeArg" <<external>> {
+  + getDate(): LocalDate
+  + getTime(): LocalTime
+  + getDateTime(): LocalDateTime
+  + compareTo(): int
+}
+
+class ":MessageHandler" <<external>> {
+  + sendDeleteTaskMessage(): void
+  + sendMarkMessage(): void
+  + sendUnmarkMessage(): void
+  + sendEditDescMessage(): void
+  + sendEditDeadlineMessage(): void
+  + sendEditFromMessage(): void
+  + sendEditToMessage(): void
+}
+
+' Relationships
+":Task" <|.. ":ToDo"
+":Task" <|.. ":Deadline"
+":Task" <|.. ":Event"
+
+":TaskList" o-- "0..*" ":Task" : manages
+
+":Deadline" ..> ":DateTimeArg" : uses
+":Event" ..> ":DateTimeArg" : uses
+":TaskList" ..> ":DateTimeArg" : uses
+":TaskList" ..> ":MessageHandler" : notifies
+
+note left of ":TaskList"
+  Manages collection of heterogeneous tasks
+  using polymorphism. Provides CRUD operations
+  and specialized queries (find, sort).
+  Sorts indexes in reverse to prevent
+  index shifting during batch deletions.
+end note
+
+note left of ":Deadline"
+  Task with a single deadline date.
+  Used for tasks that must be
+  completed by a specific time.
+end note
+
+note bottom of ":Event"
+  Task with start and end dates.
+  Used for tasks occurring over
+  a time period.
+end note
+
+@enduml

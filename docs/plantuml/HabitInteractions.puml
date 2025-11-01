@@ -1,0 +1,72 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class ":Habit" {
+  - {static} gracePeriod: int = 4
+  - name: String
+  - deadline: DateTimeArg
+  - interval: Duration
+  - streak: int
+  - clock: Clock
+
+  + Habit()
+  + Habit()
+  + incStreak(): StreakResult
+  + getStreak(): int
+  + toString(): String
+  + toSaveString(): String
+}
+
+enum ":StreakResult" <<enumeration>> {
+  TOO_EARLY
+  ON_TIME
+  TOO_LATE
+}
+
+class ":DateTimeArg" {
+  - date: LocalDate
+  - time: LocalTime
+
+  + DateTimeArg()
+  + DateTimeArg()
+  + setDate(): void
+  + setTime(): void
+  + getTime(): LocalTime
+  + getDate(): LocalDate
+  + getDateTime(): LocalDateTime
+  + setLocalDateTime(): void
+  + toString(): String
+  + compareTo(): int
+}
+
+class ":DataFormatting" {
+  + {static} habitString(): String
+}
+
+class ":MessageFormatting" {
+  + {static} habitString(): String
+}
+
+class ":Clock" <<external>> {
+}
+
+note right of ":Habit"
+  incStreak() validates timing:
+  - TOO_EARLY: before deadline (truncated to minutes)
+  - ON_TIME: within deadline + grace period (interval/4 + 1 min)
+  - TOO_LATE: after grace period (resets streak to 1)
+
+  Updates deadline to current time + interval on success
+
+  Uses LocalDateTime.now(clock) to get current time
+end note
+
+":Habit" --> ":StreakResult" : returns
+":Habit" --> ":DateTimeArg" : has deadline
+":Habit" --> ":Clock" : uses for time via\nLocalDateTime.now()
+":Habit" ..> ":DataFormatting" : uses for save
+":Habit" ..> ":MessageFormatting" : uses for display
+
+@enduml

@@ -1,0 +1,77 @@
+@startuml ReminderCheckSequence
+' Sequence diagram for scheduler checking reminders
+skinparam roundcorner 5
+
+actor ScheduledExecutor as "Scheduled\nExecutor"
+participant ":Scheduler" as Scheduler
+participant ":ReminderList" as ReminderList
+participant ":Reminder" as Reminder
+participant ":Schedule" as Schedule
+participant ":MessageHandler" as MessageHandler
+
+ScheduledExecutor -> Scheduler : checkAndNotify()
+activate Scheduler
+
+Scheduler -> Scheduler : tick()
+activate Scheduler
+
+Scheduler -> ReminderList : getReminders()
+activate ReminderList
+return List<Reminder>
+
+loop for each reminder
+  Scheduler -> Reminder : isDue()
+  activate Reminder
+
+  Reminder -> Schedule : isDue()
+  activate Schedule
+
+  alt OneTimeSchedule
+    Schedule -> Schedule : check time >= target\nAND not fired\nAND onReminder
+  else RecurringSchedule
+    Schedule -> Schedule : check time >= target\nAND onReminder
+  end
+
+  return boolean
+  return boolean
+
+  alt reminder is due
+    Scheduler -> ReminderList : getReminderIndex(r)
+    activate ReminderList
+    return index
+
+    Scheduler -> Scheduler : create IndexedReminder(index, r)
+
+    Scheduler -> Reminder : isFired()
+    activate Reminder
+
+    Reminder -> Schedule : isFired()
+    activate Schedule
+
+    alt OneTimeSchedule
+      Schedule -> Schedule : set onReminder = false\nset isFired = true
+    else RecurringSchedule
+      Schedule -> Schedule : setNextSchedule()\n(advance deadline by interval)
+    end
+
+    return
+    return
+  end
+end
+
+Scheduler --> Scheduler : List<IndexedReminder>
+deactivate Scheduler
+
+Scheduler -> Scheduler : process dueReminders
+activate Scheduler
+
+alt dueReminders not empty
+  Scheduler -> MessageHandler : sendReminder(dueReminders)
+  activate MessageHandler
+  MessageHandler -> MessageHandler : display notifications
+  return
+  deactivate
+  deactivate
+end
+
+@enduml

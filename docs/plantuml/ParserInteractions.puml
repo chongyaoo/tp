@@ -1,0 +1,114 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+hide circle
+
+class ":Parser" {
+  - {static} DELIMITER_BY: String
+  - {static} DELIMITER_FROM: String
+  - {static} DELIMITER_TO: String
+  - {static} SORTED_FLAG: String
+  - {static} DESCRIPTION_FLAG: String
+  - {static} DEADLINE_FLAG: String
+  - {static} FROM_FLAG: String
+  - {static} TO_FLAG: String
+  - {static} integerPattern: Pattern
+  - {static} multipleIntegerPattern: Pattern
+  - {static} TIMER_PATTERN: Pattern
+  - {static} logger: Logger
+
+  + parse(): Command
+  - parseToDo(): Command
+  - parseDeadline(): Command
+  - parseEvent(): Command
+  - parseFind(): Command
+  - parseList(): Command
+  - parseMark(): Command
+  - parseUnmark(): Command
+  - parseEdit(): Command
+  - parseDelete(): Command
+  - parseIndexes(): LinkedHashSet<Integer>
+  - parseRem(): Command
+  - parseRemOn(): Command
+  - parseRemOff(): Command
+  - parseRemRm(): Command
+  - parseRemSnooze(): Command
+  - parseRemLs(): Command
+  - parseRemAdd(): Command
+  - parseDateTimeString(): DateTimeArg
+  - parseInterval(): Duration
+  - parseTimerStart(): Command
+  - parseHabit(): Command
+  - parseHabitAdd(): Command
+  - parseHabitStreak(): Command
+  - parseHabitRm(): Command
+}
+
+class ":Command" {
+  + type: CommandType
+  + desc: String
+  + substring: String
+  + isSorted: boolean
+  + message: String
+  + datetime0: DateTimeArg
+  + datetime1: DateTimeArg
+  + indexes: LinkedHashSet<Integer>
+  + index: int
+  + isRecurring: boolean
+  + duration: Integer
+  + interval: Duration
+  + snoozeDuration: Duration
+
+  + Command()
+}
+
+enum ":CommandType" <<enumeration>> {
+  TODO
+  DEADLINE
+  EVENT
+  LIST
+  FIND
+  MARK
+  UNMARK
+  EDIT_DESC
+  EDIT_DEADLINE
+  EDIT_FROM
+  EDIT_TO
+  DELETE
+  BYE
+  REM_ADD_REC
+  REM_ADD_ONETIME
+  REM_LS
+  REM_RM
+  REM_ON
+  REM_OFF
+  REM_SNOOZE
+  START
+  PAUSE
+  RESUME
+  RESET
+  STAT
+  HABIT_ADD
+  HABIT_STREAK
+  HABIT_LIST
+  HABIT_DELETE
+}
+
+class ":DateTimeArg" {
+  + date: LocalDate
+  + time: LocalTime
+}
+
+class ":StudyMateException" {
+  + message: String
+}
+
+":Parser" ..> ":Command" : creates
+":Parser" ..> ":CommandType" : uses
+":Parser" ..> ":DateTimeArg" : uses
+":Parser" ..> ":StudyMateException" : throws
+
+":Command" --> ":CommandType" : has
+":Command" --> ":DateTimeArg" : contains
+
+@enduml
