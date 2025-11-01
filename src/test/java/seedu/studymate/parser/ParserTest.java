@@ -824,4 +824,40 @@ public class ParserTest {
         assertEquals(CommandType.HABIT_ADD, cmd.type);
         assertEquals("Exercise", cmd.desc);
     }
+
+    // Tests for case-insensitive delimiters
+    @Test
+    void testDeadlineWithUpperCaseByDelimiter() throws StudyMateException {
+        Command cmd = parser.parse("deadline submit assignment /BY 2024-12-15 23:59");
+        assertEquals(CommandType.DEADLINE, cmd.type);
+        assertEquals("submit assignment", cmd.desc);
+    }
+
+    @Test
+    void testDeadlineWithMixedCaseByDelimiter() throws StudyMateException {
+        Command cmd = parser.parse("deadline homework /By 2024-12-20 10:00");
+        assertEquals(CommandType.DEADLINE, cmd.type);
+        assertEquals("homework", cmd.desc);
+    }
+
+    @Test
+    void testEventWithUpperCaseDelimiters() throws StudyMateException {
+        Command cmd = parser.parse("event team meeting /FROM 2024-12-10 14:00 /TO 2024-12-10 16:00");
+        assertEquals(CommandType.EVENT, cmd.type);
+        assertEquals("team meeting", cmd.desc);
+    }
+
+    @Test
+    void testEventWithMixedCaseDelimiters() throws StudyMateException {
+        Command cmd = parser.parse("event conference /From 2024-12-15 09:00 /To 2024-12-15 17:00");
+        assertEquals(CommandType.EVENT, cmd.type);
+        assertEquals("conference", cmd.desc);
+    }
+
+    @Test
+    void testEventWithAllLowerCaseDelimiters() throws StudyMateException {
+        Command cmd = parser.parse("event party /from 2024-12-25 18:00 /to 2024-12-25 22:00");
+        assertEquals(CommandType.EVENT, cmd.type);
+        assertEquals("party", cmd.desc);
+    }
 }
