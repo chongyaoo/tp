@@ -12,6 +12,8 @@ import seedu.studymate.reminders.Scheduler;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,6 +30,8 @@ public class StudyMate {
     private static HabitList habitList;
 
     public static void main(String[] args) {
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
         sendWelcomeMessage();
 
         String testTime = System.getenv("TEST_TIME");
@@ -46,7 +50,7 @@ public class StudyMate {
         }
 
         Storage storage = new Storage(FILE_PATH);
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8);
         Parser parser = new Parser();
         Scheduler scheduler = new Scheduler(reminderList);
 
