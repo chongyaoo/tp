@@ -324,23 +324,24 @@ class MessageHandlerTest {
     @Test
     void sendEditDeadlineMessage_success() {
         MessageHandler.sendEditDeadlineMessage(new MockTask("Deadline Task"),
-                new MockDateTimeArg("NEW_DEADLINE"));
-        String expected = line + "OK, I've edited the deadline of the deadline Deadline Task to:\nNEW_DEADLINE\n"
+                new MockDateTimeArg("2025-11-10 12:00"));
+        String expected = line + "OK, I've edited the deadline of the deadline Deadline Task to:\n2025-11-10 12:00\n"
                 + line;
         assertEquals(normaliseOutput(expected), normaliseOutput(outContent.toString()));
     }
 
     @Test
     void sendEditFromMessage_success() {
-        MessageHandler.sendEditFromMessage(new MockTask("Event Task"), new MockDateTimeArg("DATE_TIME"));
-        String expected = line + "OK, I've edited the from date of the event Event Task to:\nDATE_TIME\n" + line;
+        MessageHandler.sendEditFromMessage(new MockTask("Event Task"),
+                new MockDateTimeArg("2025-11-10 12:00"));
+        String expected = line + "OK, I've edited the from date of the event Event Task to:\n2025-11-10 12:00\n" + line;
         assertEquals(normaliseOutput(expected), normaliseOutput(outContent.toString()));
     }
 
     @Test
     void sendEditToMessage_success() {
-        MessageHandler.sendEditToMessage(new MockTask("Event Task"), new MockDateTimeArg("TO_TIME"));
-        String expected = line + "OK, I've edited the to date of the event Event Task to:\nTO_TIME\n" + line;
+        MessageHandler.sendEditToMessage(new MockTask("Event Task"), new MockDateTimeArg("2025-11-10 12:00"));
+        String expected = line + "OK, I've edited the to date of the event Event Task to:\n2025-11-10 12:00\n" + line;
         assertEquals(normaliseOutput(expected), normaliseOutput(outContent.toString()));
     }
 
