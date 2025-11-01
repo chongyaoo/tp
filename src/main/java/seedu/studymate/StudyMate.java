@@ -12,6 +12,8 @@ import seedu.studymate.reminders.Scheduler;
 import seedu.studymate.tasks.TaskList;
 import seedu.studymate.ui.MessageHandler;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -19,17 +21,27 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
+import java.util.logging.LogManager;
 
 public class StudyMate {
     /**
      * Main entry-point for the StudyMate application.
      */
     private static final String FILE_PATH = "data/StudyMate.txt";
-    private static final TaskList taskList = new TaskList();
     private static ReminderList reminderList;
     private static HabitList habitList;
+    private static TaskList taskList;
 
     public static void main(String[] args) {
+        if (isRunningFromJar()) {
+            try (InputStream is = StudyMate.class.getResourceAsStream("/logging.properties")) {
+                if (is != null) {
+                    LogManager.getLogManager().readConfiguration(is);
+                }
+            } catch (IOException e) {
+                // Silent fail - logging will just not be configured
+            }
+        }
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
         System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
         sendWelcomeMessage();
@@ -48,7 +60,7 @@ public class StudyMate {
             reminderList = new ReminderList();
             habitList = new HabitList();
         }
-
+        taskList = new TaskList();
         Storage storage = new Storage(FILE_PATH);
         Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8);
         Parser parser = new Parser();
@@ -111,5 +123,13 @@ public class StudyMate {
         return scanner.nextLine().trim();
     }
 
-
+    private static boolean isRunningFromJar() {
+        try {
+            String protocol = StudyMate.class.getResource("StudyMate.class").getProtocol();
+            return "jar".equals(protocol);
+        } catch (NullPointerException e) {
+            // might force a true if we rather disable logs at all if we can't tell if running from jar
+            return false;
+        }
+    }
 }
