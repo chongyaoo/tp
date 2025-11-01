@@ -158,7 +158,7 @@ public class TaskList {
     public ArrayList<Task> findTasks(String subStr) {
         ArrayList<Task> result = new ArrayList<>();
         for (Task task : taskList) {
-            if (task.toString().contains(subStr)) {
+            if (task.getName().contains(subStr)) {
                 result.add(task);
             }
         }
