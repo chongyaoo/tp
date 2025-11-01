@@ -119,7 +119,7 @@ ____________________________________________________________
 Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME
 ____________________________________________________________
 ____________________________________________________________
-Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!
+Bad date/time syntax! The syntax is YYYY-MM-DD hh:mm!
 ____________________________________________________________
 ____________________________________________________________
 Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME
@@ -199,7 +199,7 @@ ____________________________________________________________
 The description and deadline of a deadline cannot be empty!
 ____________________________________________________________
 ____________________________________________________________
-Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!
+Bad datetime syntax! The syntax is YYYY-MM-DD HH:mm!
 ____________________________________________________________
 ____________________________________________________________
 The mark command must be followed by a task number.
