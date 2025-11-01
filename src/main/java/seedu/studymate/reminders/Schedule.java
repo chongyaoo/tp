@@ -1,13 +1,10 @@
 package seedu.studymate.reminders;
 
 import seedu.studymate.exceptions.StudyMateException;
-import seedu.studymate.parser.DateTimeArg;
 
 import java.time.Duration;
 
 public interface Schedule {
-    //DateTimeArg nextTriggerAfter(Instant now); // when should it fire next?
-
     default Duration interval() {
         return null;
     }
@@ -23,7 +20,11 @@ public interface Schedule {
     default void isFired() {
     }
 
-    default void setRemindAt(DateTimeArg remindAt) {
+    default void setFired(boolean isDone) {
+    }
+
+    default boolean getFired() {
+        return false;
     }
 
     default void setOnReminder(boolean onReminder) {
@@ -35,6 +36,4 @@ public interface Schedule {
 
     default void snooze(Duration duration) throws StudyMateException {
     }
-
-    ;
 }

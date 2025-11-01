@@ -30,18 +30,30 @@ public final class OneTimeSchedule implements Schedule {
     }
 
     public boolean isDue() { //checking whether reminder is due to be fired
+        if (isFired || !onReminder) {
+            return false;
+        }
+
         LocalDateTime now = LocalDateTime.now(clock); //use injected clock
 
         LocalDateTime target = LocalDateTime.of(
                 remindAt.getDate(),
                 remindAt.getTime()
         );
-        return !now.isBefore(target) && !isFired && onReminder;
+        return !now.isBefore(target);
     }
 
     public void isFired() {
         this.onReminder = false; //Automatically turns off reminder
         this.isFired = true;
+    }
+
+    public void setFired(boolean isFired) {
+        this.isFired = isFired;
+    }
+
+    public boolean getFired() {
+        return isFired;
     }
 
     public void snooze(Duration duration) throws StudyMateException {

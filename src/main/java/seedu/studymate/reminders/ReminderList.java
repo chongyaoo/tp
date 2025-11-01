@@ -45,13 +45,17 @@ public class ReminderList {
         assert (reminderList.contains(newReminder));
     }
 
-    public synchronized void addReminderOneTime(String name, DateTimeArg dateTime) throws StudyMateException {
-        Reminder newReminder = new Reminder(name, dateTime, clock);
+    public synchronized void addReminderOneTime(String name, DateTimeArg dateTime, boolean isFired) throws StudyMateException {
+        Reminder newReminder = new Reminder(name, dateTime, clock, isFired);
         if (reminderList.size() >= cap) {
             throw new StudyMateException("Too many reminders! Please delete some to add in more.");
         }
         reminderList.add(newReminder);
         assert (reminderList.contains(newReminder));
+    }
+
+    public void addReminderOneTime(String name, DateTimeArg dateTime) throws StudyMateException {
+        addReminderOneTime(name, dateTime, false);
     }
 
     public synchronized int getCount() {

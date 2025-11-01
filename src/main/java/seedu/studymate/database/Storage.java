@@ -184,7 +184,7 @@ public class Storage {
             break;
 
         case "R":
-            if (parts.length < 5) {
+            if (parts.length < 6) {
                 return;
             }
             boolean isRecurring = parts[1].equals("1");
@@ -208,18 +208,17 @@ public class Storage {
 
             if (isRecurring) {
                 // Recurring reminder: parse interval from parts[5]
-                if (parts.length < 6) {
-                    throw new StudyMateException("Recurring reminder missing interval!");
-                }
                 Duration interval = Duration.parse(parts[5]);
                 reminderList.addReminderRec(reminderName, reminderTime, interval);
             } else {
+                // Check if isFired
+                boolean isFired = parts[5].equals("1");
                 // One-time reminder
-                reminderList.addReminderOneTime(reminderName, reminderTime);
+                reminderList.addReminderOneTime(reminderName, reminderTime, isFired);
             }
 
-            if (isReminderDone) {
-                reminderList.getReminder(reminderList.getCount() - 1).setOnReminder(true);
+            if (!isReminderDone) {
+                reminderList.getReminder(reminderList.getCount() - 1).setOnReminder(false);
             }
             break;
 
