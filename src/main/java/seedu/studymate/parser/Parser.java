@@ -515,18 +515,20 @@ public class Parser {
             }
 
         } else { //recurring reminder
-            String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
-                    atIndex + 1, rIndex));
-            String recurringString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
-                    rIndex + 1, arguments.length));
-            Duration recurringDuration = parseInterval(recurringString);
             try {
+                String dateTimeString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                        atIndex + 1, rIndex));
+                String recurringString = String.join(" ", java.util.Arrays.copyOfRange(arguments,
+                        rIndex + 1, arguments.length));
+                Duration recurringDuration = parseInterval(recurringString);
                 DateTimeArg dateTimeArg = parseDateTimeString(dateTimeString);
                 logger.log(Level.INFO, "Reminder name : " + reminder);
                 logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
                 return new Command(CommandType.REM_ADD_REC, reminder, dateTimeArg, recurringDuration);
             } catch (DateTimeParseException e) {
                 throw new StudyMateException("Bad date/time syntax! The syntax is YYYY-MM-DD hh:mm!");
+            } catch (NumberFormatException e) {
+                throw new StudyMateException("Input value is too long!");
             }
         }
     }
@@ -567,15 +569,14 @@ public class Parser {
         }
 
         // Extract value and unit
-        int value = Integer.parseInt(input.substring(0, input.length() - 1));
-        capNumbers(value);
-        long durationValue = (long) value;
-        if (value <= 0) {
-            throw new StudyMateException("Invalid duration provided! It must be greater than 0");
-        }
-        char unit = input.charAt(input.length() - 1);
-
         try {
+            int value = Integer.parseInt(input.substring(0, input.length() - 1));
+            capNumbers(value);
+            long durationValue = (long) value;
+            if (value <= 0) {
+                throw new StudyMateException("Invalid duration provided! It must be greater than 0");
+            }
+            char unit = input.charAt(input.length() - 1);
             switch (unit) {
             case 'm':
                 return Duration.ofMinutes(durationValue);
@@ -590,6 +591,8 @@ public class Parser {
             }
         } catch (ArithmeticException e) {
             throw new StudyMateException("Invalid duration provided");
+        } catch (NumberFormatException e) {
+            throw new StudyMateException("Input value is too long!");
         }
     }
 
