@@ -142,7 +142,7 @@ public class Parser {
             logger.log(Level.INFO, "Deadline's deadline: " + dateTimeArg);
             return new Command(CommandType.DEADLINE, desc, dateTimeArg);
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!");
+            throw new StudyMateException("Bad datetime syntax! The syntax is YYYY-MM-DD HH:mm!");
         }
     }
 
@@ -195,7 +195,7 @@ public class Parser {
             logger.log(Level.INFO, "Event's to date: " + toDateTimeArg);
             return new Command(CommandType.EVENT, desc, fromDateTimeArg, toDateTimeArg);
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm");
+            throw new StudyMateException("Bad datetime syntax! The syntax is YYYY-MM-DD HH:mm");
         }
     }
 
@@ -293,7 +293,7 @@ public class Parser {
             throw new StudyMateException("Invalid syntax! The correct syntax is edit <index> -<flag> <value>\n" +
                     "Note that -flag can be n for name, d for deadline, f for from, t for to");
         } catch (DateTimeParseException e) {
-            throw new StudyMateException("Bad datetime syntax! The syntax is yyyy-mm-dd HH:mm!");
+            throw new StudyMateException("Bad datetime syntax! The syntax is YYYY-MM-DD HH:mm!");
         }
     }
 
@@ -511,7 +511,7 @@ public class Parser {
                 logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
                 return new Command(CommandType.REM_ADD_ONETIME, reminder, dateTimeArg);
             } catch (DateTimeParseException e) {
-                throw new StudyMateException("Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!");
+                throw new StudyMateException("Bad date/time syntax! The syntax is YYYY-MM-DD hh:mm!");
             }
 
         } else { //recurring reminder
@@ -526,13 +526,13 @@ public class Parser {
                 logger.log(Level.INFO, "Reminder date: " + dateTimeArg);
                 return new Command(CommandType.REM_ADD_REC, reminder, dateTimeArg, recurringDuration);
             } catch (DateTimeParseException e) {
-                throw new StudyMateException("Bad date/time syntax! The syntax is yyyy-mm-dd hh:mm!");
+                throw new StudyMateException("Bad date/time syntax! The syntax is YYYY-MM-DD hh:mm!");
             }
         }
     }
 
     /**
-     * Parses a date-time string in the format "yyyy-mm-dd HH:mm".
+     * Parses a date-time string in the format "YYYY-MM-DD HH:mm".
      *
      * @param dateTimeString The date-time string to parse
      * @return A DateTimeArg object representing the parsed date and time
@@ -542,7 +542,7 @@ public class Parser {
         String[] parts = dateTimeString.trim().split(" ");
 
         if (parts.length != 2) {
-            throw new DateTimeParseException("Time is required! Format: yyyy-mm-dd hh:mm", dateTimeString, 0);
+            throw new DateTimeParseException("Time is required! Format: YYYY-MM-DD hh:mm", dateTimeString, 0);
         }
 
         // Parse date and time (both required)
