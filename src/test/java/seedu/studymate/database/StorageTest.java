@@ -161,12 +161,13 @@ class StorageTest {
      * Tests that a saved one-time reminder is read correctly when turned OFF
      */
     @Test
-    public void test_oneTimeReminder_load_turnedOff() throws Exception {
+    public void testOneTimeReminderLoadTurnedOff() throws Exception {
         // Format: R|0|0|name|date|0
         // parts[2] = "0" means reminder was turned OFF
         // parts[5] = "0" means hasn't fired yet
         Files.write(Paths.get(TEST_FILE_PATH),
-                List.of("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM + "2025-10-25" + DELIM + "0"),
+                List.of("R" + DELIM + "0" + DELIM + "0" + DELIM + "Doctor appointment" + DELIM + "2025-10-25"
+                        + DELIM + "0"),
                 StandardOpenOption.CREATE);
         storage.load(tasks, reminders, habits);
 
@@ -179,12 +180,13 @@ class StorageTest {
      * Tests that a saved one-time reminder is read correctly when turned ON
      */
     @Test
-    public void test_oneTimeReminder_load_turnedOn() throws Exception {
+    public void testOneTimeReminderLoadTurnedOn() throws Exception {
         // Format: R|0|1|name|date|0
         // parts[2] = "1" means reminder was turned ON
         // parts[5] = "0" means hasn't fired yet
         Files.write(Paths.get(TEST_FILE_PATH),
-                List.of("R" + DELIM + "0" + DELIM + "1" + DELIM + "Doctor appointment" + DELIM + "2025-11-25" + DELIM + "0"),
+                List.of("R" + DELIM + "0" + DELIM + "1" + DELIM + "Doctor appointment" + DELIM + "2025-11-25"
+                        + DELIM + "0"),
                 StandardOpenOption.CREATE);
         storage.load(tasks, reminders, habits);
 
@@ -197,7 +199,7 @@ class StorageTest {
      * Tests that a one-time reminder that has already fired is saved with isFired flag
      */
     @Test
-    public void test_oneTimeReminder_alreadyFired_save() throws Exception {
+    public void testOneTimeReminderAlreadyFiredSave() throws Exception {
         // Create reminder with isFired = true
         reminders.addReminderOneTime("Past reminder",
                 new DateTimeArg(LocalDate.parse("2025-10-20")), true);
@@ -216,7 +218,7 @@ class StorageTest {
      * and doesn't fire again (bug fix test)
      */
     @Test
-    public void test_oneTimeReminder_alreadyFired_load_preventsReFiring() throws Exception {
+    public void testOneTimeReminderAlreadyFiredLoadPreventsReFiring() throws Exception {
         // Format: R|0|0|name|date|1
         // parts[2] = "0" (onReminder = false - was turned off after firing)
         // parts[5] = "1" (isFired = true - already fired)
@@ -236,7 +238,7 @@ class StorageTest {
      * Tests that turning off a reminder is preserved across save/load
      */
     @Test
-    public void test_oneTimeReminder_turnedOff_preservedOnLoad() throws Exception {
+    public void testOneTimeReminderTurnedOffPreservedOnLoad() throws Exception {
         // Create and turn off a reminder
         reminders.addReminderOneTime("Future reminder",
                 new DateTimeArg(LocalDate.parse("2025-11-25")));
@@ -260,7 +262,7 @@ class StorageTest {
      * Tests that turning on a reminder is preserved across save/load
      */
     @Test
-    public void test_oneTimeReminder_turnedOn_preservedOnLoad() throws Exception {
+    public void testOneTimeReminderTurnedOnPreservedOnLoad() throws Exception {
         // Create reminder (defaults to ON)
         reminders.addReminderOneTime("Future reminder",
                 new DateTimeArg(LocalDate.parse("2025-11-25")));
@@ -284,7 +286,7 @@ class StorageTest {
      * Tests the complete lifecycle: create -> fire -> save -> load -> verify doesn't fire again
      */
     @Test
-    public void test_oneTimeReminder_completeFiringLifecycle() throws Exception {
+    public void testOneTimeReminderCompleteFiringLifecycle() throws Exception {
         // Create a past reminder that would be due
         reminders.addReminderOneTime("Past reminder",
                 new DateTimeArg(LocalDate.parse("2025-10-20"), LocalTime.parse("12:00")));
@@ -317,7 +319,7 @@ class StorageTest {
      * Tests that a recurring reminder is saved correctly
      */
     @Test
-    public void test_recurringReminder_save() throws Exception {
+    public void testRecurringReminderSave() throws Exception {
         reminders.addReminderRec("Weekly meeting",
                 new DateTimeArg(LocalDate.parse("2025-11-25")),
                 Duration.ofDays(7));
@@ -334,7 +336,7 @@ class StorageTest {
      * Tests that a saved recurring reminder is read correctly
      */
     @Test
-    public void test_recurringReminder_load() throws Exception {
+    public void testRecurringReminderLoad() throws Exception {
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of("R" + DELIM + "1" + DELIM + "0" + DELIM + "Weekly meeting" + DELIM + "2025-10-25" + DELIM +
                         "P7D"),
@@ -350,7 +352,7 @@ class StorageTest {
      * Tests that a habit is saved correctly
      */
     @Test
-    public void test_habit_save() throws Exception {
+    public void testHabitSave() throws Exception {
         habits.addHabit("Morning routine",
                 new DateTimeArg(LocalDate.parse("2025-10-27")),
                 Duration.ofDays(1),
@@ -367,7 +369,7 @@ class StorageTest {
      * Tests that a saved habit is read correctly
      */
     @Test
-    public void test_habit_load() throws Exception {
+    public void testHabitLoad() throws Exception {
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of("H" + DELIM + "Morning routine" + DELIM + "2025-10-27" + DELIM + "PT24H" + DELIM + "5"),
                 StandardOpenOption.CREATE);
@@ -383,7 +385,7 @@ class StorageTest {
      * Tests that invalid lines are skipped during loading and valid entries are still loaded
      */
     @Test
-    public void test_invalidLine_skipped() throws Exception {
+    public void testInvalidLineSkipped() throws Exception {
         // Create a file with mixed valid and invalid lines
         Files.write(Paths.get(TEST_FILE_PATH),
                 List.of(
