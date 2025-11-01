@@ -1,0 +1,46 @@
+@startuml TaskInteractions
+' High-level component interactions diagram
+skinparam componentStyle rectangle
+skinparam roundcorner 10
+
+package "Tasks Component" {
+  component TaskList
+  component Task <<abstract>>
+  component ToDo
+  component Deadline
+  component Event
+}
+
+component MessageHandler <<UI>>
+component DateTimeArg <<Model>>
+component CommandHandler <<Controller>>
+component DataFormatting <<Util>>
+component MessageFormatting <<Util>>
+
+' Main interactions
+CommandHandler --> TaskList : manages
+TaskList --> Task : contains *
+Task <|.. ToDo
+Task <|.. Deadline
+Task <|.. Event
+
+Deadline ..> DateTimeArg : uses
+Event ..> DateTimeArg : uses
+
+TaskList ..> MessageHandler : sends notifications
+
+ToDo ..> DataFormatting : saving
+ToDo ..> MessageFormatting : display
+Deadline ..> DataFormatting : saving
+Deadline ..> MessageFormatting : display
+Event ..> DataFormatting : saving
+Event ..> MessageFormatting : display
+
+note right of TaskList
+  Manages heterogeneous collection
+  of Task objects using polymorphism.
+  Provides add, delete, mark, edit,
+  find, and sort operations.
+end note
+
+@enduml

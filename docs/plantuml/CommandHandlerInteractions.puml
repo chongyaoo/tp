@@ -1,0 +1,108 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam classFontSize 10
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+skinparam nodesep 50
+skinparam ranksep 1
+skinparam noteArrowLength 2
+hide circle
+
+class ":CommandHandler" {
+  - {static} activeTimer: Timer
+  - {static} scheduler: ScheduledExecutorService
+  - {static} logger: Logger
+
+  + {static} executeCommand(): void
+  + {static} cleanup(): void
+  - {static} handleToDo(): void
+  - {static} handleDeadline(): void
+  - {static} handleEvent(): void
+  - {static} handleList(): void
+  - {static} handleFind(): void
+  - {static} handleMark(): void
+  - {static} handleUnmark(): void
+  - {static} handleEdit(): void
+  - {static} handleDelete(): void
+  - {static} handleRemAddRec(): void
+  - {static} handleRemAddOneTime(): void
+  - {static} handleRemList(): void
+  - {static} handleRemRm(): void
+  - {static} handleRemOn(): void
+  - {static} handleRemOff(): void
+  - {static} handleRemSnooze(): void
+  - {static} handleTimerStart(): void
+  - {static} handleTimerPause(): void
+  - {static} handleTimerResume(): void
+  - {static} handleTimerReset(): void
+  - {static} handleTimerStat(): void
+  - {static} startTimerMonitoring(): void
+  - {static} handleHabitAdd(): void
+  - {static} handleHabitDelete(): void
+  - {static} handleHabitList(): void
+  - {static} handleHabitStreak(): void
+}
+
+class ":Command" {
+  + type: CommandType
+  + desc: String
+  + substring: String
+  + isSorted: boolean
+  + message: String
+  + datetime0: DateTimeArg
+  + datetime1: DateTimeArg
+  + indexes: LinkedHashSet<Integer>
+  + index: int
+  + isRecurring: boolean
+  + duration: Integer
+  + interval: Duration
+  + snoozeDuration: Duration
+}
+
+class ":XYZList" {
+  - list: ArrayList
+}
+note bottom of ":XYZList" : XYZList represents:\nTaskList, ReminderList, HabitList
+
+class ":Timer" {
+  - {static} logger: Logger
+  - state: TimerState
+  - remainingSec: long
+  - startedAt: Instant
+  - label: String
+
+  + Timer()
+  + Timer()
+  + start(): void
+  + pause(): void
+  + resume(): void
+  + reset(): void
+  + getRemainingTime(): long
+  + getState(): TimerState
+  + getLabel(): String
+  + toString(): String
+  - {static} formatDuration(): int[]
+}
+
+class ":MessageHandler" {
+  + {static} sendMessage(): void
+}
+note bottom of ":MessageHandler" : Contains other\nprinting related functions
+
+class ":IndexValidator" {
+  + {static} validateIndexes(): void
+  + {static} validateIndex(): void
+}
+
+class ":StudyMateException" {
+  + StudyMateException(message: String)
+}
+
+":CommandHandler" ..> ":Command" : uses
+":CommandHandler" ..> ":XYZList" : uses
+":CommandHandler" ..> ":Timer" : manages
+":CommandHandler" ..> ":MessageHandler" : uses
+":CommandHandler" ..> ":IndexValidator" : uses
+":CommandHandler" ..> ":StudyMateException" : throws
+
+@enduml

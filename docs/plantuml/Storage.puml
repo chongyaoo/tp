@@ -1,0 +1,51 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide circle
+
+class ":Storage" {
+    - filePath : String
+    - delim : char
+    --
+    + Storage()
+    + load() : void
+    + save() : void
+}
+
+class ":TaskList" {
+    - taskList : ArrayList
+    --
+    + addToDo() : void
+    + addDeadline() : void
+    + addEvent() : void
+    + getTask() : Task
+    + getTasks() : ArrayList
+    + getCount() : int
+}
+
+class ":ReminderList" {
+    - reminderList : ArrayList
+    - clock : Clock
+    --
+    + addReminderRec() : void
+    + addReminderOneTime() : void
+    + getReminders() : ArrayList
+    + getCount() : int
+}
+
+class ":HabitList" {
+    - habits : ArrayList
+    - clock : Clock
+    --
+    + addHabit() : void
+    + addHabit() : void
+    + getHabits() : ArrayList
+    + getCount() : int
+}
+
+' arrows: these lists "use" Storage for persistence
+":TaskList" --> ":Storage"
+":ReminderList" --> ":Storage"
+":HabitList" --> ":Storage"
+
+@enduml

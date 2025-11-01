@@ -1,0 +1,152 @@
+@startuml ClassDiagram
+' Full detailed class diagram
+skinparam classAttributeIconSize 0
+skinparam roundcorner 5
+hide circle
+
+' Interface
+interface ":Schedule" {
+  + interval(): Duration
+  + isRecurring(): boolean
+  + isDue(): boolean
+  + isFired(): void
+  + setRemindAt(): void
+  + setOnReminder(): void
+  + getOnReminder(): boolean
+  + snooze(): void
+}
+
+' Schedule Implementations
+class ":OneTimeSchedule" {
+  - remindAt: DateTimeArg
+  - isFired: boolean
+  - onReminder: boolean
+  - clock: Clock
+  + OneTimeSchedule()
+  + setOnReminder(): void
+  + getOnReminder(): boolean
+  + isDue(): boolean
+  + isFired(): void
+  + snooze(): void
+}
+
+class ":RecurringSchedule" {
+  - remindAt: DateTimeArg
+  - interval: Duration
+  - onReminder: Boolean
+  - clock: Clock
+  + RecurringSchedule()
+  + RecurringSchedule()
+  + interval(): Duration
+  + setOnReminder(): void
+  + getOnReminder(): boolean
+  + isRecurring(): boolean
+  + isDue(): boolean
+  + setNextSchedule(): void
+  + isFired(): void
+}
+
+' Core Classes
+class ":Reminder" {
+  - name: String
+  - schedule: Schedule
+  - remindAt: DateTimeArg
+  + Reminder()
+  + Reminder()
+  + getName(): String
+  + setOnReminder(): void
+  + getOnReminder(): Boolean
+  + isDue(): Boolean
+  + isFired(): void
+  + isRecurring(): boolean
+  + snooze(): void
+  + toSaveString(): String
+  + toString(): String
+}
+
+class ":ReminderList" {
+  - reminderList: ArrayList<Reminder>
+  - clock: Clock
+  + ReminderList()
+  + ReminderList()
+  + addReminderRec(): void
+  + addReminderOneTime(): void
+  + getCount(): int
+  + getReminder(): Reminder
+  + delete(): void
+  + turnOnReminders(): void
+  + turnOffReminders(): void
+  + handleSnooze(): void
+  + getReminders(): List<Reminder>
+  + getReminderIndex(): int
+}
+
+class ":Scheduler" {
+  - reminderList: ReminderList
+  - executorService: ScheduledExecutorService
+  - intervalSeconds: int
+  + Scheduler()
+  + Scheduler()
+  + start(): void
+  + shutdown(): void
+  + tick(): List<IndexedReminder>
+  - checkAndNotify(): void
+}
+
+class ":IndexedReminder" {
+  + index: int
+  + reminder: Reminder
+  + IndexedReminder()
+  + getReminder(): Reminder
+  + getIndex(): int
+}
+
+' External dependencies
+class ":DateTimeArg" <<external>> {
+  + getDate(): LocalDate
+  + getTime(): LocalTime
+  + getDateTime(): LocalDateTime
+  + setLocalDateTime(): void
+}
+
+class ":Clock" <<external>> {
+}
+
+' Relationships
+":Schedule" <|.. ":OneTimeSchedule"
+":Schedule" <|.. ":RecurringSchedule"
+
+":Reminder" *-- ":Schedule" : contains
+":Reminder" ..> ":DateTimeArg" : uses
+
+":ReminderList" o-- "0..*" ":Reminder" : manages
+":ReminderList" ..> ":Clock" : uses
+
+":Scheduler" --> ":ReminderList" : monitors
+":Scheduler" ..> ":IndexedReminder" : creates
+
+":IndexedReminder" --> ":Reminder" : wraps
+
+":OneTimeSchedule" ..> ":DateTimeArg" : uses
+":OneTimeSchedule" ..> ":Clock" : uses
+":RecurringSchedule" ..> ":DateTimeArg" : uses
+":RecurringSchedule" ..> ":Clock" : uses
+
+note right of ":Schedule"
+  Interface with default methods
+  for different schedule types
+end note
+
+note right of ":Scheduler"
+  Periodically checks reminders
+  and triggers notifications
+  using ScheduledExecutorService
+end note
+
+note bottom of ":Reminder"
+  Core reminder entity that delegates
+  scheduling logic to Schedule implementations.
+  Supports both one-time and recurring reminders.
+end note
+
+@enduml

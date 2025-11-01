@@ -1,0 +1,71 @@
+@startuml TaskListInteractions
+' Detailed TaskList component interactions
+skinparam roundcorner 5
+hide circle
+skinparam classAttributeIconSize 0
+class ":TaskList" {
+  + addToDo()
+  + addDeadline()
+  + addEvent()
+  + delete()
+  + mark()
+  + unmark()
+  + findTasks()
+  + getSorted()
+  + editDesc()
+  + editDeadline()
+  + editFrom()
+  + editTo()
+}
+
+abstract class ":Task" <<abstract>> {
+  + getName()
+  + setName()
+  + getDone()
+  + setDone()
+  + toSaveString()
+}
+
+class ":Deadline" {
+  + getDeadline()
+  + setDeadline()
+}
+
+class ":Event" {
+  + getFrom()
+  + getTo()
+  + setFrom()
+  + setTo()
+}
+
+class ":MessageHandler" <<UI>> {
+  + sendDeleteTaskMessage()
+  + sendMarkMessage()
+  + sendUnmarkMessage()
+  + sendEditDescMessage()
+  + sendEditDeadlineMessage()
+  + sendEditFromMessage()
+  + sendEditToMessage()
+}
+
+class ":CommandHandler" <<Controller>> {
+  + execute()
+}
+
+class ":IndexValidator" <<Util>> {
+  + validateIndexes()
+}
+
+":CommandHandler" --> ":TaskList" : calls operations
+":CommandHandler" ..> ":IndexValidator" : validates indexes
+
+":TaskList" "1" o-- "0..*" ":Task" : manages
+":Task" <|.. ":ToDo"
+":Task" <|.. ":Deadline"
+":Task" <|.. ":Event"
+
+":TaskList" ..> ":MessageHandler" : sends UI messages
+":TaskList" ..> ":Task" : queries/updates
+
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+class Parser {
+  - {static} DELIMITER_BY: String
+  - {static} DELIMITER_FROM: String
+  - {static} DELIMITER_TO: String
+  - {static} SORTED_FLAG: String
+  - {static} DESCRIPTION_FLAG: String
+  - {static} DEADLINE_FLAG: String
+  - {static} FROM_FLAG: String
+  - {static} TO_FLAG: String
+  - {static} integerPattern: Pattern
+  - {static} multipleIntegerPattern: Pattern
+  - {static} TIMER_PATTERN: Pattern
+  - {static} logger: Logger
+
+  + parse(line: String): Command
+  - parseToDo(desc: String): Command
+  - parseDeadline(arguments: String): Command
+  - parseEvent(arguments: String): Command
+  - parseFind(arguments: String): Command
+  - parseList(arguments: String): Command
+  - parseMark(arguments: String[]): Command
+  - parseUnmark(arguments: String[]): Command
+  - parseEdit(arguments: String): Command
+  - parseDelete(arguments: String[]): Command
+  - parseIndexes(arguments: String[]): LinkedHashSet<Integer>
+  - parseRem(arguments: String[]): Command
+  - parseRemOn(arguments: String[]): Command
+  - parseRemOff(arguments: String[]): Command
+  - parseRemRm(arguments: String[]): Command
+  - parseRemSnooze(arguments: String[]): Command
+  - parseRemLs(rest: String): Command
+  - parseRemAdd(rem: String): Command
+  - parseDateTimeString(dateTimeString: String): DateTimeArg
+  - parseInterval(input: String): Duration
+  - parseTimerStart(arguments: String): Command
+  - parseHabit(arguments: String[]): Command
+  - parseHabitAdd(habit: String): Command
+  - parseHabitStreak(arguments: String): Command
+  - parseHabitRm(arguments: String): Command
+}
+
+@enduml

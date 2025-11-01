@@ -1,0 +1,67 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant ":CommandHandler" as CommandHandler
+participant ":HabitList" as HabitList
+participant ":Habit" as Habit
+participant ":MessageHandler" as MessageHandler
+
+CommandHandler -> HabitList: incStreak(index)
+activate HabitList
+
+HabitList -> HabitList: habit = habits.get(index)
+
+HabitList -> Habit: incStreak()
+activate Habit
+
+Habit -> Habit: now = LocalDateTime.now(clock)
+Habit -> Habit: deadline.getDateTime().\ntruncatedTo(MINUTES)
+
+alt now < deadline (TOO_EARLY)
+    Habit --> HabitList: StreakResult.TOO_EARLY
+    note right
+        No modifications to habit
+        Streak and deadline unchanged
+    end note
+
+else now > deadline + (interval/4) + 1 minute (TOO_LATE)
+    Habit -> Habit: streak = 1
+    note right: Reset streak to 1
+
+    Habit -> Habit: newDeadline = LocalDateTime.now(clock).plus(interval)
+    Habit -> Habit: this.deadline = new DateTimeArg(...)
+    note right: Update deadline to newDeadline
+
+    Habit --> HabitList: StreakResult.TOO_LATE
+
+else ON_TIME (within valid window)
+    Habit -> Habit: streak += 1
+    note right: Increment streak
+
+    Habit -> Habit: newDeadline = LocalDateTime.now(clock).plus(interval)
+    Habit -> Habit: this.deadline = new DateTimeArg(...)
+    note right: Update deadline to newDeadline
+
+    Habit --> HabitList: StreakResult.ON_TIME
+    deactivate Habit
+end
+
+HabitList -> MessageHandler: sendIncStreakMessage(habit, result)
+activate MessageHandler
+
+alt result == TOO_EARLY
+    MessageHandler -> MessageHandler: print "Too early! You can only\nincrement after deadline"
+else result == TOO_LATE
+    MessageHandler -> MessageHandler: print "Missed the deadline!\nStreak reset to 1"
+else result == ON_TIME
+    MessageHandler -> MessageHandler: print "Great! You've incremented\nyour streak"
+end
+
+MessageHandler --> HabitList
+deactivate MessageHandler
+
+
+deactivate HabitList
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+hide circle
+
+class ":HabitList" {
+  - {static} logger: Logger
+  - habits: ArrayList<Habit>
+  - clock: Clock
+
+  + HabitList()
+  + HabitList()
+  + getHabit(): Habit
+  + getAllHabits(): ArrayList<Habit>
+  + getCount(): int
+  + addHabit(): void
+  + addHabit(): void
+  + deleteHabit(): void
+  + getHabits(): ArrayList<Habit>
+  + incStreak(): StreakResult
+}
+
+class ":Habit" {
+  - {static} gracePeriod: int = 4
+  - name: String
+  - deadline: DateTimeArg
+  - interval: Duration
+  - streak: int
+  - clock: Clock
+
+  + Habit()
+  + Habit()
+  + incStreak(): StreakResult
+  + getStreak(): int
+  + toString(): String
+  + toSaveString(): String
+}
+
+
+
+class ":MessageHandler" {
+  + {static} sendAddHabitMessage(): void
+  + {static} sendDeleteHabitMessage(): void
+  + {static} sendHabitList(): void
+  + {static} sendIncStreakMessage(): void
+}
+
+class ":StudyMateException" {
+  + StudyMateException()
+}
+
+":HabitList" "1" *-- "0..*" ":Habit" : manages
+":HabitList" ..> ":MessageHandler" : uses
+":HabitList" ..> ":StudyMateException" : throws
+
+@enduml
