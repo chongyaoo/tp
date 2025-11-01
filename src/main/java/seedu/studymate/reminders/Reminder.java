@@ -23,8 +23,17 @@ public class Reminder {
      * @param dateTime The date and time for the reminder
      * @param clock The clock to use for time operations
      **/
+    public Reminder(String name, DateTimeArg dateTime, Clock clock, boolean isDone) { //One-Time Schedule
+        this.schedule = new OneTimeSchedule(dateTime, clock);
+        this.schedule.setFired(isDone);
+        this.name = name;
+        this.remindAt = dateTime;
+    }
+
+    // For MessageHandlerTest
     public Reminder(String name, DateTimeArg dateTime, Clock clock) { //One-Time Schedule
         this.schedule = new OneTimeSchedule(dateTime, clock);
+        this.schedule.setFired(true);
         this.name = name;
         this.remindAt = dateTime;
     }
@@ -94,7 +103,7 @@ public class Reminder {
             return DataFormatting.recurringReminderSaveString(schedule.getOnReminder(),
                     name, remindAt, schedule.interval());
         }
-        return DataFormatting.oneTimeReminderSaveString(schedule.getOnReminder(), name, remindAt);
+        return DataFormatting.oneTimeReminderSaveString(schedule.getOnReminder(), name, remindAt, schedule.getFired());
     }
 
     public String toString() {

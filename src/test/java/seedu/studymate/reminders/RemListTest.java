@@ -300,7 +300,7 @@ public class RemListTest {
 
         // Create recurring schedule with fixed clock and inject it into Reminder
         RecurringSchedule recSchedule = new RecurringSchedule(remDateTime, interval, fixedClock);
-        Reminder recReminder = new Reminder("Daily reminder to take a shit", remDateTime, recSchedule);
+        Reminder recReminder = new Reminder("Daily reminder to take a dump", remDateTime, recSchedule);
 
         // Verify the reminder is due (it's overdue by 2 days)
         assertTrue(recReminder.isDue(), "Reminder should be due since it's 2 days overdue");

@@ -13,13 +13,7 @@ public class RecurringSchedule implements Schedule {
     private Boolean onReminder;
     private final Clock clock;
 
-    // Default constructor for production use
-    public RecurringSchedule(DateTimeArg remindAt, Duration interval) {
-        this(remindAt, interval, Clock.systemDefaultZone());
-    }
-
-    // Package-private constructor for testing
-    RecurringSchedule(DateTimeArg remindAt, Duration interval, Clock clock) {
+    public RecurringSchedule(DateTimeArg remindAt, Duration interval, Clock clock) {
         this.remindAt = remindAt;
         this.interval = interval;
         this.onReminder = true;
@@ -44,12 +38,15 @@ public class RecurringSchedule implements Schedule {
     }
 
     public boolean isDue() {
+        if (!onReminder) {
+            return false;
+        }
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime target = LocalDateTime.of(
                 remindAt.getDate(),
                 remindAt.getTime()
         );
-        return !now.isBefore(target) && onReminder;
+        return !now.isBefore(target);
     }
 
     public void setNextSchedule() {

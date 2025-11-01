@@ -41,8 +41,9 @@ public class DataFormatting {
      * @param dateTime The date and time for the reminder.
      * @return A formatted string for file storage, e.g. "R|1|Appointment|2025-10-12T08:00"
      */
-    public static String oneTimeReminderSaveString(Boolean isDone, String name, DateTimeArg dateTime) {
-        return "R" + DELIM + "0" + DELIM + (isDone ? "1" : "0") + DELIM + name + DELIM + dateTime;
+    public static String oneTimeReminderSaveString(Boolean isDone, String name, DateTimeArg dateTime, boolean isFired) {
+        return "R" + DELIM + "0" + DELIM + (isDone ? "1" : "0") + DELIM + name + DELIM + dateTime + DELIM +
+                (isFired ? "1" : "0");
     }
 
     /**
