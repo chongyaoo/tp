@@ -7,6 +7,7 @@ import seedu.studymate.habits.HabitList;
 import seedu.studymate.reminders.ReminderList;
 import seedu.studymate.tasks.TaskList;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -53,6 +54,79 @@ public class CommandHandlerTest {
         cmd.datetime1 = endTime;
 
         // Should throw exception with message "End time cannot be earlier than start time"
+        assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
+    }
+
+    // Time Validation Tests - Reject Past Times
+    @Test
+    void testHandleDeadline_timeInPast_throwsException() {
+        // Create a deadline in the past (year 2020)
+        DateTimeArg pastDeadline = new DateTimeArg(
+                java.time.LocalDate.of(2020, 1, 1),
+                java.time.LocalTime.of(10, 0)
+        );
+
+        Command cmd = new Command(CommandType.DEADLINE, "Old Task");
+        cmd.datetime0 = pastDeadline;
+
+        // Should throw exception because deadline is in the past
+        assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
+    }
+
+    @Test
+    void testHandleEvent_endTimeInPast_throwsException() {
+        // Create an event where end time is in the past
+        DateTimeArg startTime = new DateTimeArg(
+                java.time.LocalDate.of(2020, 1, 1),
+                java.time.LocalTime.of(10, 0)
+        );
+        DateTimeArg endTime = new DateTimeArg(
+                java.time.LocalDate.of(2020, 1, 1),
+                java.time.LocalTime.of(12, 0)
+        );
+
+        Command cmd = new Command(CommandType.EVENT, "Past Event");
+        cmd.datetime0 = startTime;
+        cmd.datetime1 = endTime;
+
+        // Should throw exception because end time is in the past
+        assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
+    }
+
+    @Test
+    void testHandleRemAddOneTime_timeInPast_throwsException() {
+        // Create a one-time reminder in the past
+        DateTimeArg pastTime = new DateTimeArg(
+                java.time.LocalDate.of(2020, 1, 1),
+                java.time.LocalTime.of(10, 0)
+        );
+
+        Command cmd = new Command(CommandType.REM_ADD_ONETIME, "Old Reminder");
+        cmd.datetime0 = pastTime;
+
+        // Should throw exception because reminder time is in the past
+        assertThrows(StudyMateException.class,
+                () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
+    }
+
+    @Test
+    void testHandleRemAddRec_timeInPast_throwsException() {
+        // Create a recurring reminder starting in the past
+        DateTimeArg pastTime = new DateTimeArg(
+                java.time.LocalDate.of(2020, 1, 1),
+                java.time.LocalTime.of(10, 0)
+        );
+        Duration interval = Duration.ofHours(24);
+
+        Command cmd = new Command(CommandType.REM_ADD_REC);
+        cmd.message = "Old Recurring Reminder";
+        cmd.datetime0 = pastTime;
+        cmd.interval = interval;
+
+        // Should throw exception because reminder time is in the past
         assertThrows(StudyMateException.class,
                 () -> CommandHandler.executeCommand(taskList, reminderList, habitList, cmd));
     }

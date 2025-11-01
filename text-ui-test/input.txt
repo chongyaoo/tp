@@ -1,8 +1,11 @@
 todo Read chapter 1
 todo Complete assignment
-deadline Submit report /by 2025-10-15 23:59
-deadline Prepare presentation /by 2025-10-20 17:00
-event Team meeting /from 2025-10-25 09:00 /to 2025-10-25 17:00
+deadline Submit report /by 2025-10-26 23:59
+deadline Prepare presentation /by 2025-10-27 17:00
+event Team meeting /from 2025-10-26 09:00 /to 2025-10-26 17:00
+deadline Old deadline /by 2025-10-15 23:59
+deadline Past deadline /by 2025-10-25 11:00
+event Past event /from 2025-10-20 09:00 /to 2025-10-20 17:00
 list
 mark 1
 mark 2,3
@@ -17,6 +20,9 @@ rem ls
 rem rm 2
 rem ls
 rem rm
+rem Old reminder @ 2025-10-20 10:00
+rem Past reminder @ 2025-10-25 11:30
+rem Past recurring @ 2025-10-15 09:00 -r 1d
 rem meeting 2025-11-05
 rem meeting @
 rem meeting @ invalid-date
