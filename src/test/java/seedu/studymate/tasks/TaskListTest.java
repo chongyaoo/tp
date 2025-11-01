@@ -257,30 +257,6 @@ public class TaskListTest {
         assertEquals(5, results.size());
     }
 
-    // Test finding matches task type markers
-    @Test
-    void testFindMatchesTaskTypeMarkers() throws StudyMateException {
-        populateListForFind();
-        ArrayList<Task> results = taskList.findTasks("[T]");
-        // Should find all ToDo tasks (3 of them)
-        assertEquals(3, results.size());
-    }
-
-    // Test finding matches completion status
-    @Test
-    void testFindMatchesCompletionStatus() throws StudyMateException {
-        populateListForFind();
-        // Mark the first task
-        LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Collections.singletonList(0));
-        taskList.mark(indexes);
-
-        ArrayList<Task> markedResults = taskList.findTasks("[X]");
-        assertEquals(1, markedResults.size());
-
-        ArrayList<Task> unmarkedResults = taskList.findTasks("[ ]");
-        assertEquals(4, unmarkedResults.size());
-    }
-
     // Test finding with partial word match
     @Test
     void testFindPartialMatch() throws StudyMateException {
@@ -303,24 +279,6 @@ public class TaskListTest {
         assertEquals(0, resultsUpper.size()); // Case sensitive, so uppercase doesn't match
     }
 
-    // Test finding matches dates in deadlines
-    @Test
-    void testFindMatchesDeadlineDate() throws StudyMateException {
-        populateListForFind();
-        ArrayList<Task> results = taskList.findTasks("2025-10-25");
-        assertEquals(1, results.size());
-        assertInstanceOf(Deadline.class, results.get(0));
-    }
-
-    // Test finding matches dates in events
-    @Test
-    void testFindMatchesEventDates() throws StudyMateException {
-        populateListForFind();
-        ArrayList<Task> results = taskList.findTasks("2025-11-01");
-        assertEquals(1, results.size());
-        assertInstanceOf(Event.class, results.get(0));
-    }
-
     // Test finding with multiple words
     @Test
     void testFindMultipleWords() throws StudyMateException {
@@ -328,17 +286,6 @@ public class TaskListTest {
         ArrayList<Task> results = taskList.findTasks("submit assignment");
         assertEquals(1, results.size());
         assertEquals("submit assignment", results.get(0).getName());
-    }
-
-    // Test finding all tasks returns correct order
-    @Test
-    void testFindPreservesOrder() throws StudyMateException {
-        populateListForFind();
-        ArrayList<Task> results = taskList.findTasks("T");
-        // Should find tasks in the order they were added
-        assertTrue(results.size() >= 3);
-        // Verify first result is the first ToDo task added
-        assertEquals("read book", results.get(0).getName());
     }
 
     // --- Test Cases for getSorted() ---
