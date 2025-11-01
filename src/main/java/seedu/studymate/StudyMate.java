@@ -53,6 +53,7 @@ public class StudyMate {
                 Clock clock = Clock.fixed(fixedTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
                 reminderList = new ReminderList(clock);
                 habitList = new HabitList(clock);
+                CommandHandler.setClock(clock);
             } catch (DateTimeParseException e) {
                 System.err.println("Invalid TEST_TIME format: " + testTime);
             }

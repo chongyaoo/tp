@@ -10,6 +10,8 @@ import seedu.studymate.timer.Timer;
 import seedu.studymate.timer.TimerState;
 import seedu.studymate.ui.MessageHandler;
 
+import java.time.Clock;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,8 +27,13 @@ public class CommandHandler {
 
     private static Timer activeTimer = null;
     private static ScheduledExecutorService scheduler = null;
+    private static Clock clock = Clock.systemDefaultZone();
 
     private static final Logger logger = Logger.getLogger("Command Handler Logger");
+
+    public static void setClock(Clock clock) {
+        CommandHandler.clock = clock;
+    }
 
     /**
      * Executes the appropriate command based on the parsed input
@@ -120,6 +127,10 @@ public class CommandHandler {
      * @param cmd The command containing the task description and deadline
      */
     private static void handleDeadline(TaskList taskList, Command cmd) throws StudyMateException {
+        if (cmd.datetime0.getDateTime().isBefore(clock.instant().atZone(clock.getZone()).toLocalDateTime()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(1))) {
+            throw new StudyMateException("Deadline must be after current time!");
+        }
         taskList.addDeadline(cmd.desc, cmd.datetime0);
         int listCount = taskList.getCount();
         Task newTask = taskList.getTask(listCount - 1);
@@ -137,7 +148,11 @@ public class CommandHandler {
     private static void handleEvent(TaskList taskList, Command cmd) throws StudyMateException {
         // ensures end time (cmd.datetime1) is not before start time (cmd.datetime0) of an event
         if (cmd.datetime1.compareTo(cmd.datetime0) < 0) {
-            throw new StudyMateException("End time cannot be earlier than start time");
+            throw new StudyMateException("End time cannot be earlier than start time!");
+        }
+        if (cmd.datetime1.getDateTime().isBefore(clock.instant().atZone(clock.getZone()).toLocalDateTime()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(1))) {
+            throw new StudyMateException("End time cannot be earlier than current time!");
         }
         taskList.addEvent(cmd.desc, cmd.datetime0, cmd.datetime1);
         int listCount = taskList.getCount();
@@ -205,6 +220,10 @@ public class CommandHandler {
      * @param cmd The command containing reminder name, datetime, and interval
      */
     private static void handleRemAddRec(ReminderList reminderList, Command cmd) throws StudyMateException {
+        if (cmd.datetime0.getDateTime().isBefore(clock.instant().atZone(clock.getZone()).toLocalDateTime()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(1))) {
+            throw new StudyMateException("Reminder time cannot be earlier than current time!");
+        }
         reminderList.addReminderRec(cmd.message, cmd.datetime0, cmd.interval);
         int reminderCount = reminderList.getCount();
         Reminder newReminder = reminderList.getReminder(reminderCount - 1);
@@ -218,6 +237,10 @@ public class CommandHandler {
      * @param cmd The command containing reminder name and datetime
      */
     private static void handleRemAddOneTime(ReminderList reminderList, Command cmd) throws StudyMateException {
+        if (cmd.datetime0.getDateTime().isBefore(clock.instant().atZone(clock.getZone()).toLocalDateTime()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(1))) {
+            throw new StudyMateException("Reminder time cannot be earlier than current time!");
+        }
         reminderList.addReminderOneTime(cmd.desc, cmd.datetime0);
         int reminderCount = reminderList.getCount();
         Reminder newReminder = reminderList.getReminder(reminderCount - 1);

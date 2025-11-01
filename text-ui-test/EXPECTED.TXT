@@ -22,26 +22,35 @@ Now you have 2 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Submit report (by: 2025-10-15 23:59)
+[D][ ] Submit report (by: 2025-10-26 23:59)
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[D][ ] Prepare presentation (by: 2025-10-20 17:00)
+[D][ ] Prepare presentation (by: 2025-10-27 17:00)
 Now you have 4 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-[E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
+[E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
 Now you have 5 tasks in the task list.
+____________________________________________________________
+____________________________________________________________
+Deadline must be after current time!
+____________________________________________________________
+____________________________________________________________
+Deadline must be after current time!
+____________________________________________________________
+____________________________________________________________
+End time cannot be earlier than current time!
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][ ] Read chapter 1
 2. [T][ ] Complete assignment
-3. [D][ ] Submit report (by: 2025-10-15 23:59)
-4. [D][ ] Prepare presentation (by: 2025-10-20 17:00)
-5. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
+3. [D][ ] Submit report (by: 2025-10-26 23:59)
+4. [D][ ] Prepare presentation (by: 2025-10-27 17:00)
+5. [E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
@@ -50,7 +59,7 @@ ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15 23:59)
+[D][X] Submit report (by: 2025-10-26 23:59)
 ____________________________________________________________
 ____________________________________________________________
 OK, I've marked these tasks as not done yet:
@@ -59,28 +68,28 @@ ____________________________________________________________
 ____________________________________________________________
 Nice! I've marked these tasks as done:
 [T][X] Complete assignment
-[D][X] Submit report (by: 2025-10-15 23:59)
-[D][X] Prepare presentation (by: 2025-10-20 17:00)
+[D][X] Submit report (by: 2025-10-26 23:59)
+[D][X] Prepare presentation (by: 2025-10-27 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][X] Read chapter 1
 2. [T][X] Complete assignment
-3. [D][X] Submit report (by: 2025-10-15 23:59)
-4. [D][X] Prepare presentation (by: 2025-10-20 17:00)
-5. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
+3. [D][X] Submit report (by: 2025-10-26 23:59)
+4. [D][X] Prepare presentation (by: 2025-10-27 17:00)
+5. [E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've deleted these tasks:
-[D][X] Submit report (by: 2025-10-15 23:59)
+[D][X] Submit report (by: 2025-10-26 23:59)
 [T][X] Complete assignment
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
 1. [T][X] Read chapter 1
-2. [D][X] Prepare presentation (by: 2025-10-20 17:00)
-3. [E][ ] Team meeting (from: 2025-10-25 09:00, to: 2025-10-25 17:00)
+2. [D][X] Prepare presentation (by: 2025-10-27 17:00)
+3. [E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this One-Time reminder:
@@ -111,6 +120,15 @@ Here are your Reminders:
 ____________________________________________________________
 ____________________________________________________________
 The rm command must be followed by a task number.
+____________________________________________________________
+____________________________________________________________
+Reminder time cannot be earlier than current time!
+____________________________________________________________
+____________________________________________________________
+Reminder time cannot be earlier than current time!
+____________________________________________________________
+____________________________________________________________
+Reminder time cannot be earlier than current time!
 ____________________________________________________________
 ____________________________________________________________
 Input an event and a DATE/TIME for the reminder! Use '@' between the event and the DATE/TIME
