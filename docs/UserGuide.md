@@ -1,5 +1,45 @@
 # User Guide
 
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Quick Start](#quick-start)
+3. [Features](#features)
+   1. [Tasks](#tasks)
+      - [Adding a todo: `todo`](#adding-a-todo-todo)
+      - [Adding a deadline: `deadline`](#adding-a-deadline-deadline)
+      - [Adding an event: `event`](#adding-an-event-event)
+      - [Listing Tasks: `list`](#listing-tasks-list)
+      - [Finding Tasks: `find`](#finding-tasks-find)
+      - [Marking tasks: `mark`](#marking-tasks-mark)
+      - [Unmarking tasks: `unmark`](#unmarking-tasks-unmark)
+      - [Editing a Task: `edit`](#editing-a-task-edit)
+      - [Deleting Tasks: `delete`](#deleting-tasks-delete)
+   2. [Reminders](#reminders)
+      - [Adding a One-Time Reminder: `rem`](#adding-a-one-time-reminder-rem)
+      - [Adding a Recurring Reminder: `rem`](#adding-a-recurring-reminder-rem)
+      - [Listing Reminders: `rem ls`](#listing-reminders-rem-ls)
+      - [Turning Reminders On: `rem on`](#turning-reminders-on-rem-on)
+      - [Turning Reminders Off: `rem off`](#turning-reminders-off-rem-off)
+      - [Snoozing a Reminder: `rem snooze`](#snoozing-a-reminder-rem-snooze)
+      - [Deleting Reminders: `rem rm`](#deleting-reminders-rem-rm)
+      - [Reminder Behavior and Rules](#reminder-behavior-and-rules)
+   3. [Timer](#timer)
+      - [Starting a Timer: `start`](#starting-a-timer-start)
+      - [Pausing a Timer: `pause`](#pausing-a-timer-pause)
+      - [Resuming a Timer: `resume`](#resuming-a-timer-resume)
+      - [Resetting a Timer: `reset`](#resetting-a-timer-reset)
+      - [Checking Timer Status: `stat`](#checking-timer-status-stat)
+      - [Timer Behaviour and Rules](#timer-behaviour-and-rules)
+   4. [Habits: `habit`](#habits-habit)
+      - [Adding a Habit: `habit DESCRIPTION -t INTERVAL`](#adding-a-habithabit-description--t-interval)
+      - [Listing Habits: `habit ls`](#listing-habits-habit-ls)
+      - [Incrementing Habit Streak: `habit streak INDEX`](#incrementing-habit-streak-habit-streak-index)
+      - [Deleting a Habit: `habit rm INDEX`](#deleting-a-habit-habit-rm-index)
+   5. [Exiting the Application: `bye`](#exiting-the-application-bye)
+4. [FAQ](#faq)
+5. [Command Summary](#command-summary)
+
 ---
 
 ## Introduction
@@ -18,7 +58,7 @@ StudyMate is a desktop task management application designed for students to mana
 
 ---
 
-## Features 
+# Features
 
 ---
 

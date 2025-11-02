@@ -28,11 +28,107 @@
 
 # Developer Guide
 
+## Table of Contents
+
+1. [Acknowledgements](#acknowledgements)
+2. [Design & Implementation](#design--implementation)
+   - [Application Initialization](#application-initialization)
+     - [Clock Dependency Injection](#clock-dependency-injection)
+     - [UTF-8 Encoding Configuration](#utf-8-encoding-configuration)
+     - [Logging Configuration](#logging-configuration)
+3. [Parser Component](#parser-component)
+   - [Structure of the Parser Component](#structure-of-the-parser-component)
+   - [Parser Component Interactions](#parser-component-interactions)
+   - [How the Parser Component Works](#how-the-parser-component-works)
+   - [Key Design Considerations](#key-design-considerations)
+   - [Supported Command Formats](#supported-command-formats)
+   - [Parser Helper Methods](#parser-helper-methods)
+4. [CommandHandler Component](#commandhandler-component)
+   - [Structure of the CommandHandler Component](#structure-of-the-commandhandler-component)
+   - [CommandHandler Component Interactions](#commandhandler-component-interactions)
+   - [How the CommandHandler Component Works](#how-the-commandhandler-component-works)
+   - [CommandHandler Helper Methods](#commandhandler-helper-methods)
+   - [Key Design Considerations](#key-design-considerations-1)
+   - [Command Execution Flow](#command-execution-flow)
+5. [Task Component](#task-component)
+   - [Overview](#overview)
+   - [Architecture](#architecture)
+   - [How the Task Component Works](#how-the-task-component-works)
+   - [Error Handling & Edge Cases](#error-handling--edge-cases)
+   - [Integration and Interactions](#integration-and-interactions)
+6. [Reminders Component](#reminders-component)
+   - [Structure of the Reminders Component](#structure-of-the-reminders-component)
+   - [Reminders Component Interactions](#reminders-component-interactions)
+   - [ReminderList Component Interactions](#reminderlist-component-interactions)
+   - [Key Design Considerations](#key-design-considerations-2)
+7. [Habits Component](#habits-component)
+   - [Structure of the Habits Component](#structure-of-the-habits-component)
+   - [Habits Component Interactions](#habits-component-interactions)
+   - [How the Habits Component Works](#how-the-habits-component-works)
+   - [Grace Period Calculation](#grace-period-calculation)
+   - [Integration with Storage](#integration-with-storage)
+   - [Key Design Considerations](#key-design-considerations-3)
+8. [Storage Component](#storage-component)
+   - [Responsibilities](#responsibilities)
+   - [File Format](#file-format)
+   - [How It Works](#how-it-works)
+   - [Key Design Considerations](#key-design-considerations-4)
+9. [UI Component](#ui-component)
+10. [Product Scope](#product-scope)
+    - [Target User Profile](#target-user-profile)
+    - [Value Proposition](#value-proposition)
+11. [User Stories](#user-stories)
+12. [Non-Functional Requirements](#non-functional-requirements)
+13. [Instructions for Manual Testing](#instructions-for-manual-testing)
+    - [Initial Setup](#initial-setup)
+    - [Testing Task Management](#testing-task-management)
+    - [Testing Reminder Management](#testing-reminder-management)
+    - [Testing Timer Functionality](#testing-timer-functionality)
+    - [Testing Habit Tracking](#testing-habit-tracking)
+    - [Testing Data Persistence](#testing-data-persistence)
+    - [Testing Case Insensitivity](#testing-case-insensitivity)
+    - [Testing Edge Cases](#testing-edge-cases)
+---
+
 # Acknowledgements
 
 Thank you teaching team of CS2113!
 
 # Design & Implementation
+
+---
+
+# Application Initialization
+
+The `StudyMate` main class orchestrates the application startup and component initialization with several key features for robustness and testability:
+
+## Clock Dependency Injection
+
+The application supports Clock injection for testability via the `TEST_TIME` environment variable:
+
+* **Production Mode**: Uses `Clock.systemDefaultZone()` for real-time operations
+* **Test Mode**: When `TEST_TIME` environment variable is set (format: `YYYY-MM-DDTHH:mm`), creates a fixed `Clock` instance at that time
+* The injected Clock is passed to:
+  * `ReminderList` - for checking reminder due times
+  * `HabitList` - for validating habit streak increments
+  * `CommandHandler` - for validating that task/reminder times are in the future
+
+This design enables deterministic testing of time-dependent features without waiting for real time to pass.
+
+## UTF-8 Encoding Configuration
+
+All I/O operations use UTF-8 encoding to ensure proper handling of international characters and special symbols:
+
+* Scanner input configured with `StandardCharsets.UTF_8`
+* System output streams configured with UTF-8 encoding
+* File operations (Storage) use UTF-8 for reading and writing
+
+## Logging Configuration
+
+When running from JAR:
+* Logging is automatically configured via `/logging.properties` resource
+* Console output is suppressed to prevent cluttering user interface
+* Logs can be re-enabled by modifying the properties file
 
 ---
 
@@ -214,13 +310,17 @@ The Parser component supports the following command formats:
 
 1. **Case Insensitivity**: All command words are case-insensitive (e.g., `TODO`, `todo`, `ToDo` are all valid)
 
-2. **Whitespace Normalisation**: Multiple consecutive spaces are collapsed into single spaces
+2. **Case-Insensitive Delimiters**: Task delimiters `/by`, `/from`, and `/to` are parsed case-insensitively (e.g., `/BY`, `/By`, `/by` are all valid)
 
-3. **Index Range Expansion**: Range notation (e.g., `1...5`) is automatically expanded to individual indices
+3. **Whitespace Normalisation**: Multiple consecutive spaces are collapsed into single spaces
 
-4. **Date-Time Parsing**: Uses Java's `LocalDate.parse()` and `LocalTime.parse()` for robust date/time validation
+4. **Index Range Expansion**: Range notation (e.g., `1...5`) is automatically expanded to individual indices
 
-5. **Duration Interval Parsing**: Custom `parseInterval()` method supports human-readable formats like `30m`, `2h`, `1d`, `1w` for minutes, hours, days, and weeks respectively
+5. **Date-Time Parsing**: Uses Java's `LocalDate.parse()` and `LocalTime.parse()` for robust date/time validation
+
+6. **Duration Interval Parsing**: Custom `parseInterval()` method supports human-readable formats like `30m`, `2h`, `1d`, `1w` for minutes, hours, days, and weeks respectively
+
+7. **Number Overflow Protection**: All numeric inputs are validated against integer overflow with appropriate error handling
 
 ---
 
@@ -238,17 +338,19 @@ The Parser component includes several private helper methods:
   * Calls `capNumbers()` on each index
 
 * `parseDateTimeString(String dateTimeString)` - Parses date-time strings:
-  * Format: `yyyy-MM-dd HH:mm` (both date and time required)
+  * Format: `YYYY-MM-DD HH:mm` (both date and time required)
   * Splits on space to separate date and time components
   * Uses `LocalDate.parse()` and `LocalTime.parse()`
   * Returns `DateTimeArg` object
-  * Throws `DateTimeParseException` if format invalid or time missing
+  * Throws `StudyMateException` with message "Bad datetime syntax! The syntax is YYYY-MM-DD HH:mm!" if format invalid or time missing
 
 * `parseInterval(String input)` - Parses duration/interval strings:
   * Format: `<number><unit>` where unit is m/h/d/w
   * Normalizes input to lowercase
   * Validates format matches `\\d+[smhdw]` pattern
   * Calls `capNumbers()` to validate value
+  * Throws `StudyMateException` with message "Input value is too long!" if integer overflow occurs
+  * Validates value > 0
   * Returns `Duration` object
   * Throws `StudyMateException` for invalid format/unit or non-positive values
 
@@ -279,6 +381,7 @@ The CommandHandler component acts as the controller in the application architect
 * `HabitList` - Model component managing the list of habits
 * `Timer` - Manages timer state and countdown functionality
 * `TimerState` - Enumeration defining timer states (IDLE, RUNNING, PAUSED)
+* `Clock` - Java time API component injected for testability (defaults to system clock)
 * `Task` - Abstract base class for all task types
 * `Reminder` - Represents a reminder with schedule information
 * `Habit` - Represents a habit with deadline, interval, and streak tracking
@@ -338,11 +441,13 @@ For all commands, the CommandHandler follows a similar pattern:
    * If validation succeeds, the operation proceeds on the Model component
 
 2. **For task operations:**
+   * **Time Validation**: For deadline and event tasks, validates that the specified time is in the future (current time + 1 minute, truncated to minutes)
    * The handler interacts with `TaskList` to add, modify, or delete tasks
    * After the operation, the result is retrieved from TaskList
    * `MessageHandler` is called to display the result to the user
 
 3. **For reminder operations:**
+   * **Time Validation**: Validates that the reminder time is in the future (current time + 1 minute, truncated to minutes)
    * The handler interacts with `ReminderList` to add or remove reminders
    * For recurring reminders, a `Duration` interval is stored alongside the reminder
    * Results are displayed through `MessageHandler`
@@ -388,13 +493,15 @@ The CommandHandler includes private helper methods for timer management:
 
 ### Aspect: Static vs Instance Methods
 
-* **Current choice**: Use static methods and static state for CommandHandler
-  * Pros: Simple access pattern; no need to pass CommandHandler instance around; centralised state management
-  * Cons: Harder to test; global mutable state; potential concurrency issues; single active timer limitation
+* **Current choice**: Use static methods and static state for CommandHandler with Clock injection
+  * Pros: Simple access pattern; no need to pass CommandHandler instance around; centralised state management; Clock injection via `setClock()` enables testability for time-dependent validations
+  * Cons: Still has global mutable state; potential concurrency issues; single active timer limitation
 
-* **Alternative**: Use instance methods with dependency injection
+* **Alternative**: Use instance methods with full dependency injection
   * Pros: Better testability; easier to mock; supports multiple independent instances
   * Cons: More complex initialisation; need to pass instance around; more boilerplate code
+
+**Rationale**: The hybrid approach (static with Clock injection) provides a middle ground - maintaining simplicity while enabling critical time-based testing through the `TEST_TIME` environment variable mechanism.
 
 ### Aspect: Command Routing
 
@@ -626,7 +733,7 @@ Below, every class is described with all its fields, methods, and their individu
     - `public Task getTask(int index)`: Accesses a task by its 0-based index
     - `public ArrayList<Task> getTasks()`: Returns a copy of the internal task list
     - `public ArrayList<Task> getSorted()`: Returns a sorted list of all deadlines/events by date/time
-    - `public ArrayList<Task> findTasks(String substring)`: Finds all tasks whose `toString()` contains the substring
+    - `public ArrayList<Task> findTasks(String substring)`: Finds all tasks whose name (via `getName()`) contains the substring. This searches only the task description, not the full string representation including type markers or completion status
 
     - `public void editDesc(int index, String newDesc)`: Changes the description of a task at the specified index
     - `public void editDeadline(int index, DateTimeArg deadline)`: Sets deadline for a Deadline task
@@ -670,7 +777,7 @@ The classes with the Task Component can be summarised in the following Class Dia
 
 ### Searching and Listing
 
-- `findTasks(substring)` returns all tasks whose `toString()` includes the given substring
+- `findTasks(substring)` returns all tasks whose name (via `getName()`) contains the given substring. This provides focused search results by matching only the task description, excluding type markers and completion status
 - `getTasks()` provides direct indexed access for the entire current list, supporting paged/batch output
 - `getSorted()` finds all deadlines and events and returns them sorted by relevant date fields
 
@@ -1249,21 +1356,27 @@ It serializes model objects into human-readable strings and deserializes them in
 
 ## File Format
 
-The save file is a plain UTF-8 text file containing one line per entity:
+The save file is a plain UTF-8 encoded text file containing one line per entity:
+Let | represent the actual char separator (ASCII value 0x1F)
 
+```
 T | 0 | Read book
 D | 1 | Submit report | 2025-11-15T23:59
 E | 0 | Project meeting | 2025-11-04T15:00 | 2025-11-04T16:00
-RO | Call mom | 2025-11-01T09:00
-RR | Pay bills | 2025-11-03T08:00 | PT1W
+R | 0 | 1 | Call mom | 2025-11-01T09:00 | 0
+R | 1 | 0 | Pay bills | 2025-11-03T08:00 | PT1W
 H | Exercise | 2025-11-02T09:00 | PT24H | 3
+```
 
 Where:
 - The first token identifies the type.
-- Boolean values (`0` or `1`) represent completion status.
+- Boolean values (`0` or `1`) represent completion/status flags.
 - Date/time uses format (`yyyy-MM-ddTHH:mm`).
-- Recurring reminders include an interval in `Duration` form.
+- **Reminder format**: `R | isRecurring | onReminder | name | datetime | isFired/interval`
+  - For one-time reminders (isRecurring=0): includes `isFired` flag (0 or 1) to track if reminder has already fired
+  - For recurring reminders (isRecurring=1): includes interval in `Duration` format (e.g., `PT1W`)
 - Habits store name, deadline, interval, and streak.
+- All file operations use UTF-8 encoding for proper character support.
 
 ---
 
@@ -1272,22 +1385,23 @@ Where:
 ### Loading Sequence
 
 1. `StudyMate` creates a `Storage` instance and calls `loadAll()`.
-2. `Storage` opens the file and reads each line.
-3. Each line is split by the delimiter `" | "` and reconstructed as:
+2. `Storage` opens the file with UTF-8 encoding and reads each line.
+3. Each line is split by the delimiter `0x1F` (ASCII Unit Separator) and reconstructed as:
    * `T` → `ToDo`
    * `D` → `Deadline`
    * `E` → `Event`
-   * `RO` → One-time `Reminder`
-   * `RR` → Recurring `Reminder`
+   * `R` with isRecurring=0 → One-time `Reminder` (includes isFired flag to prevent re-firing)
+   * `R` with isRecurring=1 → Recurring `Reminder` (includes interval duration)
    * `H` → `Habit`
 4. Objects are added to their respective lists.
-5. Lists are returned to `StudyMate` for runtime use.
+5. Invalid or corrupt lines are skipped with logging, allowing valid data to still load.
+6. Lists are returned to `StudyMate` for runtime use.
 
 ### Saving Sequence
 
 1. Whenever the user adds, edits, or deletes data, or upon exit, `Storage.saveAll()` is called.
 2. Each model component provides its serialized representation via `toSaveString()`.
-3. All lines are written to `data/StudyMate.txt` using buffered writers.
+3. All lines are written to `data/StudyMate.txt` using UTF-8 encoded buffered writers.
 4. The file is atomically replaced to ensure consistency.
 
 ---
@@ -1725,9 +1839,17 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Command: `event Team meeting /from 2025-11-10 14:00 /to 2025-11-10 16:00`
 - Expected: Event task is added with start and end times.
 
+**Test case: Deadline in the past**
+- Command: `deadline Past task /by 2024-01-01 10:00`
+- Expected: Error message: "Deadline must be after current time!"
+
+**Test case: Event end time in the past**
+- Command: `event Past event /from 2024-01-01 09:00 /to 2024-01-01 17:00`
+- Expected: Error message: "End time cannot be earlier than current time!"
+
 **Test case: Invalid deadline format**
 - Command: `deadline Test /by tomorrow`
-- Expected: Error message about bad datetime syntax. Format should be `yyyy-mm-dd HH:mm`.
+- Expected: Error message about bad datetime syntax. Format should be `YYYY-MM-DD HH:mm`.
 
 ### Listing Tasks
 
@@ -1765,7 +1887,7 @@ This section provides instructions for manual testing of StudyMate. These test c
 
 **Test case: Find tasks by keyword**
 - Command: `find assignment`
-- Expected: All tasks containing "assignment" are displayed.
+- Expected: All tasks whose name contains "assignment" are displayed. Search matches task descriptions only, not type markers or completion status.
 
 **Test case: Case-insensitive search**
 - Command: `find CHAPTER`
@@ -1810,6 +1932,10 @@ This section provides instructions for manual testing of StudyMate. These test c
 **Test case: Add recurring reminder**
 - Command: `rem Weekly review @ 2025-11-01 10:00 -r 168h`
 - Expected: Recurring reminder is added with 168-hour (weekly) interval.
+
+**Test case: Reminder time in the past**
+- Command: `rem Past reminder @ 2024-01-01 10:00`
+- Expected: Error message: "Reminder time cannot be earlier than current time!"
 
 **Test case: Invalid interval format**
 - Command: `rem Test @ 2025-11-01 10:00 -r abc`
@@ -1949,6 +2075,13 @@ This section provides instructions for manual testing of StudyMate. These test c
 - Command: `TODO test task`, `List`, `MARK 1`, `BYE`
 - Expected: All commands work correctly regardless of case.
 
+**Test case: Delimiters are case-insensitive**
+- Commands: 
+  - `deadline Test /BY 2025-12-15 23:59`
+  - `event Meeting /FROM 2025-12-10 14:00 /TO 2025-12-10 16:00`
+  - `deadline Report /by 2025-12-20 10:00`
+- Expected: All commands parse correctly regardless of delimiter case.
+
 **Test case: Flags are case-insensitive**
 - Command: `list -S`, `edit 1 -N New description`, `rem Test @ 2025-11-01 10:00 -R 24h`
 - Expected: All flags are recognized regardless of case.
@@ -1975,13 +2108,3 @@ This section provides instructions for manual testing of StudyMate. These test c
 **Test case: Very long timer duration**
 - Command: `start Test @ 10000`
 - Expected: Timer starts with 10,000 minutes (or appropriate validation message if exceeding limits).
-
-## Notes for Testers
-
-- Always test commands with both valid and invalid inputs.
-- Verify that error messages are clear and helpful.
-- Check that data persists correctly after each major operation.
-- Test boundary conditions (empty lists, maximum indices, etc.).
-- Verify that the application handles concurrent operations gracefully.
-- Test with both lowercase and uppercase commands/flags to ensure case insensitivity.
-
