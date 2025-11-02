@@ -13,7 +13,7 @@ StudyMate is a desktop task management application designed for students to mana
 1. Ensure that you have Java 17 or above installed.
 2. Download the latest version of `StudyMate` from the releases page.
 3. Copy the file to the folder you want to use as the home folder for StudyMate.
-4. Open a command terminal, navigate to the folder containing the JAR file, and run `java -jar studymate.jar`.
+4. Open a command terminal, navigate to the folder containing the JAR file, and run `java -jar StudyMate.jar`.
 5. Type commands in the terminal and press Enter to execute them.
 
 ---
