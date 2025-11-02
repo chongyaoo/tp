@@ -157,10 +157,10 @@ public class Scheduler {
      *   <li><b>Recurring reminders</b>: Rescheduled to their next occurrence</li>
      * </ul>
      *
-     * @return A list of {@link IndexedReminder} objects representing all reminders that
-     * were due at the time of this check. Returns an empty list if no reminders
-     * are due. Each IndexedReminder contains the reminder and its display index.
+     * @return A list of {@link IndexedReminder} objects representing all reminders
+     *              that were due at the time of this check.
      */
+
     public List<IndexedReminder> tick() {
         List<IndexedReminder> remindersToOutput = new java.util.ArrayList<>();
         synchronized (reminderList) {
