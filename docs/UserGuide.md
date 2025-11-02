@@ -858,6 +858,16 @@ This gives you reasonable flexibility while still encouraging consistency.
 
 **A**: The system automatically handles duplicate indices by processing each unique index only once. For example, `mark 3,2,1,1` will mark tasks 1, 2, and 3 exactly once, ignoring the duplicate `1`. Similarly, `delete 5,5,3` will delete tasks 3 and 5 without errors. This design allows you to trust that duplicate indices are handled appropriately - the command executes successfully and each specified task is affected only once, regardless of how many times its index appears in the command. Hence, no warnings are thrown for this.
 
+**Q**: Why does the system allow me to add duplicate tasks or reminders with the same name?
+
+**A**: The system prioritizes user flexibility over preventing duplicates. You may legitimately need multiple tasks or reminders with the same name in different contexts, such as:
+* Recurring deadlines: "Submit weekly report" every week with different due dates
+* Similar tasks for different occasions: "Buy groceries" for different shopping trips
+* Iterative work: Multiple reviews of the same material at different times
+* Regular recurring events: "Team meeting" scheduled for multiple different dates
+
+Since what constitutes a "true duplicate" is subjective (same name? same name and date? same everything?), the system allows you to organize your tasks as you see fit. If you accidentally create a duplicate, you can easily identify and delete it using the `list` and `delete` commands.
+
 ---
 ## Command Summary
 
