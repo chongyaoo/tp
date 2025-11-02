@@ -26,6 +26,8 @@ StudyMate is a desktop task management application designed for students to mana
 
 StudyMate supports three kinds of tasks: todo, deadline, and event. You can also list, search, edit, mark, unmark, or delete them efficiently with CLI commands. All commands are case-insensitive, but task indices always start at 1 (as displayed in the list view).
 
+**Important:** When specifying multiple indices separated by commas, **do not include spaces** between the comma and numbers. For example, use `mark 1,2,3` not `mark 1, 2, 3`.
+
 ---
 
 ### Adding a todo: `todo`
@@ -185,6 +187,7 @@ Mark one or more tasks as "done".
 **Format:** `mark INDEX[,INDEX...]`
 * `INDEX` corresponds to the task number from the list command.
 * Can accept multiple indices separated by commas (e.g., `mark 3,5`), or ranges (e.g., `mark 2...4`).
+* **Important:** Do not include spaces after commas. Use `mark 1,2,3` not `mark 1, 2, 3`.
 
 **Examples:**
 * `mark 1`
@@ -214,6 +217,7 @@ Mark one or more tasks as "not done".
 **Format:** `unmark INDEX[,INDEX...]`
 * `INDEX` corresponds to the task number from the list command.
 * Can accept multiple indices separated by commas (e.g., `unmark 3,5`), or ranges (e.g., `unmark 2...4`).
+* **Important:** Do not include spaces after commas. Use `unmark 1,2,3` not `unmark 1, 2, 3`.
 
 **Expected Output:**
 
@@ -267,6 +271,7 @@ OK, I've edited the description of the task to:
 ### Deleting Tasks: `delete`
 
 Removes one or more tasks from your list
+* **Important:** Do not include spaces after commas. Use `delete 1,2,3` not `delete 1, 2, 3`.
 
 **Format:** `delete INDEX[,INDEX...]`
 * `INDEX` corresponds to the task number from the list command.
@@ -478,6 +483,7 @@ Permanently removes one or more reminders.
 
 * `INDEX` corresponds to the reminder number from the `rem ls` command.
 * Can accept multiple indices separated by commas (e.g., `rem rm 2,4`).
+* **Important:** Do not include spaces after commas. Use `rem rm 1,2,3` not `rem rm 1, 2, 3`.
 
 **Examples:**
 * `rem rm 1`
