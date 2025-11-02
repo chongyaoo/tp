@@ -831,7 +831,12 @@ Bye. Hope to see you again soon!
 
 **Q**: How is the grace period calculated for habits?
 
-**A**: The grace period is (interval ÷ 4) + 1 minute. For example, a daily habit (24h) has a 6-hour grace period, while a weekly habit (7d) has a 1.75-day grace period. This gives you reasonable flexibility while still encouraging consistency.
+**A**: The grace period is (interval ÷ 4) + 1 minute. The division is calculated precisely without rounding - the system maintains exact fractional durations down to the nanosecond level. For example:
+* Daily habit (24 hours): grace period = 6 hours + 1 minute
+* Weekly habit (7 days = 168 hours): grace period = 42 hours (1 day 18 hours) + 1 minute
+* 12-hour habit: grace period = 3 hours + 1 minute
+
+This gives you reasonable flexibility while still encouraging consistency.
 
 **Q**: Can I change a habit's interval after creating it?
 
