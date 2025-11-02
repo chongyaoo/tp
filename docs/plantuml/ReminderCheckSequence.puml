@@ -28,8 +28,14 @@ loop for each reminder
 
   alt OneTimeSchedule
     Schedule -> Schedule : check time >= target\nAND not fired\nAND onReminder
+    activate Schedule
+    Schedule --> Schedule
+    deactivate Schedule
   else RecurringSchedule
     Schedule -> Schedule : check time >= target\nAND onReminder
+    activate Schedule
+    Schedule --> Schedule
+    deactivate Schedule
   end
 
   return boolean
@@ -41,6 +47,9 @@ loop for each reminder
     return index
 
     Scheduler -> Scheduler : create IndexedReminder(index, r)
+    activate Scheduler
+    Scheduler --> Scheduler
+    deactivate Scheduler
 
     Scheduler -> Reminder : isFired()
     activate Reminder
@@ -50,8 +59,14 @@ loop for each reminder
 
     alt OneTimeSchedule
       Schedule -> Schedule : set onReminder = false\nset isFired = true
+      activate Schedule
+      Schedule --> Schedule
+      deactivate Schedule
     else RecurringSchedule
       Schedule -> Schedule : setNextSchedule()\n(advance deadline by interval)
+      activate Schedule
+      Schedule --> Schedule
+      deactivate Schedule
     end
 
     return
@@ -69,8 +84,10 @@ alt dueReminders not empty
   Scheduler -> MessageHandler : sendReminder(dueReminders)
   activate MessageHandler
   MessageHandler -> MessageHandler : display notifications
+  activate MessageHandler
+  MessageHandler --> MessageHandler
+  deactivate MessageHandler
   return
-  deactivate
   deactivate
 end
 
