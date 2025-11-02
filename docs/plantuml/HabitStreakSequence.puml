@@ -16,7 +16,14 @@ HabitList -> Habit: incStreak()
 activate Habit
 
 Habit -> Habit: now = LocalDateTime.now(clock)
+activate Habit
+Habit --> Habit
+deactivate Habit
+
 Habit -> Habit: deadline.getDateTime().\ntruncatedTo(MINUTES)
+activate Habit
+Habit --> Habit
+deactivate Habit
 
 alt now < deadline (TOO_EARLY)
     Habit --> HabitList: StreakResult.TOO_EARLY
@@ -27,21 +34,41 @@ alt now < deadline (TOO_EARLY)
 
 else now > deadline + (interval/4) + 1 minute (TOO_LATE)
     Habit -> Habit: streak = 1
+    activate Habit
     note right: Reset streak to 1
+    Habit --> Habit
+    deactivate Habit
 
     Habit -> Habit: newDeadline = LocalDateTime.now(clock).plus(interval)
+    activate Habit
+    Habit --> Habit
+    deactivate Habit
+
     Habit -> Habit: this.deadline = new DateTimeArg(...)
+    activate Habit
     note right: Update deadline to newDeadline
+    Habit --> Habit
+    deactivate Habit
 
     Habit --> HabitList: StreakResult.TOO_LATE
 
 else ON_TIME (within valid window)
     Habit -> Habit: streak += 1
+    activate Habit
     note right: Increment streak
+    Habit --> Habit
+    deactivate Habit
 
     Habit -> Habit: newDeadline = LocalDateTime.now(clock).plus(interval)
+    activate Habit
+    Habit --> Habit
+    deactivate Habit
+
     Habit -> Habit: this.deadline = new DateTimeArg(...)
+    activate Habit
     note right: Update deadline to newDeadline
+    Habit --> Habit
+    deactivate Habit
 
     Habit --> HabitList: StreakResult.ON_TIME
     deactivate Habit
@@ -52,10 +79,19 @@ activate MessageHandler
 
 alt result == TOO_EARLY
     MessageHandler -> MessageHandler: print "Too early! You can only\nincrement after deadline"
+    activate MessageHandler
+    MessageHandler --> MessageHandler
+    deactivate MessageHandler
 else result == TOO_LATE
     MessageHandler -> MessageHandler: print "Missed the deadline!\nStreak reset to 1"
+    activate MessageHandler
+    MessageHandler --> MessageHandler
+    deactivate MessageHandler
 else result == ON_TIME
     MessageHandler -> MessageHandler: print "Great! You've incremented\nyour streak"
+    activate MessageHandler
+    MessageHandler --> MessageHandler
+    deactivate MessageHandler
 end
 
 MessageHandler --> HabitList

@@ -30,6 +30,5 @@ deactivate CommandHandler
 
 CommandHandler --> StudyMate
 deactivate CommandHandler
-deactivate CommandHandler
 
 @enduml
