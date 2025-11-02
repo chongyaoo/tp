@@ -9,7 +9,9 @@ import java.time.Clock;
 import java.time.Duration;
 
 /**
- * A reminder has a DateTime for reminding, and the task to remind
+ * Represents a reminder with a name and schedule.
+ * Delegates scheduling logic to either OneTimeSchedule or RecurringSchedule.
+ * Acts as a facade providing unified interface for different schedule types.
  */
 public class Reminder {
     protected final String name;
@@ -17,34 +19,56 @@ public class Reminder {
     protected DateTimeArg remindAt;
 
     /**
-     * Constructs a Reminder with default status !isReminded
+     * Constructs a one-time Reminder with specified fired status.
+     * Used when loading reminders from storage.
      *
-     * @param name The name of the task
-     * @param dateTime The date and time for the reminder
-     * @param clock The clock to use for time operations
-     **/
-    public Reminder(String name, DateTimeArg dateTime, Clock clock, boolean isDone) { //One-Time Schedule
+     * @param name Task/event description
+     * @param dateTime When to fire
+     * @param clock Clock for time comparisons
+     * @param isDone Whether already fired
+     */
+    public Reminder(String name, DateTimeArg dateTime, Clock clock, boolean isDone) {
         this.schedule = new OneTimeSchedule(dateTime, clock);
         this.schedule.setFired(isDone);
         this.name = name;
         this.remindAt = dateTime;
     }
 
-    // For MessageHandlerTest
-    public Reminder(String name, DateTimeArg dateTime, Clock clock) { //One-Time Schedule
+    /**
+     * Constructs a One-time Reminder for testing (fired status = true).
+     *
+     * @param name Task/event description
+     * @param dateTime When to fire
+     * @param clock Clock for time comparisons
+     */
+    public Reminder(String name, DateTimeArg dateTime, Clock clock) {
         this.schedule = new OneTimeSchedule(dateTime, clock);
         this.schedule.setFired(true);
         this.name = name;
         this.remindAt = dateTime;
     }
 
-    public Reminder(String name, DateTimeArg dateTime, Duration interval, Clock clock) { //Recurring Schedule
+    /**
+     * Constructs a recurring Reminder.
+     *
+     * @param name Task/event description
+     * @param dateTime When to first fire
+     * @param interval Duration between firings
+     * @param clock Clock for time comparisons
+     */
+    public Reminder(String name, DateTimeArg dateTime, Duration interval, Clock clock) {
         this.schedule = new RecurringSchedule(dateTime, interval, clock);
         this.name = name;
         this.remindAt = dateTime;
     }
 
-    // Package-private constructor for testing with custom Schedule
+    /**
+     * Package-private constructor for testing with custom Schedule.
+     *
+     * @param name Task/event description
+     * @param dateTime Reminder time
+     * @param schedule Custom schedule implementation
+     */
     Reminder(String name, DateTimeArg dateTime, Schedule schedule) {
         this.name = name;
         this.remindAt = dateTime;
@@ -52,31 +76,47 @@ public class Reminder {
     }
 
     /**
-     * Returns the name of the task
+     * Returns the reminder name.
      *
-     * @return The name of the task as a String
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Sets the completion status of the task
+     * Sets whether this reminder is active.
      *
-     * @param onReminder A boolean indicating if the task is done (true) or not (false)
+     * @param onReminder true to activate, false to deactivate
      */
     public void setOnReminder(Boolean onReminder) {
         this.schedule.setOnReminder(onReminder);
     }
 
+    /**
+     * Checks if this reminder is active.
+     *
+     * @return true if active, false otherwise
+     */
     public Boolean getOnReminder() {
         return this.schedule.getOnReminder();
     }
 
+    /**
+     * Checks if this reminder is due to fire.
+     * Called periodically by Scheduler.
+     *
+     * @return true if reminder should fire now, false otherwise
+     */
     public Boolean isDue() {
         return schedule.isDue();
     }
 
+    /**
+     * Marks as fired and performs post-firing actions.
+     * One-time: deactivates. Recurring: reschedules to next occurrence.
+     * Called by Scheduler when reminder triggers.
+     */
     public void isFired() {
         schedule.isFired();
         if (!schedule.isRecurring()) {
@@ -84,19 +124,31 @@ public class Reminder {
         }
     }
 
+    /**
+     * Checks if this is a recurring reminder.
+     *
+     * @return true if recurring, false if one-time
+     */
     public boolean isRecurring() {
         return schedule.isRecurring();
     }
 
+    /**
+     * Delays this reminder by specified duration.
+     * Only supported for one-time reminders.
+     *
+     * @param duration Delay duration
+     * @throws StudyMateException if new time not in future
+     */
     public void snooze(Duration duration) throws StudyMateException {
         schedule.snooze(duration);
     }
 
     /**
-     * Returns a string representation of the task suitable for saving to a file.
-     * This method is intended to be overridden by subclasses to provide specific formatting.
+     * Returns string formatted for saving to storage.
+     * Includes all data needed to reconstruct reminder when loading.
      *
-     * @return An empty String
+     * @return Formatted save string
      */
     public String toSaveString() {
         if (schedule.isRecurring()) {
@@ -106,6 +158,11 @@ public class Reminder {
         return DataFormatting.oneTimeReminderSaveString(schedule.getOnReminder(), name, remindAt, schedule.getFired());
     }
 
+    /**
+     * Returns string formatted for display to users.
+     *
+     * @return Formatted display string
+     */
     public String toString() {
         if (schedule.isRecurring()) {
             return MessageFormatting.recReminderString(schedule.getOnReminder(), name, remindAt, schedule.interval());
