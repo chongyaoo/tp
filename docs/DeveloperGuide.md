@@ -1231,7 +1231,7 @@ It serializes model objects into human-readable strings and deserializes them in
 ## Responsibilities
 
 1. **Loading Data**
-   * Reads a text file (`data/studymate.txt`) line by line.
+   * Reads a text file (`data/StudyMate.txt`) line by line.
    * Distinguishes data types by prefix (T, D, E, R, H). The R prefix encodes both one-time and recurring reminders via flag values.
    * Parses each line and reconstructs the appropriate model object.
    * Populates `TaskList`, `ReminderList`, and `HabitList`.
@@ -1287,7 +1287,7 @@ Where:
 
 1. Whenever the user adds, edits, or deletes data, or upon exit, `Storage.saveAll()` is called.
 2. Each model component provides its serialized representation via `toSaveString()`.
-3. All lines are written to `data/studymate.txt` using buffered writers.
+3. All lines are written to `data/StudyMate.txt` using buffered writers.
 4. The file is atomically replaced to ensure consistency.
 
 ---
@@ -1703,10 +1703,10 @@ This section provides instructions for manual testing of StudyMate. These test c
 
 ## Initial Setup
 
-1. Download the latest `studymate.jar` file from the releases page.
+1. Download the latest `StudyMate.jar` file from the releases page.
 2. Place the jar file in an empty folder designated for testing.
 3. Open a terminal/command prompt and navigate to the folder containing the jar file.
-4. Run the application using `java -jar studymate.jar`.
+4. Run the application using `java -jar StudyMate.jar`.
 5. The application should start and display a welcome message. A `data` folder will be created with a `StudyMate.txt` save file.
 
 ## Testing Task Management
@@ -1932,7 +1932,7 @@ This section provides instructions for manual testing of StudyMate. These test c
 **Test case: Data persistence after exit**
 1. Add several tasks, reminders, and habits.
 2. Command: `bye`
-3. Restart the application: `java -jar studymate.jar`
+3. Restart the application: `java -jar StudyMate.jar`
 4. Command: `list`, `rem ls`, `habit ls`
 - Expected: All previously added data is loaded and displayed correctly.
 
