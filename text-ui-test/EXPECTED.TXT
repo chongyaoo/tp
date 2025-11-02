@@ -80,16 +80,46 @@ Here are the tasks in your task list:
 5. [E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
 ____________________________________________________________
 ____________________________________________________________
+OK, I've edited the description of the task to:
+[T][X] Updated first task
+____________________________________________________________
+____________________________________________________________
+OK, I've edited the deadline of the deadline Submit report to:
+2025-11-30 23:59
+____________________________________________________________
+____________________________________________________________
+OK, I've edited the from date of the event Team meeting to:
+2025-11-28 09:00
+____________________________________________________________
+____________________________________________________________
+OK, I've edited the to date of the event Team meeting to:
+2025-11-28 17:00
+____________________________________________________________
+____________________________________________________________
+Here are the tasks with the matching substring found!:
+1. [D][X] Prepare presentation (by: 2025-10-27 17:00)
+____________________________________________________________
+____________________________________________________________
+Here are the tasks with the matching substring found!:
+1. [T][X] Updated first task
+____________________________________________________________
+____________________________________________________________
+Here are the deadlines and events in your task list, sorted by their deadlines and/or start times:
+1. [D][X] Prepare presentation (by: 2025-10-27 17:00)
+2. [E][ ] Team meeting (from: 2025-11-28 09:00, to: 2025-11-28 17:00)
+3. [D][X] Submit report (by: 2025-11-30 23:59)
+____________________________________________________________
+____________________________________________________________
 Got it. I've deleted these tasks:
-[D][X] Submit report (by: 2025-10-26 23:59)
+[D][X] Submit report (by: 2025-11-30 23:59)
 [T][X] Complete assignment
 Now you have 3 tasks in the task list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your task list:
-1. [T][X] Read chapter 1
+1. [T][X] Updated first task
 2. [D][X] Prepare presentation (by: 2025-10-27 17:00)
-3. [E][ ] Team meeting (from: 2025-10-26 09:00, to: 2025-10-26 17:00)
+3. [E][ ] Team meeting (from: 2025-11-28 09:00, to: 2025-11-28 17:00)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this One-Time reminder:

@@ -317,7 +317,7 @@ class MessageHandlerTest {
     @Test
     void sendEditDescMessage_success() {
         MessageHandler.sendEditDescMessage(new MockTask("Edit"));
-        String expected = line + "OK, I've edited the description of the task to: \n[T][ ] Edit\n" + line;
+        String expected = line + "OK, I've edited the description of the task to:\n[T][ ] Edit\n" + line;
         assertEquals(normaliseOutput(expected), normaliseOutput(outContent.toString()));
     }
 

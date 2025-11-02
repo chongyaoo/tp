@@ -201,7 +201,7 @@ public class MessageHandler {
      */
     public static void sendEditDescMessage(Task task) {
         System.out.println(LINE);
-        System.out.println("OK, I've edited the description of the task to: ");
+        System.out.println("OK, I've edited the description of the task to:");
         System.out.println(task);
         System.out.println(LINE);
     }

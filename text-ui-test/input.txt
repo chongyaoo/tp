@@ -12,6 +12,13 @@ mark 2,3
 unmark 2
 mark 2...4
 list
+edit 1 -n Updated first task
+edit 3 -d 2025-11-30 23:59
+edit 5 -f 2025-11-28 09:00
+edit 5 -t 2025-11-28 17:00
+find presentation
+find task
+list -s
 delete 2...3
 list
 rem Project sync @ 2025-11-01 14:30
