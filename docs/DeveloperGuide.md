@@ -1468,8 +1468,6 @@ The UI component provides a strict separation between application logic and outp
   * Provides static string utility methods to format every modeled object—tasks, reminders, timers, habits—before display
   * Ensures output is uniformly readable and self-explanatory even for batch/edge cases
 
-# Insert UI UML Diagram here
-
 ---
 
 ## How the UI Component Works
