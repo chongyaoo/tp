@@ -845,8 +845,11 @@ Bye. Hope to see you again soon!
 
 **A**: When a one-time reminder triggers, it is automatically turned off and marked as "fired". If you turn off a one-time reminder before it fires and later turn it back on after its scheduled time has passed, StudyMate treats this as if you no longer need that reminder and will not trigger it. This prevents outdated reminders from firing unexpectedly. If you still need the reminder, create a new one with an updated time.
 
----
+**Q**: Why does `start -5` give an error instead of creating a timer named "-5"?
 
+**A**: If the first argument to `start` contains only digits (including negative numbers like `-5`), it will always be treated as a task INDEX, not a name. Since `-5` is not a valid task index, it results in an error. The first argument is never interpreted as duration - use `@MINUTES` to specify duration. To use a numeric-looking name, include non-digit characters (e.g., `start Task-5 @ 30` instead of `start -5 @ 30`).
+
+---
 ## Command Summary
 
 **Task Management:**
