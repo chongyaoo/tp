@@ -868,6 +868,14 @@ This gives you reasonable flexibility while still encouraging consistency.
 
 Since what constitutes a "true duplicate" is subjective (same name? same name and date? same everything?), the system allows you to organize your tasks as you see fit. If you accidentally create a duplicate, you can easily identify and delete it using the `list` and `delete` commands.
 
+**Q**: Can I use special characters like `|`, `,`, `;`, or `:` in my task descriptions?
+
+**A**: Yes! You can use any characters you want in your task names, descriptions, and reminders, including common special characters like pipes (`|`), commas (`,`), semicolons (`;`), colons (`:`), and even emojis. The system uses a special non-printable delimiter (ASCII Unit Separator, 0x1F) in the save file to separate fields, which means you have complete freedom to use mainstream characters without worrying about breaking the save file functionality. For example, all of these are perfectly valid:
+* `todo Submit report | urgent priority`
+* `deadline Meeting: Project Review /by 2025-12-01 15:00`
+* `event Workshop; Topics 1-3 /from 2025-11-10 09:00 /to 2025-11-10 17:00`
+Note that this does not affect readability even looking at the text file.
+
 ---
 ## Command Summary
 
