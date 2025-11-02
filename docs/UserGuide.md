@@ -554,6 +554,7 @@ Begin a study timer, optionally linked to a specific task, or use a custom label
 * `INDEX`: (Optional) Task number from the `list` command
 * `NAME`: (Optional) Custom label for the timer session
 * `@MINUTES`: (Optional) Duration in minutes (default: 25)
+* **Spacing flexibility:** The system accepts flexible spacing around the `@` symbol to accommodate natural typing patterns. All of these formats work: `@40`, `@ 40`, `4@40`, `4 @ 40`
 * If no parameters, `start` starts a 25 minute "Focus Session"
 * If `INDEX` is supplied (e.g. `start 3 @ 45`), it starts a timer label with task 3's name for 45 minutes
 * If `NAME` and duration are supplied (e.g. `start Review Notes @ 30`), it starts a 30 minute timer labeled "Review Notes"
@@ -562,8 +563,9 @@ Begin a study timer, optionally linked to a specific task, or use a custom label
 **Examples:**
 * `start` (starts default 25 minute "Focus Session")
 * `start 2` (starts timer for task 2, default 25 minutes)
-* `start 4@40` (starts timer for task 4, 40 minutes)
+* `start 4 @ 40` (starts timer for task 4, 40 minutes)
 * `start Research @ 60` (starts timer for "Research", 60 minutes)
+* `start 1@30` (also valid - spacing is flexible)
 
 **Expected Output:**
 ```
