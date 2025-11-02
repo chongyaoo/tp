@@ -53,7 +53,7 @@ Now you have X tasks in the list.
 * Todo tasks are marked with `[T]` to indicate they are simple tasks.
 * `[ ]` indicates the task is not yet completed. It will show `[X]` when marked as done.
 * Use the `mark` command to mark a todo as completed.
-* Use the `unmark` command a mark a todo as incomplete.
+* Use the `unmark` command to mark a todo as incomplete.
 * Use the `list` command to view all your tasks.
 
 ---
