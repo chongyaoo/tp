@@ -189,7 +189,7 @@ Mark one or more tasks as "done".
 **Examples:**
 * `mark 1`
 * `mark 2,4,6`
-* `mark 3..5`
+* `mark 3...5`
 
 **Expected Output:**
 
@@ -275,7 +275,7 @@ Removes one or more tasks from your list
 **Examples:**
 * `delete 1`
 * `delete 2,4,6`
-* `delete 3..5`
+* `delete 3...5`
 
 **Expected Output:**
 
