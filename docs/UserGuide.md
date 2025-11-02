@@ -312,6 +312,7 @@ Creates a reminder that fires once at a specified date and time.
 
 * The `MESSAGE` is the text that will be displayed when the reminder fires.
 * The `@` delimiter is required to separate the message from the date/time.
+* **Important:** A space is required after the `@` symbol. Use `@ 2025-11-15 09:00` not `@2025-11-15 09:00`.
 * The date and time must be in `YYYY-MM-DD HH:mm` format.
 * The reminder must be set for a future date/time.
 
@@ -524,7 +525,7 @@ Now you have 1 reminder in the Reminders list.
 
 
 * **Time Precision**:
-    * A reminder fires once when the current time equals or exceeds its scheduled time
+    * A reminder fires once the current time equals or exceeds its scheduled time
     * The 30-second check interval means a reminder scheduled for 14:30:00 will fire on the first check after 14:30:00 (between 14:30:00 and 14:30:30), if StudyMate is on during this period.
     * After firing, the reminder either turns off (One-Time) or reschedules (Recurring), preventing duplicate notifications
 
