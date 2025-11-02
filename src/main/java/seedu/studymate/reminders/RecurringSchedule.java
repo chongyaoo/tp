@@ -60,6 +60,15 @@ public class RecurringSchedule implements Schedule {
     }
 
     /**
+     * Indicates this is a recurring schedule.
+     *
+     * @return Always true
+     */
+    public boolean isRecurring() {
+        return true;
+    }
+
+    /**
      * Checks if reminder is due to fire.
      * Returns true if active and current time >= scheduled time.
      *
