@@ -841,6 +841,10 @@ Bye. Hope to see you again soon!
 
 **A**: The system truncates timing to minutes to be more user-friendly. This means if your deadline is at 14:30:59 and you complete at 14:30:00, it still counts as on-time because both are in the same minute.
 
+**Q**: Why doesn't my one-time reminder fire when I turn it back on after its scheduled time has passed?
+
+**A**: When a one-time reminder triggers, it is automatically turned off and marked as "fired". If you turn off a one-time reminder before it fires and later turn it back on after its scheduled time has passed, StudyMate treats this as if you no longer need that reminder and will not trigger it. This prevents outdated reminders from firing unexpectedly. If you still need the reminder, create a new one with an updated time.
+
 ---
 
 ## Command Summary
