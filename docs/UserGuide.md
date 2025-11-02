@@ -639,6 +639,8 @@ Displays the current timer status and time remaining.
 **Format:** `stat`
 
 **Expected Output:**
+
+*When timer is running or paused:*
 ```
 Timer Status
   State: RUNNING
@@ -646,19 +648,29 @@ Timer Status
   Label: Focus session
 ```
 
+*When timer is not active:*
+```
+No timer currently active.
+```
+
 **Notes:**
-* Only works if a timer is active
-* Shows details like timer label, state (RUNNING/PAUSED/IDLE), and exact time left
+* Only works if a timer is active (running or paused)
+* Shows details like timer label, state (RUNNING or PAUSED), and exact time left
+* When a timer finishes or is reset, it returns to IDLE state and is cleared from memory, so `stat` will show "No timer currently active"
 
 ---
 
 ### Timer Behaviour and Rules
-* Only a single timer sessions can be active at a time
+* Only a single timer session can be active at a time
 * The timer can be associated with a task (by index), or a custom label
-* Time always counts down to zero. When finished, you are notified and the timer is cleared for a new session
+* **Timer States:**
+  * **IDLE** - No timer is active (initial state, after completion, or after reset)
+  * **RUNNING** - Timer is actively counting down
+  * **PAUSED** - Timer countdown is temporarily paused
+* Time always counts down to zero. When finished, you are notified and the timer returns to IDLE state (cleared from memory)
 * Time is tracked precisely to seconds, the UI displays minutes:seconds
 * If you pause, resume or reset the timer, actions are immediate and confirmed in output
-* If you attempt commands with no active timer, or redudant actions (e.g. resume while already running), you get a friendly error
+* If you attempt commands with no active timer (IDLE state), or redundant actions (e.g. resume while already running), you get a friendly error
 
 ---
 
