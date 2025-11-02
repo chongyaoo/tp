@@ -854,6 +854,10 @@ This gives you reasonable flexibility while still encouraging consistency.
 
 **A**: If the first argument to `start` contains only digits (including negative numbers like `-5`), it will always be treated as a task INDEX, not a name. Since `-5` is not a valid task index, it results in an error. The first argument is never interpreted as duration - use `@MINUTES` to specify duration. To use a numeric-looking name, include non-digit characters (e.g., `start Task-5 @ 30` instead of `start -5 @ 30`).
 
+**Q**: What happens if I include duplicate indices in commands like `mark 3,2,1,1`?
+
+**A**: The system automatically handles duplicate indices by processing each unique index only once. For example, `mark 3,2,1,1` will mark tasks 1, 2, and 3 exactly once, ignoring the duplicate `1`. Similarly, `delete 5,5,3` will delete tasks 3 and 5 without errors. This design allows you to trust that duplicate indices are handled appropriately - the command executes successfully and each specified task is affected only once, regardless of how many times its index appears in the command. Hence, no warnings are thrown for this.
+
 ---
 ## Command Summary
 
