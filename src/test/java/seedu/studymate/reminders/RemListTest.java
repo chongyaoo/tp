@@ -138,7 +138,7 @@ public class RemListTest {
         reminderList.addReminderRec("Daily meditation", remDateTime, dailyInterval);
     }
 
-    //test for deleting one reminder
+    //Test for deleting one reminder
     @Test
     void testDeleteSingleReminder() throws StudyMateException {
         populateListForDeletion();
@@ -204,7 +204,7 @@ public class RemListTest {
 
     //--TestCases for checking isDue()--
 
-    // Helper function to populate a list to test
+    // Helper function to populate the list with One-Time Reminders to test if due
     private void populateListOneTimeDue() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
         LocalDate date = dateTime.toLocalDate();
@@ -242,6 +242,7 @@ public class RemListTest {
         }
     }
 
+    //Test to check that One-Time reminder is not due after firing
     @Test
     void reminderOneTimeIsFired() throws StudyMateException {
         populateListOneTimeDue();
@@ -260,6 +261,7 @@ public class RemListTest {
         }
     }
 
+    // Helper function to populate the list with Recurring Reminders to test if due
     private void populateListRecDue() throws StudyMateException {
         LocalDateTime dateTime = LocalDateTime.of(2025, 9, 9, 18, 0);
         LocalDate date = dateTime.toLocalDate();
@@ -284,6 +286,7 @@ public class RemListTest {
         }
     }
 
+    //Test that recurring reminder sets next remindAt after firing reminder, and Reminder is not due now.
     @Test
     void recurringReminder_resetsAfterFired() {
         // Set a fixed "now" time for the test

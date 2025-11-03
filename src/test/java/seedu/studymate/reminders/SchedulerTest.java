@@ -257,7 +257,7 @@ public class SchedulerTest {
         assertTrue(secondTick.isEmpty(), "Both reminders should not fire again immediately");
     }
 
-    // ========== INTEGRATION TESTS - Testing Interval Scheduler Mechanism ==========
+    // INTEGRATION TESTS - Testing Interval Scheduler Mechanism
 
     @Test
     void integrationTest_schedulerAutomaticallyFiresReminder() throws InterruptedException, StudyMateException {
