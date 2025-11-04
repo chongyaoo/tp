@@ -19,7 +19,7 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
     - Snooze functionality for one-time reminders with validation to prevent past-time snoozing
     - Turn on/off functionality to enable/disable reminders without deletion
     - Clock dependency injection for testable time operations
-    - Comprehensive unit tests for timing edge cases and concurrent operations
+    - Comprehensive unit tests for UI, handling and storage of Reminders
 
 
 * **Scheduler Component**: Implemented background reminder monitoring system:
@@ -31,6 +31,7 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
     - Handling shutdowns to prevent resource leaks
     - Integration with `MessageHandler` for user notifications
     - Support for both immediate checks on startup and periodic background monitoring
+    - Comprehensive unit tests for timing and edge cases of Scheduler
 
 
 * **Reminder Command Parsing**: Extended the Parser component to support reminder commands:
@@ -100,7 +101,7 @@ NUS students who rely on laptops to manage lectures, labs, CCAs, and project dea
     - Enabled deterministic testing with fixed clocks in test suites
     - Allowed simulation of different time scenarios for edge case testing (past reminders, future reminders, exact timing)
 
-* **Integration Testing for Scheduler**: Implemented comprehensive integration tests:
+* **Integration Testing for Scheduler**: Verified comprehensive integration tests:
     - Tested proper cleanup and shutdown behavior of ScheduledExecutorService
     - Verified notification delivery through MessageHandler integration
 
